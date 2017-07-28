@@ -27,5 +27,6 @@
     <string name="error_invalid_auth">Authentication failed.</string>
     <string name="error_invalid_verification">Your account isn\'t verify. Please verify your email address. Check on your mail inbox.</string>
     <string name="edit_profile">Edit Profile</string>
+    <string name="title_search">Search</string>
 
 </resources>
