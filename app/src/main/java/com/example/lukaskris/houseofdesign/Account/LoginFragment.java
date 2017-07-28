@@ -45,6 +45,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import static android.content.Context.MODE_PRIVATE;
+import static com.example.lukaskris.houseofdesign.Shop.HomeFragment.calledActivity;
 
 public class LoginFragment extends Fragment {
 
@@ -77,6 +78,11 @@ public class LoginFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        /* Setting Firebase */
+        if(!calledActivity){
+            FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+            calledActivity=true;
+        }
         // Inflate the layout for this fragment
         final View view = inflater.inflate(R.layout.fragment_login, container, false);
         googleSignin = (SignInButton) view.findViewById(R.id.sign_in_button);
@@ -237,6 +243,8 @@ public class LoginFragment extends Fragment {
             if(result.isSuccess()){
                 GoogleSignInAccount account = result.getSignInAccount();
                 firebaseAuthWithGoogle(account);
+            }else{
+                Snackbar.make(getView(),result.getStatus().toString(),Snackbar.LENGTH_SHORT).show();
             }
         }
     }

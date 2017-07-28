@@ -229,10 +229,11 @@ public class HomeFragment extends Fragment {
                         @Override
                         public void onClick(View v) {
                             //TODO: Detail Item
-//                            Intent inten = new Intent(HomeActivity.this,DetailItemActivity.class);
+
+                            Intent intent = new Intent(getActivity(),DetailActivity.class);
 //                            inten.putExtra("iditem",iditem);
 //                            inten.putExtra("category",sectionName);
-//                            startActivity(inten);
+                            startActivity(intent);
                         }
                     });
                 }

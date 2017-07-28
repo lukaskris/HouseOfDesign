@@ -1,10 +1,12 @@
 package com.example.lukaskris.houseofdesign;
 
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -37,6 +39,16 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private DrawerLayout drawer;
+    private NavigationView navigationView;
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        selectedFragment(R.id.nav_home);
+        navigationView.getMenu().getItem(0).setChecked(true);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,14 +59,14 @@ public class HomeActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         getSupportActionBar().setElevation(0);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+        ActionBarDrawerToggle toggle = new SmoothActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         final View header = navigationView.getHeaderView(0);
         header.findViewById(R.id.nav_header_Login).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -88,7 +100,6 @@ public class HomeActivity extends AppCompatActivity
                     .override(100, 100)
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(mPicture);
-            selectedFragment(R.id.nav_home);
         }
     }
 
@@ -119,9 +130,8 @@ public class HomeActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+    public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
         selectedFragment(id);
@@ -129,6 +139,9 @@ public class HomeActivity extends AppCompatActivity
     }
 
     private void selectedFragment(int id){
+
+
+        drawer.closeDrawers();
         Fragment fragment = null;
         if(id == R.id.nav_home) {
             fragment = new HomeFragment();
@@ -162,13 +175,50 @@ public class HomeActivity extends AppCompatActivity
         }
 
         if(fragment != null){
-            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.replace(R.id.content_frame,fragment);
-            ft.commit();
+            final Fragment finalFragment = fragment;
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+
+                    FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                    ft.replace(R.id.content_frame, finalFragment);
+                    ft.commit();
+                }
+            }, 200);
+
+        }
+    }
+
+    private class SmoothActionBarDrawerToggle extends ActionBarDrawerToggle {
+
+        private Runnable runnable;
+
+        public SmoothActionBarDrawerToggle(Activity activity, DrawerLayout drawerLayout, Toolbar toolbar, int openDrawerContentDescRes, int closeDrawerContentDescRes) {
+            super(activity, drawerLayout, toolbar, openDrawerContentDescRes, closeDrawerContentDescRes);
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
+        @Override
+        public void onDrawerOpened(View drawerView) {
+            super.onDrawerOpened(drawerView);
+            invalidateOptionsMenu();
+        }
+        @Override
+        public void onDrawerClosed(View view) {
+            super.onDrawerClosed(view);
+            invalidateOptionsMenu();
+        }
+        @Override
+        public void onDrawerStateChanged(int newState) {
+            super.onDrawerStateChanged(newState);
+            if (runnable != null && newState == DrawerLayout.STATE_IDLE) {
+                runnable.run();
+                runnable = null;
+            }
+        }
+
+        public void runWhenIdle(Runnable runnable) {
+            this.runnable = runnable;
+        }
     }
 
 }
