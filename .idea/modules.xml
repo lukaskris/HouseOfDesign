@@ -4,6 +4,8 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/HouseOfDesign.iml" filepath="$PROJECT_DIR$/HouseOfDesign.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/endpoint-backend/endpoint-backend.iml" filepath="$PROJECT_DIR$/endpoint-backend/endpoint-backend.iml" />
+      <module fileurl="file://$PROJECT_DIR$/mysql-connector-java-5.1.43-bin/mysql-connector-java-5.1.43-bin.iml" filepath="$PROJECT_DIR$/mysql-connector-java-5.1.43-bin/mysql-connector-java-5.1.43-bin.iml" />
     </modules>
   </component>
 </project>
