@@ -16,24 +16,28 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.example.lukaskris.houseofdesign.Model.Item;
 import com.example.lukaskris.houseofdesign.R;
 import com.viewpagerindicator.CirclePageIndicator;
+
+import java.util.ArrayList;
 
 public class DetailActivity extends AppCompatActivity {
     private ViewPager mViewPager;
 
     ViewPagerAdapter mViewPagerAdapter;
     CirclePageIndicator mIndicator;
+    ArrayList<String> imageUrl;
 
-    int [] mResources = {
-            R.drawable.pemandangan1,
-            R.drawable.pemandangan1,
-            R.drawable.pemandangan1,
-            R.drawable.pemandangan1,
-            R.drawable.pemandangan1,
-            R.drawable.pemandangan1
-    };
+    private TextView mName;
+    private TextView mPrice;
+    private TextView mDescription;
+
+    private Item mItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +48,7 @@ public class DetailActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
+        imageUrl = new ArrayList<>();
 
         mViewPager = (ViewPager) findViewById(R.id.detail_viewpager);
 
@@ -82,7 +87,7 @@ public class DetailActivity extends AppCompatActivity {
 
         @Override
         public int getCount() {
-            return mResources.length;
+            return imageUrl.size();
         }
 
         @Override
@@ -99,8 +104,8 @@ public class DetailActivity extends AppCompatActivity {
             View itemView = mLayoutInflater.inflate(R.layout.home_viewpager_row, container, false);
 
             ImageView imageView = (ImageView) itemView.findViewById(R.id.home_viewpager_imageView);
-            imageView.setImageResource(mResources[position]);
-
+//            imageView.setImageResource();
+            Glide.with(DetailActivity.this).load(imageUrl.get(position)).diskCacheStrategy(DiskCacheStrategy.ALL).into(imageView);
             container.addView(itemView);
 
             return itemView;

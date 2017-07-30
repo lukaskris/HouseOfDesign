@@ -26,9 +26,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".Account.ContainerLoginRegisterActivity" />
-        <activity android:name=".Shop.DetailActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            ></activity>
+        <activity
+            android:name=".Shop.DetailActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

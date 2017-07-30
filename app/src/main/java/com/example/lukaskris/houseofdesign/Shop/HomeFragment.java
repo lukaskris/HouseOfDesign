@@ -145,7 +145,9 @@ public class HomeFragment extends Fragment {
 
         RecyclerView my_recycler_view = (RecyclerView) view.findViewById(R.id.home_recyclerview);
         my_recycler_view.setHasFixedSize(true);
+        my_recycler_view.setNestedScrollingEnabled(false);
         CategoryListAdapter adapter = new CategoryListAdapter(getContext(), allCategory);
+
         my_recycler_view.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         my_recycler_view.setAdapter(adapter);
         return view;
