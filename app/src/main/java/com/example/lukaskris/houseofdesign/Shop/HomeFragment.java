@@ -145,7 +145,9 @@ public class HomeFragment extends Fragment {
 
         RecyclerView my_recycler_view = (RecyclerView) view.findViewById(R.id.home_recyclerview);
         my_recycler_view.setHasFixedSize(true);
+        my_recycler_view.setNestedScrollingEnabled(false);
         CategoryListAdapter adapter = new CategoryListAdapter(getContext(), allCategory);
+
         my_recycler_view.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         my_recycler_view.setAdapter(adapter);
         return view;
@@ -229,10 +231,11 @@ public class HomeFragment extends Fragment {
                         @Override
                         public void onClick(View v) {
                             //TODO: Detail Item
-//                            Intent inten = new Intent(HomeActivity.this,DetailItemActivity.class);
+
+                            Intent intent = new Intent(getActivity(),DetailActivity.class);
 //                            inten.putExtra("iditem",iditem);
 //                            inten.putExtra("category",sectionName);
-//                            startActivity(inten);
+                            startActivity(intent);
                         }
                     });
                 }

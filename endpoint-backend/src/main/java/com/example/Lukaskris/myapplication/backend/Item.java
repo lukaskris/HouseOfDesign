@@ -1,20 +1,24 @@
-package com.example.lukaskris.houseofdesign.Model;
+package com.example.Lukaskris.myapplication.backend;
+
+import com.googlecode.objectify.annotation.Entity;
+import com.googlecode.objectify.annotation.Id;
 
 import java.io.Serializable;
 import java.util.List;
-
 /**
  * Created by Lukaskris on 24/07/2017.
  */
-
+@Entity
 public class Item implements Serializable{
     private String name;
     private String price;
     private String desc;
     private String category;
     private List<String> image;
-    private List<String> qty;
-    private List<String> size;
+//    private List<String> qty;
+//    private List<String> size;
+    private List<Type> type;
+    @Id
     private String id;
     private String count;
 
@@ -27,8 +31,8 @@ public class Item implements Serializable{
         this.desc = desc;
         this.category = category;
         this.image = image;
-        this.qty = qty;
-        this.size = size;
+//        this.qty = qty;
+//        this.size = size;
         this.id = id;
         this.count=count;
     }
@@ -36,6 +40,14 @@ public class Item implements Serializable{
     public String getName() {
 
         return name;
+    }
+
+    public List<Type> getType() {
+        return type;
+    }
+
+    public void setType(List<Type> type) {
+        this.type = type;
     }
 
     public String getCount() {
@@ -82,21 +94,21 @@ public class Item implements Serializable{
         this.image = image;
     }
 
-    public List<String> getQty() {
-        return qty;
-    }
-
-    public void setQty(List<String> qty) {
-        this.qty = qty;
-    }
-
-    public List<String> getSize() {
-        return size;
-    }
-
-    public void setSize(List<String> size) {
-        this.size = size;
-    }
+//    public List<String> getQty() {
+//        return qty;
+//    }
+//
+//    public void setQty(List<String> qty) {
+//        this.qty = qty;
+//    }
+//
+//    public List<String> getSize() {
+//        return size;
+//    }
+//
+//    public void setSize(List<String> size) {
+//        this.size = size;
+//    }
 
     public String getId() {
         return id;
