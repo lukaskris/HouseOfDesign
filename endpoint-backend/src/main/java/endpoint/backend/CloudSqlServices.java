@@ -1,4 +1,5 @@
-package com.example.Lukaskris.myapplication.backend;
+package endpoint.backend;
+
 
 import com.google.appengine.api.utils.SystemProperty;
 
@@ -24,6 +25,7 @@ public class CloudSqlServices {
     }
 
     public Connection getConnection() throws Exception {
+
         try {
 //             Class.forName("com.mysql.jdbc.GoogleDriver");
             Class.forName("com.mysql.jdbc.Driver");

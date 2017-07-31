@@ -1,24 +1,19 @@
-package com.example.Lukaskris.myapplication.backend;
-
-import com.googlecode.objectify.annotation.Entity;
-import com.googlecode.objectify.annotation.Id;
+package endpoint.backend;
 
 import java.io.Serializable;
 import java.util.List;
 /**
  * Created by Lukaskris on 24/07/2017.
  */
-@Entity
 public class Item implements Serializable{
     private String name;
     private String price;
     private String desc;
     private String category;
     private List<String> image;
-//    private List<String> qty;
+    //    private List<String> qty;
 //    private List<String> size;
     private List<Type> type;
-    @Id
     private String id;
     private String count;
 

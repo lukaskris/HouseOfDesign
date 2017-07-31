@@ -1,7 +1,7 @@
-package com.example.Lukaskris.myapplication.backend;
+package endpoint.backend;
 
 /**
- * Created by Lukaskris on 30/07/2017.
+ * Created by Lukaskris on 31/07/2017.
  */
 
 public class Type {

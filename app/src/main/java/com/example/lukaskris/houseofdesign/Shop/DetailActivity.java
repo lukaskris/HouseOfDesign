@@ -22,6 +22,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.lukaskris.houseofdesign.Model.Item;
 import com.example.lukaskris.houseofdesign.R;
+import com.example.lukaskris.houseofdesign.Services.EndpointAsyncTask;
 import com.viewpagerindicator.CirclePageIndicator;
 
 import java.util.ArrayList;
@@ -49,7 +50,7 @@ public class DetailActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         imageUrl = new ArrayList<>();
-
+        new EndpointAsyncTask(this).execute();
         mViewPager = (ViewPager) findViewById(R.id.detail_viewpager);
 
         mViewPagerAdapter = new ViewPagerAdapter(this);

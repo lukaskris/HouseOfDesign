@@ -1,10 +1,9 @@
-package com.example.Lukaskris.myapplication.backend;
+package endpoint.backend;
 
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.config.Nullable;
-import com.google.api.server.spi.response.CollectionResponse;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -24,15 +23,14 @@ import javax.inject.Named;
         version = "v1",
         resource = "item",
         namespace = @ApiNamespace(
-                ownerDomain = "backend.myapplication.Lukaskris.example.com",
-                ownerName = "backend.myapplication.Lukaskris.example.com",
+                ownerDomain = "backend.endpoint",
+                ownerName = "backend.endpoint",
                 packagePath = ""
         )
 )
 public class ItemEndpoint {
-    private static final Logger logger = Logger.getLogger(ItemEndpoint.class.getName());
 
-    public ItemEndpoint(){}
+    private static final Logger logger = Logger.getLogger(ItemEndpoint.class.getName());
 
     /**
      * This method gets the <code>Item</code> object associated with the specified <code>id</code>.
@@ -70,6 +68,8 @@ public class ItemEndpoint {
         logger.info("Calling getItem method" + item);
         return item;
     }
+
+
 
     @ApiMethod(name = "getAllItem")
     public List<Item> getAllItem(@Nullable @Named("category") String category, @Nullable @Named("offset") Integer offset){

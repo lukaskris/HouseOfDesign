@@ -18,18 +18,15 @@ apply plugin: 'java'
 apply plugin: 'war'
 apply plugin: 'appengine'
 
-sourceCompatibility = JavaVersion.VERSION_1_7
-targetCompatibility = JavaVersion.VERSION_1_7
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
 
 dependencies {
     appengineSdk 'com.google.appengine:appengine-java-sdk:1.9.42'
     compile 'com.google.appengine:appengine-endpoints:1.9.42'
     compile 'com.google.appengine:appengine-endpoints-deps:1.9.42'
-    compile 'com.googlecode.objectify:objectify:5.0.3'
     compile 'javax.servlet:servlet-api:2.5'
     compile project(':mysql-connector-java-5.1.43-bin')
-    compile 'com.google.cloud.sql:mysql-socket-factory:1.0.3'
-    compile 'com.google.apis:google-api-services-sqladmin:v1beta4-rev45-1.22.0'
 }
 
 appengine {
