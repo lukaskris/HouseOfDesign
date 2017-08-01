@@ -23,6 +23,7 @@
             android:background="@color/colorLightOrange"
             android:foreground="?android:attr/selectableItemBackground"
             android:text="Add to cart"
+            android:id="@+id/type_add_to_cart"
             android:textColor="@color/colorRed" />
 
         <android.support.v4.widget.Space
@@ -37,6 +38,7 @@
             android:background="@color/colorRed"
             android:foreground="?android:attr/selectableItemBackground"
             android:text="Buy now"
+            android:id="@+id/type_buy_now"
             android:textColor="@color/colorWhite" />
     </LinearLayout>
     <ScrollView
@@ -55,54 +57,67 @@
                     android:layout_height="wrap_content"
                     android:padding="10dp"
                     android:orientation="horizontal">
+
                     <ImageView
+                        android:id="@+id/type_picture"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="0.3"
-                        android:src="@drawable/empty_image"/>
+                        android:layout_marginRight="10dp"
+                        android:src="@drawable/empty_image" />
+
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_weight="0.7"
                         android:orientation="vertical"
                         android:layout_height="match_parent"
                         android:padding="5dp">
+
                         <TextView
+                            android:id="@+id/type_name"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Facecozy Women's Summer Hiking Pants Wateroriif Quic Dry Outdoor Trousers abcd"
+                            android:ellipsize="end"
                             android:lines="2"
-                            android:ellipsize="end"/>
+                            android:text="Facecozy Women's Summer Hiking Pants Wateroriif Quic Dry Outdoor Trousers abcd" />
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
                             android:text="Rp 250.000,-"
+                            android:id="@+id/type_price"
                             android:gravity="bottom"
                             android:textColor="@color/colorRed"
                             android:layout_marginBottom="10dp"/>
                     </LinearLayout>
                 </LinearLayout>
 
-                <View
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="10dp">
+
+                <TextView
+                    android:id="@+id/type_color"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:text="Color: Black" />
+
+                <android.support.v7.widget.RecyclerView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/type_recycler_color"
+                    android:nestedScrollingEnabled="false" />
+            </LinearLayout>
+
+            <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:background="@color/colorLightGrey" />
-                <LinearLayout
-                    android:padding="10dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="5dp"
-                        android:text="Color: Black"/>
-                    <android.support.v7.widget.RecyclerView
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:nestedScrollingEnabled="false"/>
-                </LinearLayout>
 
-                <View
+            <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:background="@color/colorLightGrey" />
@@ -126,6 +141,7 @@
                     android:orientation="horizontal">
                     <android.support.v7.widget.RecyclerView
                         android:layout_width="match_parent"
+                        android:id="@+id/type_recycler_size"
                         android:layout_height="wrap_content"/>
                 </LinearLayout>
 
@@ -151,10 +167,11 @@
                         <Button
                             style="@style/QuantityPickerButtonStyle"
                             android:onClick="decrement"
+                            android:id="@+id/type_decrement"
                             android:text="-" />
 
                         <TextView
-                            android:id="@+id/quantity_text_view"
+                            android:id="@+id/type_quantity"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:paddingLeft="8dp"
@@ -166,6 +183,7 @@
                         <Button
                             style="@style/QuantityPickerButtonStyle"
                             android:onClick="increment"
+                            android:id="@+id/type_increment"
                             android:text="+" />
 
                     </LinearLayout>

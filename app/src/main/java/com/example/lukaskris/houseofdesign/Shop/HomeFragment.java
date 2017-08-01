@@ -212,7 +212,7 @@ public class HomeFragment extends Fragment {
             holder.itemTitle.setText(sectionName);
 
             /* Setting Adapter RecyclerView*/
-            final Query recentItem = mDatabase.child(sectionName).limitToFirst(7);
+            final Query recentItem = mDatabase.child(sectionName).limitToLast(5);
                                                     //            .limitToLast(5);
             FirebaseRecyclerAdapter<Item,ItemViewHolder> adpt = new FirebaseRecyclerAdapter<Item, ItemViewHolder>(Item.class,
                                                                                             R.layout.home_recyclerview_row,
@@ -220,10 +220,10 @@ public class HomeFragment extends Fragment {
                                                                                             recentItem) {
                 @Override
                 protected void populateViewHolder(final ItemViewHolder viewHolder, Item model, int position) {
-                    int[] posisi = new int[]{6,5,4,3,2,1,0};
-//                    model = getItem(posisi[viewHolder.getAdapterPosition()]);
-                    model = getItem(viewHolder.getAdapterPosition());
-//                    final String iditem = this.getRef(posisi[viewHolder.getAdapterPosition()]).getKey();
+                    int[] posisi = new int[]{4,3,2,1,0};
+                    model = getItem(posisi[viewHolder.getAdapterPosition()]);
+
+                    final String iditem = this.getRef(posisi[viewHolder.getAdapterPosition()]).getKey();
 //                    model.setId(this.getRef(posisi[viewHolder.getAdapterPosition()]).getKey());
                     viewHolder.setImage(getContext(), model.getImage().get(0));
                     viewHolder.setNama(model.getName());
@@ -235,6 +235,7 @@ public class HomeFragment extends Fragment {
                             //TODO: Detail Item
                             Intent intent = new Intent(getActivity(),DetailActivity.class);
                             intent.putExtra("iditem", finalModel.getId());
+                            intent.putExtra("idfirebase", iditem);
                             intent.putExtra("category",sectionName);
                             startActivity(intent);
                         }

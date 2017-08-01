@@ -25,11 +25,18 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.lukaskris.houseofdesign.Callback.Callback;
+import com.example.lukaskris.houseofdesign.Model.Type;
 import com.example.lukaskris.houseofdesign.R;
 import com.example.lukaskris.houseofdesign.Services.EndpointAsyncTask;
 import com.example.lukaskris.houseofdesign.Services.MyServicesAPI;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.viewpagerindicator.CirclePageIndicator;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,6 +56,8 @@ public class DetailActivity extends AppCompatActivity {
 
     private Item mItem;
 
+    private DatabaseReference mDatabase;
+
     private ProgressDialog mProgressDialog;
 
     @Override
@@ -63,8 +72,11 @@ public class DetailActivity extends AppCompatActivity {
         imageUrl = new ArrayList<>();
 //        new EndpointAsyncTask(this).execute();
         String iditem = getIntent().getStringExtra("iditem");
+        final String idfb = getIntent().getStringExtra("idfirebase");
+        String category = getIntent().getStringExtra("category");
 
-        iditem = "PKA001";
+        mDatabase = FirebaseDatabase.getInstance().getReference().child("category/"+category);
+//        iditem = "PKA001";
 
         mName = (TextView) findViewById(R.id.detail_name);
         mPrice = (TextView) findViewById(R.id.detail_price);
@@ -74,23 +86,7 @@ public class DetailActivity extends AppCompatActivity {
 //        mProgressDialog.setTitle("Fetch Data");
 //        mProgressDialog.setMessage("Please wait");
 //        mProgressDialog.show();
-        MyServicesAPI.getInstance().getItem(this, iditem, new Callback() {
-            @Override
-            public void onSuccess(Object... params) {
-//                mProgressDialog.dismiss();
-                Item item = (Item) params[0];
-                mItem = item;
-                mName.setText(item.getName());
-                mPrice.setText(String.valueOf(item.getPrice()));
-                mDescription.setText(item.getDesc());
-            }
 
-            @Override
-            public void onError(Object... params) {
-//                mProgressDialog.dismiss();
-                Log.d("Result",params[0].toString());
-            }
-        });
         mViewPager = (ViewPager) findViewById(R.id.detail_viewpager);
 
         mViewPagerAdapter = new ViewPagerAdapter(this);
@@ -102,9 +98,28 @@ public class DetailActivity extends AppCompatActivity {
         mSelect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(DetailActivity.this, TypeActivity.class));
+                List<com.example.lukaskris.houseofdesign.Model.Type> types = new ArrayList<>();
+                if(mItem != null) {
+                    for (endpoint.backend.itemApi.model.Type type : mItem.getType()) {
+                        Type tipe = new Type();
+                        tipe.setColor(type.getColor());
+                        tipe.setQty(type.getQty());
+                        tipe.setId_item(type.getIdItem());
+                        tipe.setId_type(type.getIdType());
+                        tipe.setSize(type.getSize());
+
+                    }
+                }
+                Intent intent = new Intent(DetailActivity.this, TypeActivity.class);
+                intent.putExtra("type", (Serializable) types);
+                intent.putExtra("nama", mName.getText());
+                intent.putExtra("harga",mPrice.getText());
+                intent.putExtra("foto",imageUrl.get(0));
+                startActivity(intent);
             }
         });
+        getImage(idfb);
+        getSize(iditem);
     }
 
     @Override
@@ -123,6 +138,50 @@ public class DetailActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    private void getSize(String iditem){
+        MyServicesAPI.getInstance().getItem(this, iditem, new Callback() {
+            @Override
+            public void onSuccess(Object... params) {
+//                mProgressDialog.dismiss();
+                Item item = (Item) params[0];
+                mItem = item;
+            }
+
+            @Override
+            public void onError(Object... params) {
+//                mProgressDialog.dismiss();
+                Log.d("Result",params[0].toString());
+            }
+        });
+    }
+
+    private void getImage(String id){
+        mProgressDialog = new ProgressDialog(this);
+        mProgressDialog.setMessage("Please wait");
+        mProgressDialog.show();
+        mDatabase.child(id).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.child("image").exists()){
+                    DataSnapshot image = dataSnapshot.child("image");
+                    for (DataSnapshot img : image.getChildren()){
+                        mViewPagerAdapter.addItem(img.getValue().toString().trim());
+                    }
+                    mName.setText(dataSnapshot.child("name").getValue().toString());
+                    mPrice.setText(dataSnapshot.child("price").getValue().toString());
+                    mDescription.setText(dataSnapshot.child("desc").getValue().toString());
+                }
+                mProgressDialog.dismiss();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
+    }
 
     private class ViewPagerAdapter extends PagerAdapter {
 
@@ -132,6 +191,11 @@ public class DetailActivity extends AppCompatActivity {
         ViewPagerAdapter(Context context) {
             mContext = context;
             mLayoutInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        }
+
+        public void addItem(String s){
+            imageUrl.add(s);
+            this.notifyDataSetChanged();
         }
 
         @Override

@@ -4,6 +4,11 @@
     <version>1</version>
     <threadsafe>true</threadsafe>
     <use-google-connector-j>true</use-google-connector-j>
+    <inbound-services>
+        <service>mail</service>
+        <service>warmup</service>
+    </inbound-services>
+
     <warmup-requests-enabled>true</warmup-requests-enabled>
     <system-properties>
         <property name="java.util.logging.config.file" value="WEB-INF/logging.properties" />

@@ -31,7 +31,8 @@ public class MyServicesAPI {
             instance = new MyServicesAPI();
             if(myApiService == null) {
                 ItemApi.Builder builder = new ItemApi.Builder(AndroidHttp.newCompatibleTransport(), new AndroidJsonFactory(), null)
-                        .setRootUrl("https://default-demo-app-db53e.appspot.com/_ah/api/");
+//                        .setRootUrl("https://default-demo-app-db53e.appspot.com/_ah/api/");
+                        .setRootUrl("https://utility-time-161403.appspot.com/_ah/api/");
                 myApiService = builder.build();
             }
         }
@@ -60,13 +61,13 @@ public class MyServicesAPI {
     public void getItem(final Context context, final String id, final Callback callback){
 
         new AsyncTask<String, Void, Item>(){
-            private ProgressDialog pd;
+//            private ProgressDialog pd;
 
             @Override
             protected void onPreExecute() {
-                pd = new ProgressDialog(context);
-                pd.setMessage("Retrieving Item...");
-                pd.show();
+//                pd = new ProgressDialog(context);
+//                pd.setMessage("Retrieving Item...");
+//                pd.show();
             }
 
             @Override
@@ -87,7 +88,7 @@ public class MyServicesAPI {
 
             @Override
             protected void onPostExecute(Item item) {
-                pd.dismiss();
+//                pd.dismiss();
                 callback.onSuccess(item);
             }
         }.execute();

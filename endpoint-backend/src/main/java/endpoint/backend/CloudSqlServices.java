@@ -42,7 +42,7 @@ public class CloudSqlServices {
             }catch (ClassNotFoundException e){
                 throw new ServletException("Error loading Google JDBC Driver", e);
             }
-            url = "jdbc:google:mysql://default-demo-app-db53e:asia-east1:houseofdesign/houseofdesign?user=root";
+            url = "jdbc:google:mysql://utility-time-161403:asia-east1:houseofdesign/houseofdesign?user=root";
         } else {
             // Local MySQL instance to use during development.
 //                Class.forName("com.google.appengine.api.rdbms.AppEngineDriver");

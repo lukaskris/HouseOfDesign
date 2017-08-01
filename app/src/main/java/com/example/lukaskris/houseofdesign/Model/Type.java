@@ -1,12 +1,13 @@
-package endpoint.backend;
+package com.example.lukaskris.houseofdesign.Model;
 
 import java.io.Serializable;
 
 /**
- * Created by Lukaskris on 31/07/2017.
+ * Created by Lukaskris on 01/08/2017.
  */
 
-public class Type {
+
+public class Type implements Serializable {
     private String id_type;
     private String id_item;
     private String size;
