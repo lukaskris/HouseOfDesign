@@ -212,29 +212,30 @@ public class HomeFragment extends Fragment {
             holder.itemTitle.setText(sectionName);
 
             /* Setting Adapter RecyclerView*/
-            final Query recentItem = mDatabase.child(sectionName).limitToLast(5);
+            final Query recentItem = mDatabase.child(sectionName).limitToFirst(7);
+                                                    //            .limitToLast(5);
             FirebaseRecyclerAdapter<Item,ItemViewHolder> adpt = new FirebaseRecyclerAdapter<Item, ItemViewHolder>(Item.class,
                                                                                             R.layout.home_recyclerview_row,
                                                                                             ItemViewHolder.class,
                                                                                             recentItem) {
                 @Override
                 protected void populateViewHolder(final ItemViewHolder viewHolder, Item model, int position) {
-                    int[] posisi = new int[]{4,3,2,1,0};
-
-                    model = getItem(posisi[viewHolder.getAdapterPosition()]);
+                    int[] posisi = new int[]{6,5,4,3,2,1,0};
+//                    model = getItem(posisi[viewHolder.getAdapterPosition()]);
+                    model = getItem(viewHolder.getAdapterPosition());
 //                    final String iditem = this.getRef(posisi[viewHolder.getAdapterPosition()]).getKey();
-                    model.setId(this.getRef(posisi[viewHolder.getAdapterPosition()]).getKey());
+//                    model.setId(this.getRef(posisi[viewHolder.getAdapterPosition()]).getKey());
                     viewHolder.setImage(getContext(), model.getImage().get(0));
                     viewHolder.setNama(model.getName());
                     viewHolder.setHarga(model.getPrice());
+                    final Item finalModel = model;
                     viewHolder.mView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             //TODO: Detail Item
-
                             Intent intent = new Intent(getActivity(),DetailActivity.class);
-//                            inten.putExtra("iditem",iditem);
-//                            inten.putExtra("category",sectionName);
+                            intent.putExtra("iditem", finalModel.getId());
+                            intent.putExtra("category",sectionName);
                             startActivity(intent);
                         }
                     });

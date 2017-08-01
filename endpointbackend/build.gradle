@@ -26,17 +26,13 @@ dependencies {
     compile 'com.google.appengine:appengine-endpoints:1.9.42'
     compile 'com.google.appengine:appengine-endpoints-deps:1.9.42'
     compile 'javax.servlet:servlet-api:2.5'
-    compile 'mysql:mysql-connector-java:5.1.43'
-//    compile 'com.google.cloud.sql:mysql-socket-factory:1.0.3'
-//    compile 'com.google.apis:google-api-services-sqladmin:v1beta4-rev45-1.22.0'
-//    compile project(':mysql-connector-java-5.1.43-bin')
+    compile project(':mysql-connector-java-5.1.43-bin')
 }
 
 appengine {
     downloadSdk = true
     appcfg {
         oauth2 = true
-        email = "lukaskris12@gmail.com"
     }
     endpoints {
         getClientLibsOnBuild = true

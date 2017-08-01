@@ -26,25 +26,36 @@ public class CloudSqlServices {
 
     public Connection getConnection() throws Exception {
 
-        try {
+//        try {
 //             Class.forName("com.mysql.jdbc.GoogleDriver");
-            Class.forName("com.mysql.jdbc.Driver");
-        }catch (ClassNotFoundException e) {
-            throw new ServletException("Error loading Google JDBC Driver", e);
+////            Class.forName("com.mysql.jdbc.Driver");
+//
+//        }catch (ClassNotFoundException e) {
+//            throw new ServletException("Error loading Google JDBC Driver", e);
+//        }
+
+        String url = "";
+        if (SystemProperty.environment.value() == SystemProperty.Environment.Value.Production) {
+            // Load the class that provides the new "jdbc:google:mysql://" prefix.
+            try {
+                Class.forName("com.mysql.jdbc.GoogleDriver");
+            }catch (ClassNotFoundException e){
+                throw new ServletException("Error loading Google JDBC Driver", e);
+            }
+            url = "jdbc:google:mysql://default-demo-app-db53e:asia-east1:houseofdesign/houseofdesign?user=root";
+        } else {
+            // Local MySQL instance to use during development.
+//                Class.forName("com.google.appengine.api.rdbms.AppEngineDriver");
+            try {
+                Class.forName("com.mysql.jdbc.Driver");
+//                Class.forName("com.mysql.jdbc.GoogleDriver");
+            }catch (ClassNotFoundException e){
+                throw new ServletException("Error loading JDBC Driver", e);
+            }
+            url = "jdbc:mysql://104.155.207.230:3306/houseofdesign?user=root";
+//            url = "jdbc:google:mysql://default-demo-app-db53e:asia-east1:houseofdesign/houseofdesign?user=root";
         }
 
-        String url = "jdbc:mysql://104.155.207.230:3306/houseofdesign";
-
-//        if (SystemProperty.environment.value() ==
-//                SystemProperty.Environment.Value.Production) {
-//            // Load the class that provides the new "jdbc:google:mysql://" prefix.
-//            Class.forName("com.mysql.jdbc.GoogleDriver");
-//            url = "jdbc:google:mysql://your-project-id:your-instance-name/guestbook?user=root";
-//        } else {
-//            // Local MySQL instance to use during development.
-//            Class.forName("com.mysql.jdbc.Driver");
-//            url = "jdbc:mysql://127.0.0.1:3306/guestbook?user=root";
-//        }
 
         Connection connection = DriverManager.getConnection(url, "root", "lukask10tki");
         return connection;

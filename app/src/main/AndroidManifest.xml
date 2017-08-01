@@ -30,6 +30,7 @@
         <activity
             android:name=".Shop.DetailActivity"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".Shop.TypeActivity"></activity>
     </application>
 
 </manifest>

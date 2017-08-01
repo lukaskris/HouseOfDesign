@@ -48,7 +48,8 @@ public class ItemEndpoint {
             ResultSet resultSet = null;
             preparedStatement.setString(1,id);
             resultSet = preparedStatement.executeQuery();
-            if(resultSet.next()){
+            while (resultSet.next()){
+                query="select * from type where id_item = ? ";
                 String name = resultSet.getString("name");
                 String desc = resultSet.getString("desc");
                 String price = resultSet.getString("price");
@@ -56,6 +57,22 @@ public class ItemEndpoint {
                 item.setName(name);
                 item.setDesc(desc);
                 item.setPrice(price);
+                PreparedStatement preparedStatement1 = con.prepareStatement(query);
+                ResultSet resultSet1 = null;
+                preparedStatement1.setString(1,id);
+                resultSet1 = preparedStatement1.executeQuery();
+
+                List<Type> typeList = new ArrayList<>();
+                while(resultSet1.next()){
+                    Type type = new Type();
+                    type.setId_item(id);
+                    type.setId_type(resultSet1.getString("id_type"));
+                    type.setSize(resultSet1.getString("size"));
+                    type.setQty(resultSet1.getInt("qty"));
+                    type.setColor(resultSet1.getString("color"));
+                    typeList.add(type);
+                }
+                item.setType(typeList);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -68,8 +85,6 @@ public class ItemEndpoint {
         logger.info("Calling getItem method" + item);
         return item;
     }
-
-
 
     @ApiMethod(name = "getAllItem")
     public List<Item> getAllItem(@Nullable @Named("category") String category, @Nullable @Named("offset") Integer offset){

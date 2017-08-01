@@ -1,12 +1,15 @@
 package com.example.lukaskris.houseofdesign.Services;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.example.lukaskris.houseofdesign.Callback.Callback;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
+import com.google.api.client.json.gson.GsonFactory;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -54,4 +57,39 @@ public class MyServicesAPI {
         }.execute();
     }
 
+    public void getItem(final Context context, final String id, final Callback callback){
+
+        new AsyncTask<String, Void, Item>(){
+            private ProgressDialog pd;
+
+            @Override
+            protected void onPreExecute() {
+                pd = new ProgressDialog(context);
+                pd.setMessage("Retrieving Item...");
+                pd.show();
+            }
+
+            @Override
+            protected Item doInBackground(String... strings) {
+                Item item=null;
+                try{
+                    item = myApiService.getItem(id).execute();
+
+//                    Toast.makeText(context, item.getDesc().toString(), Toast.LENGTH_SHORT);
+//                    callback.onSuccess(item);
+                }catch (Exception e){
+                    callback.onError(e.getMessage());
+                    Log.d("Could not retrieve Item", e.getMessage(), e);
+                }
+
+                return item;
+            }
+
+            @Override
+            protected void onPostExecute(Item item) {
+                pd.dismiss();
+                callback.onSuccess(item);
+            }
+        }.execute();
+    }
 }
