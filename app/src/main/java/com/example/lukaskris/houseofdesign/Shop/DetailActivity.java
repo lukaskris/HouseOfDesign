@@ -110,6 +110,7 @@ public class DetailActivity extends AppCompatActivity {
 
                     }
                 }
+
                 Intent intent = new Intent(DetailActivity.this, TypeActivity.class);
                 intent.putExtra("type", (Serializable) types);
                 intent.putExtra("nama", mName.getText());
@@ -135,7 +136,14 @@ public class DetailActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        return super.onOptionsItemSelected(item);
+        switch (item.getItemId()){
+            case android.R.id.home:
+                finish();
+                break;
+            default:
+                break;
+        }
+        return true;
     }
 
     private void getSize(String iditem){

@@ -142,8 +142,13 @@
                     <android.support.v7.widget.RecyclerView
                         android:layout_width="match_parent"
                         android:id="@+id/type_recycler_size"
+                        android:nestedScrollingEnabled="false"
+
+                        android:paddingBottom="8dp"
+                        android:clipToPadding="false"
                         android:layout_height="wrap_content"/>
                 </LinearLayout>
+
 
                 <View
                     android:layout_width="match_parent"
@@ -152,7 +157,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
+                android:layout_height="wrap_content"
                 android:padding="10dp"
                 android:orientation="vertical">
                     <TextView
@@ -161,31 +166,21 @@
                         android:text="Quantity"/>
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
 
-                        <Button
-                            style="@style/QuantityPickerButtonStyle"
-                            android:onClick="decrement"
-                            android:id="@+id/type_decrement"
-                            android:text="-" />
-
-                        <TextView
-                            android:id="@+id/type_quantity"
+                        <me.himanshusoni.quantityview.QuantityView
+                            android:id="@+id/type_qty"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:paddingLeft="8dp"
-                            android:paddingRight="8dp"
-                            android:text="0"
-                            android:textColor="@android:color/black"
-                            android:textSize="16sp" />
+                            android:layout_marginTop="10dp" />
 
-                        <Button
-                            style="@style/QuantityPickerButtonStyle"
-                            android:onClick="increment"
-                            android:id="@+id/type_increment"
-                            android:text="+" />
-
+                        <TextView
+                            android:layout_marginTop="10dp"
+                            android:id="@+id/type_qty_available"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="20 available"/>
                     </LinearLayout>
             </LinearLayout>
         </LinearLayout>

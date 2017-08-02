@@ -42,32 +42,44 @@ public class MyServicesAPI {
     public void getItems(final Context context, final String category, final int offset, final Callback callback){
         //AsyncTask<Param,Progress,Result>
         new AsyncTask<String,Boolean, List<Item>>(){
+            ProgressDialog pd;
+
+            @Override
+            protected void onPreExecute() {
+                pd = new ProgressDialog(context);
+                pd.setMessage("Retrieving Item...");
+                pd.show();
+            }
 
             @Override
             protected List<Item> doInBackground(String... params) {
+                List<Item> items = null;
                 try {
-                    List<Item> items= myApiService.getAllItem().setCategory(category).setOffset(offset).execute().getItems();
-                    callback.onSuccess(items);
+                    items= myApiService.getAllItem().setCategory(category).setOffset(offset).execute().getItems();
+
                 } catch (IOException e) {
                     Log.d("Errorfromendpointasync",e.getMessage());
-//                    ExceptionUtil.handleException(e);
                     callback.onError(Collections.EMPTY_LIST);
                 }
-                return null;
+                return items;
+            }
+
+            @Override
+            protected void onPostExecute(List<Item> items) {
+                pd.dismiss();
+                callback.onSuccess(items);
             }
         }.execute();
     }
 
     public void getItem(final Context context, final String id, final Callback callback){
-
         new AsyncTask<String, Void, Item>(){
-//            private ProgressDialog pd;
-
+            ProgressDialog pd;
             @Override
             protected void onPreExecute() {
-//                pd = new ProgressDialog(context);
-//                pd.setMessage("Retrieving Item...");
-//                pd.show();
+                pd = new ProgressDialog(context);
+                pd.setMessage("Retrieving Item...");
+                pd.show();
             }
 
             @Override
@@ -75,8 +87,6 @@ public class MyServicesAPI {
                 Item item=null;
                 try{
                     item = myApiService.getItem(id).execute();
-
-//                    Toast.makeText(context, item.getDesc().toString(), Toast.LENGTH_SHORT);
 //                    callback.onSuccess(item);
                 }catch (Exception e){
                     callback.onError(e.getMessage());
@@ -88,9 +98,10 @@ public class MyServicesAPI {
 
             @Override
             protected void onPostExecute(Item item) {
-//                pd.dismiss();
+                pd.dismiss();
                 callback.onSuccess(item);
             }
         }.execute();
+
     }
 }

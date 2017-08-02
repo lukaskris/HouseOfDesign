@@ -254,9 +254,9 @@ public class HomeFragment extends Fragment {
                 public void onClick(View v) {
                     //TODO: MORE ITEM
 //                    Toast.makeText(v.getContext(), "click event on more, "+sectionName , Toast.LENGTH_SHORT).show();
-//                    Intent intent = new Intent(HomeActivity.this,MoreItem.class);
-//                    intent.putExtra("category",sectionName);
-//                    startActivity(intent);
+                    Intent intent = new Intent(getActivity(),ShowAllActivity.class);
+                    intent.putExtra("category",sectionName);
+                    startActivity(intent);
                 }
             });
 //        getDataFromFirebase(adapter.itemList);
