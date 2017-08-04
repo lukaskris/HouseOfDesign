@@ -3,15 +3,10 @@ package com.example.lukaskris.houseofdesign;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
@@ -28,9 +23,9 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.lukaskris.houseofdesign.Account.ContainerLoginRegisterActivity;
-import com.example.lukaskris.houseofdesign.Account.LoginFragment;
 import com.example.lukaskris.houseofdesign.Account.ProfileFragment;
 import com.example.lukaskris.houseofdesign.Shop.HomeFragment;
+import com.example.lukaskris.houseofdesign.Shop.ShoppingCartFragment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -41,7 +36,7 @@ public class HomeActivity extends AppCompatActivity
 
     private DrawerLayout drawer;
     private NavigationView navigationView;
-
+    private Fragment selectedFragment;
     @Override
     protected void onStart() {
         super.onStart();
@@ -124,10 +119,11 @@ public class HomeActivity extends AppCompatActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.home_action_cart) {
-            return true;
+            selectedFragment(R.id.home_action_cart);
+            navigationView.getMenu().getItem(3).setChecked(true);
         }
 
-        return super.onOptionsItemSelected(item);
+        return true;
     }
 
     @Override
@@ -138,16 +134,21 @@ public class HomeActivity extends AppCompatActivity
         return true;
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+    }
+
     private void selectedFragment(int id){
-
-
         drawer.closeDrawers();
         Fragment fragment = null;
         if(id == R.id.nav_home) {
             fragment = new HomeFragment();
         }else if (id == R.id.nav_profile) {
             fragment = new ProfileFragment();
-        } else if (id == R.id.nav_cart) {
+        } else if (id == R.id.nav_cart || id == R.id.home_action_cart) {
+            fragment = new ShoppingCartFragment();
 
         } else if (id == R.id.nav_orders) {
 

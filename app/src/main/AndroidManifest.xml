@@ -31,7 +31,8 @@
             android:name=".Shop.DetailActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".Shop.TypeActivity" />
-        <activity android:name=".Shop.ShowAllActivity"></activity>
+        <activity android:name=".Shop.ShowAllActivity" />
+        <activity android:name=".Shop.ShoppingCartFragment"></activity>
     </application>
 
 </manifest>

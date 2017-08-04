@@ -6,7 +6,7 @@ import java.io.Serializable;
  * Created by Lukaskris on 31/07/2017.
  */
 
-public class Type {
+public class Type implements Serializable {
     private String id_type;
     private String id_item;
     private String size;

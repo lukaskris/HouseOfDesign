@@ -20,14 +20,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.lukaskris.houseofdesign.Callback.Callback;
-import com.example.lukaskris.houseofdesign.Model.Type;
 import com.example.lukaskris.houseofdesign.R;
-import com.example.lukaskris.houseofdesign.Services.EndpointAsyncTask;
 import com.example.lukaskris.houseofdesign.Services.MyServicesAPI;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -41,6 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import endpoint.backend.itemApi.model.Item;
+import endpoint.backend.itemApi.model.Type;
 
 public class DetailActivity extends AppCompatActivity {
     private ViewPager mViewPager;
@@ -98,18 +96,9 @@ public class DetailActivity extends AppCompatActivity {
         mSelect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                List<com.example.lukaskris.houseofdesign.Model.Type> types = new ArrayList<>();
-                if(mItem != null) {
-                    for (endpoint.backend.itemApi.model.Type type : mItem.getType()) {
-                        Type tipe = new Type();
-                        tipe.setColor(type.getColor());
-                        tipe.setQty(type.getQty());
-                        tipe.setId_item(type.getIdItem());
-                        tipe.setId_type(type.getIdType());
-                        tipe.setSize(type.getSize());
-
-                    }
-                }
+                List<Type> types = new ArrayList<>();
+                if(mItem.getType() != null)
+                    types.addAll(mItem.getType());
 
                 Intent intent = new Intent(DetailActivity.this, TypeActivity.class);
                 intent.putExtra("type", (Serializable) types);
@@ -119,6 +108,7 @@ public class DetailActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
         getImage(idfb);
         getSize(iditem);
     }
@@ -187,7 +177,6 @@ public class DetailActivity extends AppCompatActivity {
 
             }
         });
-
 
     }
 
