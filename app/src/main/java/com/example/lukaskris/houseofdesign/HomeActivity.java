@@ -24,6 +24,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.lukaskris.houseofdesign.Account.ContainerLoginRegisterActivity;
 import com.example.lukaskris.houseofdesign.Account.ProfileFragment;
+import com.example.lukaskris.houseofdesign.Orders.OrdersFragment;
 import com.example.lukaskris.houseofdesign.Shop.HomeFragment;
 import com.example.lukaskris.houseofdesign.Shop.ShoppingCartFragment;
 import com.google.firebase.auth.FirebaseAuth;
@@ -149,9 +150,8 @@ public class HomeActivity extends AppCompatActivity
             fragment = new ProfileFragment();
         } else if (id == R.id.nav_cart || id == R.id.home_action_cart) {
             fragment = new ShoppingCartFragment();
-
         } else if (id == R.id.nav_orders) {
-
+            fragment = OrdersFragment.newInstance();
         } else if (id == R.id.nav_favorite) {
 
         }else if (id == R.id.nav_logout){

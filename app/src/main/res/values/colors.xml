@@ -5,7 +5,7 @@
     <color name="colorPrimaryLight">#5c6bc0</color>
     <color name="colorAccent">#26afff</color>
     <color name="colorWhite">#FFF</color>
-    <color name="colorInactive">#9e9e9e</color>
+    <color name="colorInactive">#E9E9E9</color>
     <color name="colorTransparant">@android:color/transparent</color>
     <color name="colorRed">#F44336</color>
     <color name="colorGreen">#4CAF50</color>

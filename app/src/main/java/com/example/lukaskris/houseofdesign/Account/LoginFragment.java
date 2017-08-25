@@ -51,7 +51,7 @@ public class LoginFragment extends Fragment {
 
     private static final int RC_SIGN_IN = 1;
     private TextView mRegister;
-    private SignInButton googleSignin;
+    private Button googleSignin;
     private GoogleApiClient mGoogleApiClient;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
@@ -85,7 +85,7 @@ public class LoginFragment extends Fragment {
         }
         // Inflate the layout for this fragment
         final View view = inflater.inflate(R.layout.fragment_login, container, false);
-        googleSignin = (SignInButton) view.findViewById(R.id.sign_in_button);
+        googleSignin = (Button) view.findViewById(R.id.sign_in_button);
 
         mAuth = FirebaseAuth.getInstance();
                 mAuthListener = new FirebaseAuth.AuthStateListener() {

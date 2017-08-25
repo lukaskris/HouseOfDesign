@@ -86,6 +86,7 @@ dependencies {
     compile 'com.github.bumptech.glide:volley-integration:1.4.0@aar'
     compile 'com.mcxiaoke.volley:library:1.0.8'
     compile 'com.google.code.findbugs:jsr305:2.0.1'
+    compile 'com.facebook.android:facebook-android-sdk:[4,5)'
     testCompile 'junit:junit:4.12'
 }
 apply plugin: 'com.google.gms.google-services'
