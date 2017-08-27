@@ -23,9 +23,11 @@ import com.example.lukaskris.houseofdesign.Util.AdapterCachingUtil;
 import com.example.lukaskris.houseofdesign.Util.CurrencyUtil;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import endpoint.backend.itemApi.model.Item;
+import endpoint.backend.itemApi.model.Type;
 import me.himanshusoni.quantityview.QuantityView;
 
 public class ShoppingCartFragment extends Fragment {
@@ -33,6 +35,8 @@ public class ShoppingCartFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private ShoppingCartAdapter adapter;
+    private TextView mTotal;
+    int total = 0;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -42,12 +46,31 @@ public class ShoppingCartFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_shopping_cart, container, false);
+        getActivity().setTitle("Shopping cart");
+
+        mTotal = (TextView) view.findViewById(R.id.shopping_cart_total);
+        mTotal.setText(CurrencyUtil.rupiah(new BigDecimal(total)));
 
         List<Item> items = AdapterCachingUtil.load(getContext(),CACHE_NAME_SHOPPING);
+        items = new ArrayList<>();
+        Item item = new Item();
+        item.setId("BA");
+        item.setName("Baju 1");
+        item.setPrice("35000");
+        item.setCategory("Pria");
+        Type type = new Type();
+        type.setColor("Red");
+        type.setQty(5);
+        type.setSize("M");
+        List<Type> types = new ArrayList<>();
+        types.add(type);
+        item.setType(types);
+        items.add(item);
         recyclerView = (RecyclerView) view.findViewById(R.id.shopping_cart_recyclerview);
         adapter = new ShoppingCartAdapter(getContext() ,items);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
+
         return view;
     }
 
@@ -69,14 +92,30 @@ public class ShoppingCartFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(ShoppingCartViewHolder holder, final int position) {
-            Item item = itemList.get(position);
+            final Item item = itemList.get(position);
             holder.mName.setText(item.getName());
             holder.mPrice.setText(CurrencyUtil.rupiah(new BigDecimal(item.getPrice())));
-            Glide.with(context).load(item.getImage().get(0)).diskCacheStrategy(DiskCacheStrategy.RESULT).override(75,100).into(holder.mImage);
+            total = total + Integer.parseInt(item.getPrice()) * item.getType().get(0).getQty();
+            mTotal.setText(CurrencyUtil.rupiah(new BigDecimal(total)));
+            if(item.getImage() != null)
+                Glide.with(context).load(item.getImage().get(0)).diskCacheStrategy(DiskCacheStrategy.RESULT).override(75,100).into(holder.mImage);
             String size = item.getType().get(0).getSize();
             String color = item.getType().get(0).getColor();
             holder.mColorSize.setText(color + "; " + size);
             holder.mQty.setQuantity(item.getType().get(0).getQty());
+            holder.mQty.setMinQuantity(1);
+            holder.mQty.setOnQuantityChangeListener(new QuantityView.OnQuantityChangeListener() {
+                @Override
+                public void onQuantityChanged(int oldQuantity, int newQuantity, boolean programmatically) {
+                    total = total + Integer.parseInt(item.getPrice()) * (newQuantity - oldQuantity);
+                    mTotal.setText(CurrencyUtil.rupiah(new BigDecimal(total)));
+                }
+
+                @Override
+                public void onLimitReached() {
+
+                }
+            });
             holder.mDelete.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -87,6 +126,8 @@ public class ShoppingCartFragment extends Fragment {
                         public void onClick(DialogInterface dialogInterface, int i) {
                             itemList.remove(position);
                             notifyDataSetChanged();
+                            total = total - Integer.parseInt(item.getPrice()) * item.getType().get(0).getQty();
+                            mTotal.setText(CurrencyUtil.rupiah(new BigDecimal(total)));
                             AdapterCachingUtil.store(getContext(), CACHE_NAME_SHOPPING, itemList);
                         }
                     });

@@ -3,7 +3,9 @@ package com.example.lukaskris.houseofdesign.Shop;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -17,6 +19,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -26,6 +29,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.lukaskris.houseofdesign.Callback.Callback;
 import com.example.lukaskris.houseofdesign.R;
 import com.example.lukaskris.houseofdesign.Services.MyServicesAPI;
+import com.example.lukaskris.houseofdesign.Util.AndroidUtil;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -52,6 +56,9 @@ public class DetailActivity extends AppCompatActivity {
     private TextView mDescription;
     private TextView mSelect;
 
+    private Button mAddToCart;
+    private Button mBuyNow;
+
     private Item mItem;
 
     private DatabaseReference mDatabase;
@@ -68,17 +75,32 @@ public class DetailActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         imageUrl = new ArrayList<>();
-//        new EndpointAsyncTask(this).execute();
         String iditem = getIntent().getStringExtra("iditem");
         final String idfb = getIntent().getStringExtra("idfirebase");
         String category = getIntent().getStringExtra("category");
 
         mDatabase = FirebaseDatabase.getInstance().getReference().child("category/"+category);
-//        iditem = "PKA001";
 
         mName = (TextView) findViewById(R.id.detail_name);
         mPrice = (TextView) findViewById(R.id.detail_price);
         mDescription = (TextView) findViewById(R.id.detail_description);
+
+        mAddToCart = (Button) findViewById(R.id.detail_add_to_cart);
+        mBuyNow = (Button) findViewById(R.id.detail_buy_now);
+
+        mBuyNow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        mAddToCart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AndroidUtil.showMessage(v,"Item telah dimasukan ke keranjang");
+            }
+        });
 
 //        mProgressDialog = new ProgressDialog(this);
 //        mProgressDialog.setTitle("Fetch Data");

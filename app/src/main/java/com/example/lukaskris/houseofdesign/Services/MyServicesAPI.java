@@ -67,7 +67,6 @@ public class MyServicesAPI {
             @Override
             protected void onPostExecute(List<Item> items) {
                 pd.dismiss();
-
                 callback.onSuccess(items);
             }
         }.execute();

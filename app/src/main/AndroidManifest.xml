@@ -22,7 +22,6 @@
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -32,7 +31,11 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".Shop.TypeActivity" />
         <activity android:name=".Shop.ShowAllActivity" />
-        <activity android:name=".Shop.ShoppingCartFragment"></activity>
+        <!-- <activity android:name=".Shop.ShoppingCartFragment" /> -->
+        <activity android:name=".Transaction.ConfirmationActivity"/>
+        <activity android:name=".Account.AddressActivity" />
+        <activity android:name=".Account.AddAddressActivity"/>
+
     </application>
 
 </manifest>

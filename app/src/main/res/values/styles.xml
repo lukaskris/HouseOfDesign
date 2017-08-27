@@ -12,6 +12,7 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
+
     <style name="TranslucentActionBar" parent="@android:style/Widget.Holo.Light.ActionBar">
         <item name="android:background">@android:color/transparent</item>
     </style>
@@ -22,9 +23,11 @@
 
     <style name="MyButton">
         <item name="colorButtonNormal">@color/colorPrimary</item>
-
     </style>
 
+    <style name="ConfirmButton">
+        <item name="colorButtonNormal">@color/colorRed</item>
+    </style>
     <!-- Style for header text in the order form -->
     <style name="HeaderTextStyle">
         <item name="android:layout_width">wrap_content</item>

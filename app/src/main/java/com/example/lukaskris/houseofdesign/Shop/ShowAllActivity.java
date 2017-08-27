@@ -63,7 +63,6 @@ public class ShowAllActivity extends AppCompatActivity {
             public void onSuccess(Object... params) {
 
                 mList.addAll((List<Item>) params[0]);
-                Log.d("MLIST", ""+mList.size());
                 GridLayoutManager gridLayoutManager = new GridLayoutManager(ShowAllActivity.this, 2);
                 recyclerView = (RecyclerView) findViewById(R.id.show_all_recyclerview);
                 recyclerView.setLayoutManager(gridLayoutManager);

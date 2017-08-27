@@ -142,6 +142,7 @@
                         android:weightSum="1">
 
                         <Button
+                            android:id="@+id/detail_add_to_cart"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="0.4"
@@ -156,6 +157,7 @@
                             android:layout_weight="0.05" />
 
                         <Button
+                            android:id="@+id/detail_buy_now"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="0.4"

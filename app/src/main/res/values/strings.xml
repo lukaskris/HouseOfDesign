@@ -28,5 +28,18 @@
     <string name="error_invalid_verification">Your account isn\'t verify. Please verify your email address. Check on your mail inbox.</string>
     <string name="edit_profile">Edit Profile</string>
     <string name="title_search">Search</string>
+    <string name="title_shipping_address">Shipping Address</string>
+    <string name="title_shipping_courier">Shipping Courier</string>
+
+
+    <array name="array_courier">
+        <item>JNE</item>
+        <item>TIKI</item>
+        <item>Pos Indonesia</item>
+    </array>
+    <string name="title_activity_xx">xx</string>
+    <string name="title_no_data">No data available.</string>
+    <string name="orders_tagihan">Tagihan</string>
+    <string name="orders_pembelian">Pembelian</string>
 
 </resources>
