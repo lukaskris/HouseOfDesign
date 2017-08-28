@@ -48,7 +48,7 @@ public class OrdersTagihanFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_orders_pembelian, container, false);
+        View view = inflater.inflate(R.layout.fragment_orders_tagihan, container, false);
 
         recyclerView = (RecyclerView) view.findViewById(R.id.orders_item_recyclerview);
         recyclerView.setHasFixedSize(true);
@@ -63,7 +63,7 @@ public class OrdersTagihanFragment extends Fragment {
         return view;
     }
 
-    class OrderItemAdapter extends RecyclerView.Adapter<OrderItemAdapter.ItemHolder>{
+    private class OrderItemAdapter extends RecyclerView.Adapter<OrderItemAdapter.ItemHolder>{
         private List<String> values;
 
         OrderItemAdapter(List<String> data){

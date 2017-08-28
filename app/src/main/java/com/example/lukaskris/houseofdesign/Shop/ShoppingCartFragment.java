@@ -2,6 +2,7 @@ package com.example.lukaskris.houseofdesign.Shop;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
@@ -13,12 +14,14 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.lukaskris.houseofdesign.R;
+import com.example.lukaskris.houseofdesign.Transaction.ConfirmationActivity;
 import com.example.lukaskris.houseofdesign.Util.AdapterCachingUtil;
 import com.example.lukaskris.houseofdesign.Util.CurrencyUtil;
 
@@ -35,6 +38,7 @@ public class ShoppingCartFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private ShoppingCartAdapter adapter;
+    private Button mConfirm;
     private TextView mTotal;
     int total = 0;
 
@@ -70,6 +74,14 @@ public class ShoppingCartFragment extends Fragment {
         adapter = new ShoppingCartAdapter(getContext() ,items);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
+
+        mConfirm = (Button) view.findViewById(R.id.shopping_cart_confirm);
+        mConfirm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getActivity(), ConfirmationActivity.class));
+            }
+        });
 
         return view;
     }

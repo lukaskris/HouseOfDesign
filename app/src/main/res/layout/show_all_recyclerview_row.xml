@@ -21,7 +21,7 @@
             android:layout_gravity="center_horizontal"
             android:adjustViewBounds="true"
             android:background="@drawable/empty_image"
-            android:scaleType="fitCenter" />
+            android:scaleType="centerCrop" />
 
         <TextView
             android:id="@+id/show_all_row_item_nama"

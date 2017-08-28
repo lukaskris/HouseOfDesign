@@ -1,6 +1,7 @@
 package com.example.lukaskris.houseofdesign.Account;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -13,16 +14,14 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 
 import com.example.lukaskris.houseofdesign.R;
 
 public class ProfileFragment extends Fragment {
 
-
-    public ProfileFragment() {
-        // Required empty public constructor
-
-    }
+    private RelativeLayout mProfile;
+    public ProfileFragment() {}
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -36,6 +35,13 @@ public class ProfileFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
         setHasOptionsMenu(true);
+        mProfile = (RelativeLayout) view.findViewById(R.id.profile_alamat);
+        mProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getActivity(), AddressActivity.class));
+            }
+        });
         return view;
     }
 

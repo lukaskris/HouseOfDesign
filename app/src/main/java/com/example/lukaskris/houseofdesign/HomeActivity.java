@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
@@ -19,6 +20,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -41,8 +43,7 @@ public class HomeActivity extends AppCompatActivity
     @Override
     protected void onStart() {
         super.onStart();
-        selectedFragment(R.id.nav_home);
-        navigationView.getMenu().getItem(0).setChecked(true);
+
     }
 
     @Override
@@ -71,9 +72,15 @@ public class HomeActivity extends AppCompatActivity
             }
         });
         navigationView.setNavigationItemSelectedListener(this);
+        selectedFragment(R.id.nav_home);
+        navigationView.getMenu().getItem(0).setChecked(true);
 
+
+        Menu nav_Menu = navigationView.getMenu();
+        nav_Menu.findItem(R.id.nav_logout).setVisible(false);
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if(user != null){
+
             TextView mEmail = (TextView) header.findViewById(R.id.nav_header_email);
             CircleImageView mPicture = (CircleImageView) header.findViewById(R.id.nav_header_picture);
             TextView mName = (TextView) header.findViewById(R.id.nav_header_name);
@@ -91,6 +98,7 @@ public class HomeActivity extends AppCompatActivity
             mEmail.setText(email);
             mName.setText(name);
 
+            nav_Menu.findItem(R.id.nav_logout).setVisible(true);
             Glide.with(this)
                     .load(photo)
                     .override(100, 100)
@@ -102,10 +110,23 @@ public class HomeActivity extends AppCompatActivity
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
+        long mBackPressed;
+        if (drawer != null) {
+
+            mBackPressed = System.currentTimeMillis();
+            FragmentManager fm = getSupportFragmentManager();
+            FragmentTransaction ft = fm.beginTransaction();
+            if (drawer.isDrawerOpen(GravityCompat.START)) {
+                drawer.closeDrawer(GravityCompat.START);
+            } else if (fm.getBackStackEntryCount() > 0) {
+                fm.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
+                ft.commit();
+            } else if (mBackPressed + 2000 > System.currentTimeMillis()) {
+                super.onBackPressed();
+            }else {
+                Toast.makeText(this,"Press again to exit the app",Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -138,7 +159,15 @@ public class HomeActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.content_frame, selectedFragment);
+        ft.commit();
+    }
 
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
     }
 
     private void selectedFragment(int id){
@@ -177,12 +206,14 @@ public class HomeActivity extends AppCompatActivity
         }
 
         if(fragment != null){
+            selectedFragment = fragment;
             final Fragment finalFragment = fragment;
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
 
                     FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                    ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                     ft.replace(R.id.content_frame, finalFragment);
                     ft.commit();
                 }

@@ -21,12 +21,14 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.lukaskris.houseofdesign.R;
+import com.example.lukaskris.houseofdesign.Util.CurrencyUtil;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.viewpagerindicator.CirclePageIndicator;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -49,12 +51,8 @@ public class HomeFragment extends Fragment {
     private DatabaseReference mDatabase;
 
     int [] mResources = {
-            R.drawable.pemandangan1,
-            R.drawable.pemandangan1,
-            R.drawable.pemandangan1,
-            R.drawable.pemandangan1,
-            R.drawable.pemandangan1,
-            R.drawable.pemandangan1
+            R.drawable.banner1,
+            R.drawable.banner2
     };
 
 
@@ -225,7 +223,7 @@ public class HomeFragment extends Fragment {
 //                    model.setId(this.getRef(posisi[viewHolder.getAdapterPosition()]).getKey());
                     viewHolder.setImage(getContext(), model.getImage().get(0));
                     viewHolder.setNama(model.getName());
-                    viewHolder.setHarga(model.getPrice());
+                    viewHolder.setHarga(CurrencyUtil.rupiah(new BigDecimal(model.getPrice())));
                     final Item finalModel = model;
                     viewHolder.mView.setOnClickListener(new View.OnClickListener() {
                         @Override

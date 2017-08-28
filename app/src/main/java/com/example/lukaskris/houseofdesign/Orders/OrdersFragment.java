@@ -61,12 +61,11 @@ public class OrdersFragment extends Fragment {
         // This determines the fragment for each tab
         @Override
         public Fragment getItem(int position) {
-//            if (position == 0) {
-//                return new OrdersTagihanFragment();
-//            } else {
-//                return new OrdersPembelianFragment();
-//            }
-            return OrdersTagihanFragment.newInstance("");
+            if (position == 0) {
+                return new OrdersTagihanFragment();
+            } else {
+                return new OrdersPembelianFragment();
+            }
         }
 
         // This determines the number of tabs

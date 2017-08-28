@@ -83,11 +83,11 @@ public class TypeActivity extends AppCompatActivity {
         Type type5 = new Type();
         type5.setSize("XXL");
         type5.setColor("Putih");
-        mList.addAll(type);
-//        mList.add(type2);
-//        mList.add(type3);
-//        mList.add(type4);
-//        mList.add(type5);
+//        mList.addAll(type);
+        mList.add(type2);
+        mList.add(type3);
+        mList.add(type4);
+        mList.add(type5);
 
         sizeAdapter adapter = new sizeAdapter(this, mList);
         mRecyclerSize.setLayoutManager(new GridLayoutManager(this,4));

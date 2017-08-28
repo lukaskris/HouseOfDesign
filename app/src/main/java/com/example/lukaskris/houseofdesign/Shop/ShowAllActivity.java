@@ -56,51 +56,59 @@ public class ShowAllActivity extends AppCompatActivity {
 
         category = getIntent().getStringExtra("category");
         getSupportActionBar().setTitle(category);
-        MyServicesAPI.getInstance().getItems(this, category,  0, new Callback() {
-
-
+        Item item = new Item();
+        item.setCategory("Pria");
+        item.setPrice("120000");
+        List<String> image = new ArrayList<>();
+        image.add("https://firebasestorage.googleapis.com/v0/b/onlineshop-cee9c.appspot.com/o/Item_Images%2FTooLaRoo1.jpg?alt=media&token=7986bdf4-6e87-4a35-99a3-c58fb97bbf3a");
+        item.setImage(image);
+        item.setName("TooLaRoo");
+        mList.add(item);
+//        MyServicesAPI.getInstance().getItems(this, category,  0, new Callback() {
+//
+//
+//            @Override
+//            public void onSuccess(Object... params) {
+//
+//                mList.addAll((List<Item>) params[0]);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(ShowAllActivity.this, 2);
+        recyclerView = (RecyclerView) findViewById(R.id.show_all_recyclerview);
+        recyclerView.setLayoutManager(gridLayoutManager);
+        adapter = new ItemAdapter(ShowAllActivity.this,mList,recyclerView);
+        adapter.setOnLoadMoreListener(new OnLoadMoreListener() {
             @Override
-            public void onSuccess(Object... params) {
-
-                mList.addAll((List<Item>) params[0]);
-                GridLayoutManager gridLayoutManager = new GridLayoutManager(ShowAllActivity.this, 2);
-                recyclerView = (RecyclerView) findViewById(R.id.show_all_recyclerview);
-                recyclerView.setLayoutManager(gridLayoutManager);
-                adapter = new ItemAdapter(ShowAllActivity.this,mList,recyclerView);
-                adapter.setOnLoadMoreListener(new OnLoadMoreListener() {
-                    @Override
-                    public void onLoadMore() {
-                        if (mList.size() >= 9) {
-                            mList.add(null);
-                            recyclerView.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    adapter.notifyItemInserted(mList.size() - 1);
-                                }
-                            });
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    mList.remove(mList.size() - 1);
-                                    adapter.notifyItemRemoved(mList.size());
-                                    //add items one by one
-                                    PAGE++;
-                                    loadProduct(category, PAGE);
-
-                                }
-                            }, 2000);
+            public void onLoadMore() {
+                if (mList.size() >= 9) {
+                    mList.add(null);
+                    recyclerView.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            adapter.notifyItemInserted(mList.size() - 1);
                         }
-                    }
-                });
-                recyclerView.setAdapter(adapter);
-            }
+                    });
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            mList.remove(mList.size() - 1);
+                            adapter.notifyItemRemoved(mList.size());
+                            //add items one by one
+                            PAGE++;
+                            loadProduct(category, PAGE);
 
-            @Override
-            public void onError(Object... params) {
-                Log.d("OnError", params[0].toString());
+                        }
+                    }, 2000);
+                }
             }
-
         });
+        recyclerView.setAdapter(adapter);
+//            }
+//
+//            @Override
+//            public void onError(Object... params) {
+//                Log.d("OnError", params[0].toString());
+//            }
+//
+//        });
     }
 
     private void loadProduct(String category, int page) {
@@ -225,7 +233,7 @@ public class ShowAllActivity extends AppCompatActivity {
                 itemViewHolder.mItem = item;
                 itemViewHolder.item_nama.setText(item.getName());
                 itemViewHolder.item_price.setText(CurrencyUtil.rupiah(new BigDecimal(item.getPrice())));
-                Glide.with(context).load(item.getImage()).diskCacheStrategy(DiskCacheStrategy.RESULT).into(itemViewHolder.item_image);
+                Glide.with(context).load(item.getImage().get(0)).diskCacheStrategy(DiskCacheStrategy.RESULT).into(itemViewHolder.item_image);
                 itemViewHolder.itemView.setTag(item);
                 itemViewHolder.itemView.setOnClickListener(detail);
             } else {

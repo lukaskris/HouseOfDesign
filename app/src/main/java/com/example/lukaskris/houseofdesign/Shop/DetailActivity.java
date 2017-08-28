@@ -119,9 +119,13 @@ public class DetailActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 List<Type> types = new ArrayList<>();
-                if(mItem.getType() != null)
-                    types.addAll(mItem.getType());
-
+//                if(!mItem.getType().equals(null))
+//                    types.addAll(mItem.getType());
+                Type type = new Type();
+                type.setSize("L");
+                type.setColor("Red");
+                type.setQty(10);
+                types.add(type);
                 Intent intent = new Intent(DetailActivity.this, TypeActivity.class);
                 intent.putExtra("type", (Serializable) types);
                 intent.putExtra("nama", mName.getText());

@@ -18,86 +18,96 @@
                 android:orientation="vertical">
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="80dp"
-                    android:orientation="horizontal">
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:clickable="true"
-                        android:orientation="vertical"
-                        android:paddingLeft="2dp"
-                        android:paddingRight="2dp"
-                        android:paddingTop="5dp">
-
-                        <ImageView
-                            android:id="@+id/imageView"
-                            android:layout_width="match_parent"
-                            android:layout_height="0dp"
-                            android:layout_gravity="center_horizontal"
-                            android:layout_weight="0.75"
-                            android:src="@drawable/ic_hourglass_full_white_24dp"
-                            android:tint="@color/colorAccent" />
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="bottom|center_horizontal"
-                            android:text="Waiting Orders" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:orientation="vertical"
-                        android:paddingTop="5dp"
-                        android:paddingRight="2dp"
-                        android:paddingLeft="2dp"
-                        android:clickable="true"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:layout_weight="1">
-
-                        <ImageView
-                            android:id="@+id/imageView2"
-                            android:layout_width="match_parent"
-                            android:layout_height="0dp"
-                            android:layout_gravity="center_horizontal"
-                            android:layout_weight="0.75"
-                            android:src="@drawable/ic_check_circle_white_24dp"
-                            android:tint="@color/colorGreen" />
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="bottom|center_horizontal"
-                            android:text="Success Orders"/>
-                    </LinearLayout>
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:orientation="vertical"
-                        android:paddingTop="5dp"
-                        android:paddingRight="2dp"
-                        android:paddingLeft="2dp"
-                        android:clickable="true"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:layout_weight="1">
-                        <ImageView
-                            android:layout_width="match_parent"
-                            android:layout_height="0dp"
-                            android:layout_weight="0.50"
-                            android:layout_gravity="center_horizontal"
-                            android:src="@drawable/ic_favorite_white_24dp"
-                            android:tint="@color/colorRed"/>
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="bottom|center_horizontal"
-                            android:text="My Favorites"/>
-                    </LinearLayout>
+                    android:layout_height="wrap_content"
+                    android:padding="20dp"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="DOMPETKU"/>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:text="Rp0"/>
                 </LinearLayout>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.6dp"
+                    android:background="@color/colorGrey"/>
+                <RelativeLayout
+                    android:id="@+id/profile_alamat"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="26dp"
+                    android:clickable="true"
+                    android:background="?attr/selectableItemBackground"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="16sp"
+                        android:text="Alamat"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:textSize="18sp"
+                        android:text=">"/>
+                </RelativeLayout>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.6dp"
+                    android:background="@color/colorGrey"/>
+                <RelativeLayout
+                    android:id="@+id/profile_feedback"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="26dp"
+                    android:clickable="true"
+                    android:background="?attr/selectableItemBackground"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="16sp"
+                        android:text="Feedback"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:textSize="18sp"
+                        android:text=">"/>
+                </RelativeLayout>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.6dp"
+                    android:background="@color/colorGrey"/>
+                <RelativeLayout
+                    android:id="@+id/profile_aboutus"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="26dp"
+                    android:clickable="true"
+                    android:background="?attr/selectableItemBackground"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="16sp"
+                        android:text="About us"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:textSize="18sp"
+                        android:text=">"/>
+                </RelativeLayout>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.6dp"
+                    android:background="@color/colorGrey"/>
             </LinearLayout>
         </RelativeLayout>
     </android.support.v4.widget.NestedScrollView>

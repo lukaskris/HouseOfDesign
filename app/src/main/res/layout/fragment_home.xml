@@ -15,40 +15,34 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="150dp">
 
-                <RelativeLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="150dp">
+                <android.support.v4.view.ViewPager
+                    android:id="@+id/home_viewpager"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
 
-                    <android.support.v4.view.ViewPager
-                        android:id="@+id/home_viewpager"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"></android.support.v4.view.ViewPager>
-
-                    <com.viewpagerindicator.CirclePageIndicator
-                        android:id="@+id/home_circlePageIndicator"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentBottom="true"
-                        android:layout_centerHorizontal="true"
-                        android:gravity="bottom"
-                        android:padding="10dip"
-                        app:centered="true"
-                        app:fillColor="#ffffff"
-                        app:pageColor="#223760"
-                        app:snap="false" />
-                </RelativeLayout>
-            </LinearLayout>
-
+                <com.viewpagerindicator.CirclePageIndicator
+                    android:id="@+id/home_circlePageIndicator"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:gravity="bottom"
+                    android:padding="10dip"
+                    app:centered="true"
+                    app:fillColor="#ffffff"
+                    app:pageColor="#223760"
+                    app:snap="false" />
+            </RelativeLayout>
             <android.support.v7.widget.RecyclerView
+                android:padding="10dp"
                 android:id="@+id/home_recyclerview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                ></android.support.v7.widget.RecyclerView>
+                />
 
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>

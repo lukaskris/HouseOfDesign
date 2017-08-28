@@ -85,7 +85,7 @@ public class OrdersPembelianFragment extends Fragment {
             LayoutInflater inflater = LayoutInflater.from(
                     parent.getContext());
             View v =
-                    inflater.inflate(R.layout.orders_row_item, parent, false);
+                    inflater.inflate(R.layout.orders_row_item_pembelian, parent, false);
             // set the view's size, margins, paddings and layout parameters
             ItemHolder vh = new ItemHolder(v);
             return vh;
