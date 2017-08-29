@@ -1,6 +1,7 @@
 package com.example.lukaskris.houseofdesign.Shop;
 
 import android.app.ProgressDialog;
+import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,24 +19,38 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.example.lukaskris.houseofdesign.Model.Items;
 import com.example.lukaskris.houseofdesign.R;
+import com.example.lukaskris.houseofdesign.Services.MyService;
+import com.example.lukaskris.houseofdesign.Services.ServiceFactory;
 import com.example.lukaskris.houseofdesign.Util.CurrencyUtil;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import com.viewpagerindicator.CirclePageIndicator;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Observable;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import endpoint.backend.itemApi.model.Item;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
+import static com.example.lukaskris.houseofdesign.Services.ServiceFactory.service;
 
 public class HomeFragment extends Fragment {
 
@@ -58,10 +74,7 @@ public class HomeFragment extends Fragment {
 
     private ArrayList<CategoryItem> allCategory;
 
-
-    public HomeFragment() {
-        // Required empty public constructor
-    }
+    public HomeFragment() {}
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -148,7 +161,37 @@ public class HomeFragment extends Fragment {
 
         my_recycler_view.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         my_recycler_view.setAdapter(adapter);
+        JSONCall(1);
+//        MyService service = ServiceFactory.createRetrofitService(MyService.class,MyService.LOCAL_ENDPOINT);
+//        service.getItems(0,10)
+//                .subscribeOn(Schedulers.newThread())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(new Consumer<Items>() {
+//                    @Override
+//                    public void accept(Items items) throws Exception {
+//                        Log.d("Item", items.getName());
+//                    }
+//                });
         return view;
+    }
+
+    private void JSONCall(int category){
+
+        service.getItems(category,0,5)
+            .subscribeOn(Schedulers.newThread())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(new Consumer<List<Items>>() {
+                @Override
+                public void accept(List<Items> itemses) throws Exception {
+
+                    Log.d("debug response", itemses.toString());
+                }
+            }, new Consumer<Throwable>() {
+                @Override
+                public void accept(Throwable throwable) throws Exception {
+                    Log.d("debug error", throwable.getLocalizedMessage().toString());
+                }
+            });
     }
 
     private void createCategory(){

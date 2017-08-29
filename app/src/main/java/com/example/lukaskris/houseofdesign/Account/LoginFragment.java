@@ -21,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.lukaskris.houseofdesign.HomeActivity;
+import com.example.lukaskris.houseofdesign.Model.Customer;
 import com.example.lukaskris.houseofdesign.Model.User;
 import com.example.lukaskris.houseofdesign.R;
 import com.example.lukaskris.houseofdesign.Static.Static;
@@ -44,7 +45,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
+
 import static android.content.Context.MODE_PRIVATE;
+import static com.example.lukaskris.houseofdesign.Services.ServiceFactory.service;
 import static com.example.lukaskris.houseofdesign.Shop.HomeFragment.calledActivity;
 
 public class LoginFragment extends Fragment {
@@ -249,7 +255,7 @@ public class LoginFragment extends Fragment {
         }
     }
 
-    private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
+    private void firebaseAuthWithGoogle(final GoogleSignInAccount acct) {
         Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
         final View v = getView();
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
@@ -259,16 +265,20 @@ public class LoginFragment extends Fragment {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         Log.d(TAG, "signInWithCredential:onComplete:" + task.isSuccessful());
 
-                        // If sign in fails, display a message to the user. If sign in succeeds
-                        // the auth state listener will be notified and logic to handle the
-                        // signed in user can be handled in the listener.
                         if (!task.isSuccessful()) {
                             Log.w(TAG, "signInWithCredential", task.getException());
                             Snackbar.make(v,"Authentication failed.",Snackbar.LENGTH_SHORT).show();
-//                            Toast.makeText(, "Authentication failed.",
-//                                    Toast.LENGTH_SHORT).show();
+                        }else{
+                            service.createCustomer(acct.getDisplayName(),acct.getEmail(),"","none",acct.getPhotoUrl().toString())
+                                    .subscribeOn(Schedulers.newThread())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribe(new Consumer<Customer>() {
+                                        @Override
+                                        public void accept(Customer customer) throws Exception {
+                                            Log.d("Customer baru",customer.toString());
+                                        }
+                                    });
                         }
-                        // ...
                     }
                 });
     }

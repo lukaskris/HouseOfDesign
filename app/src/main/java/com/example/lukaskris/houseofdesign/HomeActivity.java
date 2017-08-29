@@ -90,11 +90,9 @@ public class HomeActivity extends AppCompatActivity
             mPicture.setVisibility(View.VISIBLE);
             mName.setVisibility(View.VISIBLE);
 
-//            String name = user.getDisplayName();
             String email = user.getEmail();
             String name = user.getDisplayName();
             Uri photo = user.getPhotoUrl();
-//            String photo = "default";
             mEmail.setText(email);
             mName.setText(name);
 

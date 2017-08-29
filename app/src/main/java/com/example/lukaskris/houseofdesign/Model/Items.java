@@ -3,36 +3,32 @@ package com.example.lukaskris.houseofdesign.Model;
 import java.io.Serializable;
 import java.util.List;
 
-import endpoint.backend.Type;
 
 /**
  * Created by xub on 28/08/17.
  */
 
 
-public class Item implements Serializable {
+public class Items implements Serializable {
     private String name;
     private String price;
     private String desc;
-    private String category;
+    private String category_id;
     private List<String> image;
-    private List<Type> type;
     private String id;
-    private String count;
+    private String thumbnail;
 
-    public Item() {
+    public Items() {
     }
 
-    public Item(String name, String price, String desc, String category, List<String> image, List<String> qty, List<String> size, String id, String count) {
+    public Items(String name, String price, String desc, String category, List<String> image, String thumbnail) {
         this.name = name;
         this.price = price;
         this.desc = desc;
-        this.category = category;
+        this.category_id = category;
         this.image = image;
-//        this.qty = qty;
-//        this.size = size;
         this.id = id;
-        this.count=count;
+        this.thumbnail = thumbnail;
     }
 
     public String getName() {
@@ -40,20 +36,12 @@ public class Item implements Serializable {
         return name;
     }
 
-    public List<Type> getType() {
-        return type;
+    public String getThumbnail() {
+        return thumbnail;
     }
 
-    public void setType(List<Type> type) {
-        this.type = type;
-    }
-
-    public String getCount() {
-        return count;
-    }
-
-    public void setCount(String count) {
-        this.count = count;
+    public void setThumbnail(String thumbnail) {
+        this.thumbnail = thumbnail;
     }
 
     public void setName(String name) {
@@ -77,11 +65,11 @@ public class Item implements Serializable {
     }
 
     public String getCategory() {
-        return category;
+        return category_id;
     }
 
     public void setCategory(String category) {
-        this.category = category;
+        this.category_id = category;
     }
 
     public List<String> getImage() {
@@ -91,22 +79,6 @@ public class Item implements Serializable {
     public void setImage(List<String> image) {
         this.image = image;
     }
-
-//    public List<String> getQty() {
-//        return qty;
-//    }
-//
-//    public void setQty(List<String> qty) {
-//        this.qty = qty;
-//    }
-//
-//    public List<String> getSize() {
-//        return size;
-//    }
-//
-//    public void setSize(List<String> size) {
-//        this.size = size;
-//    }
 
     public String getId() {
         return id;
