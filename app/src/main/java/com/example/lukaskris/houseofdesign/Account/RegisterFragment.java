@@ -63,6 +63,8 @@ public class RegisterFragment extends Fragment {
 
         getActivity().setTitle("Register");
 
+        getActivity().setTitle("Register");
+
         mAuth = FirebaseAuth.getInstance();
 
 

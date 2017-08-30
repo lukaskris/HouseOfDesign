@@ -4,11 +4,13 @@ import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.ComponentName;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
@@ -35,15 +37,19 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.lukaskris.houseofdesign.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.theartofdev.edmodo.cropper.CropImage;
+import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,6 +57,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 import static android.Manifest.permission.CAMERA;
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
+import static android.app.Activity.RESULT_OK;
 import static android.support.v4.content.PermissionChecker.checkSelfPermission;
 
 public class ProfileFragment extends Fragment {
@@ -110,9 +117,11 @@ public class ProfileFragment extends Fragment {
         permissions = new ArrayList<>();
         permissionsRejected = new ArrayList<>();
 
-        permissions.add(READ_EXTERNAL_STORAGE);
+
         permissions.add(CAMERA);
         permissionsToRequest = findUnAskedPermissions(permissions);
+
+        requestPermissions(new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE, android.Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.CAMERA}, ALL_PERMISSIONS_RESULT);
 
         mProfile.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -137,35 +146,37 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         Bitmap bitmap;
-        if (resultCode == Activity.RESULT_OK) {
-
-
+        if (requestCode == 200 && resultCode == RESULT_OK) {
             if (getPickImageResultUri(data) != null) {
                 picUri = getPickImageResultUri(data);
-
-                try {
-                    myBitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), picUri);
-                    myBitmap = rotateImageIfRequired(myBitmap, picUri);
-                    myBitmap = getResizedBitmap(myBitmap, 500);
-
-                    mPicture.setImageBitmap(myBitmap);
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-
+//                try {
+//                    myBitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), picUri);
+//                    myBitmap = getResizedBitmap(myBitmap, 500);
+                    CropImage.activity(picUri).setGuidelines(CropImageView.Guidelines.ON)
+                            .setCropShape(CropImageView.CropShape.OVAL)
+                            .setFixAspectRatio(true)
+                            .start(getContext(),this);
+//                    myBitmap = rotateImageIfRequired(myBitmap, picUri);
+//                    mPicture.setImageBitmap(myBitmap);
+//
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
             } else {
-
-
                 bitmap = (Bitmap) data.getExtras().get("data");
-
                 myBitmap = bitmap;
-
                 mPicture.setImageBitmap(myBitmap);
-
             }
 
+        }else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE){
+            CropImage.ActivityResult result = CropImage.getActivityResult(data);
+            if (resultCode == RESULT_OK) {
+                Uri resultUri = result.getUri();
+                Glide.with(getContext()).load(resultUri).override(400,400).into(mPicture);
+            } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
+                Exception error = result.getError();
+                Toast.makeText(getContext(),error.getMessage(),Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -190,7 +201,7 @@ public class ProfileFragment extends Fragment {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
                                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                                requestPermissions(permissionsRejected.toArray(new String[permissionsRejected.size()]), ALL_PERMISSIONS_RESULT);
+                                                requestPermissions(new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, ALL_PERMISSIONS_RESULT);
                                             }
                                         }
                                     });
@@ -266,11 +277,14 @@ public class ProfileFragment extends Fragment {
         return outputFileUri;
     }
 
-    private static Bitmap rotateImageIfRequired(Bitmap img, Uri selectedImage) throws IOException {
+    private Bitmap rotateImageIfRequired(Bitmap img, Uri selectedImage) throws IOException {
 
         ExifInterface ei = new ExifInterface(selectedImage.getPath());
         int orientation = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
-
+        int orientation2 = getRotation(getContext(),selectedImage);
+        Log.d("Orientation 1", String.valueOf(orientation));
+        Log.d("Orientation 2", String.valueOf(orientation2));
+//        return rotateImage(img,orientation2);
         switch (orientation) {
             case ExifInterface.ORIENTATION_ROTATE_90:
                 return rotateImage(img, 90);
@@ -287,8 +301,27 @@ public class ProfileFragment extends Fragment {
         Matrix matrix = new Matrix();
         matrix.postRotate(degree);
         Bitmap rotatedImg = Bitmap.createBitmap(img, 0, 0, img.getWidth(), img.getHeight(), matrix, true);
-        img.recycle();
+//        img.recycle();
         return rotatedImg;
+    }
+
+    private static int getRotation(Context context,Uri selectedImage) {
+
+        int rotation = 0;
+        ContentResolver content = context.getContentResolver();
+
+        Cursor mediaCursor = content.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                new String[] { "orientation", "date_added" },
+                null, null, "date_added desc");
+
+        if (mediaCursor != null && mediaCursor.getCount() != 0) {
+            while(mediaCursor.moveToNext()){
+                rotation = mediaCursor.getInt(0);
+                break;
+            }
+        }
+        mediaCursor.close();
+        return rotation;
     }
 
     public Bitmap getResizedBitmap(Bitmap image, int maxSize) {
