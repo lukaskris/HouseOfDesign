@@ -34,6 +34,8 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseOptions;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -44,6 +46,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
@@ -57,7 +61,7 @@ public class LoginFragment extends Fragment {
 
     private static final int RC_SIGN_IN = 1;
     private TextView mRegister;
-    private SignInButton googleSignin;
+    private Button googleSignin;
     private GoogleApiClient mGoogleApiClient;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
@@ -91,15 +95,20 @@ public class LoginFragment extends Fragment {
         }
         // Inflate the layout for this fragment
         final View view = inflater.inflate(R.layout.fragment_login, container, false);
-        googleSignin = (SignInButton) view.findViewById(R.id.sign_in_button);
+        getActivity().setTitle("Login");
+        googleSignin = (Button) view.findViewById(R.id.sign_in_button);
 
         mAuth = FirebaseAuth.getInstance();
-                mAuthListener = new FirebaseAuth.AuthStateListener() {
+        if(mAuth.getCurrentUser() != null)
+            mAuth.signOut();
+
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
 
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+
                 if(firebaseAuth.getCurrentUser() != null && getActivity() != null){
-                    startActivity(new Intent(getActivity(), HomeActivity.class));
+//                    startActivity(new Intent(getActivity(), HomeActivity.class));
                 }
             }
         };
@@ -152,8 +161,7 @@ public class LoginFragment extends Fragment {
                                     im.hideSoftInputFromWindow(getView().getWindowToken(),0);
                                     Snackbar.make(getView(), getString(R.string.error_invalid_auth), Snackbar.LENGTH_SHORT).show();
                                 } else {
-                                    if (!mAuth.getCurrentUser().isEmailVerified()) {
-//                                        sendEmailVerification();
+                                    if (mAuth.getCurrentUser() != null && !mAuth.getCurrentUser().isEmailVerified() ) {
                                         Toast.makeText(getContext(),getString(R.string.error_invalid_verification), Toast.LENGTH_LONG).show();
                                     }
                                     mProgress.dismiss();
@@ -179,6 +187,7 @@ public class LoginFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 FragmentTransaction ft = getFragmentManager().beginTransaction();
+                ft.setCustomAnimations(R.anim.slide_from_right, R.anim.slide_to_left);
                 ft.replace(R.id.login_fragment_layout,new RegisterFragment());
                 ft.commit();
             }
@@ -269,7 +278,8 @@ public class LoginFragment extends Fragment {
                             Log.w(TAG, "signInWithCredential", task.getException());
                             Snackbar.make(v,"Authentication failed.",Snackbar.LENGTH_SHORT).show();
                         }else{
-                            service.createCustomer(acct.getDisplayName(),acct.getEmail(),"","none",acct.getPhotoUrl().toString())
+                            Customer newCustomer = new Customer(acct.getDisplayName(),acct.getEmail(),"","",acct.getPhotoUrl().toString());
+                            service.createCustomer(newCustomer)
                                     .subscribeOn(Schedulers.newThread())
                                     .observeOn(AndroidSchedulers.mainThread())
                                     .subscribe(new Consumer<Customer>() {
@@ -281,6 +291,17 @@ public class LoginFragment extends Fragment {
                         }
                     }
                 });
+    }
+
+    private boolean isHasBeenInitialized(){
+        boolean hasBeenInitialized=false;
+        List<FirebaseApp> firebaseApps = FirebaseApp.getApps(getContext());
+        for(FirebaseApp app : firebaseApps){
+            if(app.getName().equals("House of design")){
+                hasBeenInitialized=true;
+            }
+        }
+        return hasBeenInitialized;
     }
 
 }

@@ -2,6 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:padding="@dimen/activity_horizontal_margin"
     tools:context="com.example.lukaskris.houseofdesign.Account.LoginFragment">
 
@@ -27,7 +28,8 @@
 
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            app:passwordToggleEnabled="true">
 
             <EditText
                 android:id="@+id/login_password"
@@ -48,19 +50,23 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="@string/action_sign_in"
-            android:textStyle="bold" />
+            android:theme="@style/MyButton"
+            android:textColor="@color/colorWhite"
+            android:text="@string/action_sign_in" />
 
-        <com.google.android.gms.common.SignInButton
+        <Button
             android:id="@+id/sign_in_button"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
+            android:layout_height="wrap_content"
+            android:theme="@style/ConfirmButton"
+            android:textColor="@color/colorWhite"
+            android:text="Login with Google"/>
         <TextView
             android:id="@+id/login_register"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:clickable="true"
+            android:layout_marginTop="10dp"
             android:background="?attr/selectableItemBackground"
             android:textAlignment="center"
             android:text="@string/action_register"/>

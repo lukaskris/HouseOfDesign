@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -34,9 +35,9 @@ import com.google.firebase.auth.FirebaseUser;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class HomeActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
+    boolean doubleBackToExitPressedOnce = false;
     private DrawerLayout drawer;
     private NavigationView navigationView;
     private Fragment selectedFragment;
@@ -68,7 +69,9 @@ public class HomeActivity extends AppCompatActivity
         header.findViewById(R.id.nav_header_Login).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                drawer.closeDrawer(GravityCompat.START);
                 startActivity(new Intent(HomeActivity.this, ContainerLoginRegisterActivity.class));
+                overridePendingTransition(R.anim.slide_from_right, R.anim.slide_to_left);
             }
         });
         navigationView.setNavigationItemSelectedListener(this);
@@ -92,6 +95,10 @@ public class HomeActivity extends AppCompatActivity
 
             String email = user.getEmail();
             String name = user.getDisplayName();
+            if(!user.isEmailVerified()){
+                name += " (Unverified)";
+                Snackbar.make(navigationView,R.string.error_invalid_verification,Snackbar.LENGTH_SHORT);
+            }
             Uri photo = user.getPhotoUrl();
             mEmail.setText(email);
             mName.setText(name);
@@ -120,10 +127,18 @@ public class HomeActivity extends AppCompatActivity
                 fm.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
                 ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
                 ft.commit();
-            } else if (mBackPressed + 2000 > System.currentTimeMillis()) {
+            } else if (doubleBackToExitPressedOnce) {
                 super.onBackPressed();
+                return;
             }else {
-                Toast.makeText(this,"Press again to exit the app",Toast.LENGTH_SHORT).show();
+                this.doubleBackToExitPressedOnce = true;
+                Toast.makeText(this,"Press BACK again to exit the app",Toast.LENGTH_LONG).show();
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        doubleBackToExitPressedOnce=false;
+                    }
+                }, 2000);
             }
         }
     }

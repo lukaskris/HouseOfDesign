@@ -12,7 +12,7 @@ public class Customer {
     String password;
     String picture;
 
-    public Customer(int id, String name, String email, String phone, String password, String picture) {
+    public Customer(String name, String email, String phone, String password, String picture) {
         this.id = id;
         this.name = name;
         this.email = email;

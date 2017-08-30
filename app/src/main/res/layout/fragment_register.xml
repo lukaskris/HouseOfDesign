@@ -56,16 +56,19 @@
             android:id="@+id/register_submit"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:theme="@style/MyButton"
+            android:textColor="@color/colorWhite"
             android:text="Sign up" />
 
         <TextView
             android:id="@+id/register_login_btn"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="?attr/selectableItemBackgroundBorderless"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:background="?attr/selectableItemBackground"
             android:clickable="true"
-            android:text="Already have an account?"
-            android:textAlignment="center" />
+            android:text="Already have an account?"/>
     </LinearLayout>
 
 </FrameLayout>

@@ -31,6 +31,6 @@ public interface MyService {
     Observable<List<SubItem>> getSubItems(@Path("id") int item_id);
 
     @POST("customer")
-    Observable<Customer> createCustomer(@Body String name, @Body String email, @Body String phone, @Body String password, @Body String picture);
+    Observable<Customer> createCustomer(@Body Customer customer);
 
 }

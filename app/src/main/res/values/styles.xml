@@ -26,7 +26,7 @@
     </style>
 
     <style name="ConfirmButton">
-        <item name="colorButtonNormal">@color/colorRed</item>
+        <item name="colorButtonNormal">@color/colorAccent</item>
     </style>
     <!-- Style for header text in the order form -->
     <style name="HeaderTextStyle">
@@ -41,4 +41,5 @@
         <item name="android:layout_width">48dp</item>
         <item name="android:layout_height">48dp</item>
     </style>
+
 </resources>

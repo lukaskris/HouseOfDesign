@@ -138,7 +138,7 @@
 
 
                     <de.hdodenhof.circleimageview.CircleImageView
-                        android:id="@+id/circleImageView"
+                        android:id="@+id/profile_image"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:src="@drawable/userdefault" />
@@ -160,20 +160,21 @@
                     android:paddingTop="15dp">
 
                     <TextView
+                        android:id="@+id/profile_nama"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Lukas Kristianto"
                         android:textStyle="bold"
                         android:layout_gravity="center"
                         android:textColor="@color/colorWhite"
                         android:textSize="20sp" />
 
                     <TextView
+                        android:id="@+id/profile_email"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:textColor="@color/colorWhite"
-                        android:text="lukaskris12@gmail.com" />
+                        android:text="" />
                 </LinearLayout>
             </LinearLayout>
         </android.support.design.widget.CollapsingToolbarLayout>
