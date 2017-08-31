@@ -2,6 +2,7 @@ package com.example.lukaskris.houseofdesign.Services;
 
 import com.example.lukaskris.houseofdesign.Model.Customer;
 import com.example.lukaskris.houseofdesign.Model.Items;
+import com.example.lukaskris.houseofdesign.Model.ShippingAddress;
 import com.example.lukaskris.houseofdesign.Model.SubItem;
 
 import java.util.List;
@@ -33,4 +34,9 @@ public interface MyService {
     @POST("customer")
     Observable<Customer> createCustomer(@Body Customer customer);
 
+    @GET("customer/{id}")
+    Observable<Customer> getCustomer(@Path("id") String email);
+
+    @POST("shipping_address")
+    Observable<ShippingAddress> createAddress(@Body ShippingAddress shippingAddress);
 }

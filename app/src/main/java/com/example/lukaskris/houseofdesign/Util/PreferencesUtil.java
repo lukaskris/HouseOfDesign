@@ -51,7 +51,6 @@ public class PreferencesUtil {
         }
     }
 
-
     public static ArrayList<Item> getCarts(Context context){
         SharedPreferences sharedPreferences;
         List<Item> carts;

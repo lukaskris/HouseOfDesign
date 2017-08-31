@@ -21,10 +21,12 @@
                 android:padding="5dp"
                 android:layout_height="wrap_content">
                 <android.support.design.widget.TextInputLayout
+                    android:id="@+id/add_address_name_layout"
                     android:layout_width="match_parent"
                     android:layout_marginBottom="10dp"
                     android:layout_height="wrap_content">
                     <EditText
+                        android:id="@+id/add_address_name"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="Nama Penerima"/>
@@ -34,6 +36,7 @@
                     android:layout_marginBottom="10dp"
                     android:layout_height="wrap_content">
                     <EditText
+                        android:id="@+id/add_address_alamat"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="Alamat"/>
@@ -102,6 +105,7 @@
                     android:layout_marginBottom="10dp"
                     android:layout_height="wrap_content">
                     <EditText
+                        android:id="@+id/add_address_kodepos"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="Kode Pos"/>
@@ -112,6 +116,7 @@
                     android:layout_marginBottom="10dp"
                     android:layout_height="wrap_content">
                     <EditText
+                        android:id="@+id/add_address_no_telp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="Nomor Telpon Penerima"/>
@@ -121,7 +126,7 @@
     </android.support.v4.widget.NestedScrollView>
 
     <Button
-        android:id="@+id/btnMore"
+        android:id="@+id/add_address_save"
         android:layout_width="match_parent"
         android:layout_height="52dp"
         android:layout_alignParentEnd="true"

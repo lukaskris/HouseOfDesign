@@ -16,8 +16,6 @@ public class ShippingAddress {
     String status;
     int user_id;
 
-    public ShippingAddress(){}
-
     public ShippingAddress(String name, String address, String province, String id_province, String city, String id_city, String postal_code, String phone, String status, int user_id) {
         this.name = name;
         this.address = address;

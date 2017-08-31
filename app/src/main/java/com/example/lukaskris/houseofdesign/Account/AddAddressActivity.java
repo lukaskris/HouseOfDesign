@@ -1,11 +1,14 @@
 package com.example.lukaskris.houseofdesign.Account;
 
 import android.app.ProgressDialog;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
@@ -18,8 +21,12 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.lukaskris.houseofdesign.Model.City;
+import com.example.lukaskris.houseofdesign.Model.Customer;
 import com.example.lukaskris.houseofdesign.Model.Provience;
+import com.example.lukaskris.houseofdesign.Model.ShippingAddress;
 import com.example.lukaskris.houseofdesign.R;
+import com.example.lukaskris.houseofdesign.Services.ServiceFactory;
+import com.google.firebase.auth.FirebaseAuth;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -30,6 +37,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
+
+import static com.example.lukaskris.houseofdesign.Services.ServiceFactory.service;
+
 public class AddAddressActivity extends AppCompatActivity {
     Spinner mProvince;
     Spinner mCity;
@@ -38,20 +51,93 @@ public class AddAddressActivity extends AppCompatActivity {
     List<Provience> proviences;
     List<City> cities;
     ProgressBar dialog;
+    Button mSave;
+    EditText mName;
+    EditText mAlamat;
+    EditText mKodePos;
+    EditText mNoTelp;
+    int user_id=0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_address);
         getSupportActionBar().setTitle("Add Address");
+        getSupportActionBar().setHomeButtonEnabled(true);
+
         proviences = new ArrayList<>();
         cities = new ArrayList<>();
         mLayoutCity = (LinearLayout) findViewById(R.id.add_address_kabupaten_layout);
         mProvince = (Spinner) findViewById(R.id.add_address_provinsi);
         mCity = (Spinner) findViewById(R.id.add_address_kabupaten);
         dialog = (ProgressBar) findViewById(R.id.add_address_progress);
+        mSave = (Button) findViewById(R.id.add_address_save);
+        mName = (EditText) findViewById(R.id.add_address_name);
+        mAlamat = (EditText) findViewById(R.id.add_address_alamat);
+        mKodePos = (EditText) findViewById(R.id.add_address_kodepos);
+        mNoTelp = (EditText) findViewById(R.id.add_address_no_telp);
+
         queue = Volley.newRequestQueue(this);
+
+
+        mSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(validasiInput()) {
+                    if(FirebaseAuth.getInstance().getCurrentUser()!= null) {
+                        service.getCustomer(FirebaseAuth.getInstance().getCurrentUser().getEmail())
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(new Consumer<Customer>() {
+                                    @Override
+                                    public void accept(Customer customer) throws Exception {
+
+                                        String name = mName.getText().toString();
+                                        String address = mAlamat.getText().toString();
+                                        String province = mProvince.getSelectedItem().toString();
+                                        String province_id = proviences.get(mProvince.getSelectedItemPosition()).getId();
+                                        String city = mCity.getSelectedItem().toString();
+                                        String city_id = cities.get(mCity.getSelectedItemPosition()).getId();
+                                        String postal = mKodePos.getText().toString();
+                                        String phone = mNoTelp.getText().toString();
+                                        ShippingAddress shippingAddress = new ShippingAddress(name,address,province,province_id,city,city_id,postal,phone,"0",customer.getId());
+                                        service.createAddress(shippingAddress)
+                                                .subscribeOn(Schedulers.io())
+                                                .observeOn(AndroidSchedulers.mainThread())
+                                                .subscribe(new Consumer<ShippingAddress>() {
+                                                    @Override
+                                                    public void accept(ShippingAddress shippingAddress) throws Exception {
+
+                                                        Snackbar.make(mName, "Saved", Snackbar.LENGTH_SHORT).show();
+                                                    }
+                                                }, new Consumer<Throwable>() {
+                                                    @Override
+                                                    public void accept(Throwable throwable) throws Exception {
+                                                        Snackbar.make(mName,throwable.getLocalizedMessage(),Snackbar.LENGTH_LONG).show();
+                                                    }
+                                                });
+                                    }
+                                }, new Consumer<Throwable>() {
+                                    @Override
+                                    public void accept(Throwable throwable) throws Exception {
+                                        Snackbar.make(mSave,throwable.getLocalizedMessage(),Snackbar.LENGTH_SHORT).show();
+                                    }
+                                });
+                    }
+                }
+            }
+        });
         getProvince();
+    }
+
+
+
+    private boolean validasiInput(){
+        if(mName.getText().toString().isEmpty()){
+
+        }
+
+        return true;
     }
 
     private void getProvince(){
