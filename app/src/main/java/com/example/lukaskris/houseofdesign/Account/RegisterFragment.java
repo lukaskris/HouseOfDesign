@@ -92,10 +92,10 @@ public class RegisterFragment extends Fragment {
 
                 if(mName.getText().toString().isEmpty()){
                     mName.setError(getString(R.string.error_field_required));
-                    mEmail.requestFocus();
+                    mName.requestFocus();
                 }else if(mPassword.getText().toString().isEmpty()){
                     mPassword.setError(getString(R.string.error_field_required));
-                    mEmail.requestFocus();
+                    mPassword.requestFocus();
                 }else if(mEmail.getText().toString().isEmpty()){
                     mEmail.setError(getString(R.string.error_field_required));
                     mEmail.requestFocus();

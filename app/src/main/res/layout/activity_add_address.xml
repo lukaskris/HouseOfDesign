@@ -6,9 +6,22 @@
     android:layout_height="match_parent"
     android:background="@color/colorInactive"
     tools:context="com.example.lukaskris.houseofdesign.Account.AddAddressActivity">
+
+    <Button
+        android:id="@+id/add_address_save"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:layout_alignParentEnd="true"
+        android:theme="@style/ConfirmButton"
+        android:layout_alignParentBottom="true"
+        android:text="Save"
+        android:textColor="#FFF" />
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_above="@+id/add_address_save">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -29,16 +42,25 @@
                         android:id="@+id/add_address_name"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:maxLines="1"
+                        android:imeOptions="actionNext"
+                        android:inputType="text"
+                        android:nextFocusDown="@+id/add_address_alamat"
                         android:hint="Nama Penerima"/>
                 </android.support.design.widget.TextInputLayout>
                 <android.support.design.widget.TextInputLayout
+                    android:id="@+id/add_address_alamat_layout"
                     android:layout_width="match_parent"
                     android:layout_marginBottom="10dp"
                     android:layout_height="wrap_content">
                     <EditText
                         android:id="@+id/add_address_alamat"
                         android:layout_width="match_parent"
+                        android:nextFocusDown="@+id/add_address_provinsi"
+                        android:imeOptions="actionNext"
                         android:layout_height="wrap_content"
+                        android:inputType="text"
+                        android:maxLines="1"
                         android:hint="Alamat"/>
                 </android.support.design.widget.TextInputLayout>
             </LinearLayout>
@@ -63,6 +85,7 @@
                         android:text="Provinsi"/>
                     <Spinner
                         android:id="@+id/add_address_provinsi"
+                        android:nextFocusForward="@+id/add_address_kabupaten"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="10dp"/>
@@ -84,6 +107,7 @@
                         android:text="Kabupaten/Kota"/>
                     <Spinner
                         android:id="@+id/add_address_kabupaten"
+                        android:nextFocusForward="@+id/add_address_kodepos"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="10dp"/>
@@ -101,17 +125,21 @@
                 android:orientation="vertical"
                 android:background="@color/colorWhite">
                 <android.support.design.widget.TextInputLayout
+                    android:id="@+id/add_address_kodepos_layout"
                     android:layout_width="match_parent"
                     android:layout_marginBottom="10dp"
                     android:layout_height="wrap_content">
                     <EditText
                         android:id="@+id/add_address_kodepos"
+                        android:nextFocusDown="@+id/add_address_no_telp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:inputType="number"
                         android:hint="Kode Pos"/>
                 </android.support.design.widget.TextInputLayout>
 
                 <android.support.design.widget.TextInputLayout
+                    android:id="@+id/add_address_notelp_layout"
                     android:layout_width="match_parent"
                     android:layout_marginBottom="10dp"
                     android:layout_height="wrap_content">
@@ -119,19 +147,11 @@
                         android:id="@+id/add_address_no_telp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:inputType="phone"
                         android:hint="Nomor Telpon Penerima"/>
                 </android.support.design.widget.TextInputLayout>
             </LinearLayout>
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
 
-    <Button
-        android:id="@+id/add_address_save"
-        android:layout_width="match_parent"
-        android:layout_height="52dp"
-        android:layout_alignParentEnd="true"
-        android:theme="@style/ConfirmButton"
-        android:layout_alignParentBottom="true"
-        android:text="Save"
-        android:textColor="#FFF" />
 </RelativeLayout>

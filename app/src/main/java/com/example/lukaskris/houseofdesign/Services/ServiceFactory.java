@@ -22,7 +22,7 @@ public class ServiceFactory {
 //        return service;
 //    }
     public static MyService service = new Retrofit.Builder()
-        .baseUrl(MyService.LOCAL_ENDPOINT)
+        .baseUrl(MyService.SERVICE_ENDPOINT)
         .addConverterFactory(GsonConverterFactory.create())
         .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
         .build().create(MyService.class);

@@ -8,25 +8,25 @@ public class ShippingAddress {
     String name;
     String address;
     String province;
-    String id_province;
+    String province_id;
     String city;
-    String id_city;
+    String city_id;
     String postal_code;
     String phone;
     String status;
-    int user_id;
+    String email;
 
-    public ShippingAddress(String name, String address, String province, String id_province, String city, String id_city, String postal_code, String phone, String status, int user_id) {
+    public ShippingAddress(String name, String address, String province, String province_id, String city, String city_id, String postal_code, String phone, String status, String email) {
         this.name = name;
         this.address = address;
         this.province = province;
-        this.id_province = id_province;
+        this.province_id = province_id;
         this.city = city;
-        this.id_city = id_city;
+        this.city_id = city_id;
         this.postal_code = postal_code;
         this.phone = phone;
         this.status = status;
-        this.user_id = user_id;
+        this.email = email;
     }
 
     public String getName() {
@@ -41,16 +41,16 @@ public class ShippingAddress {
         return province;
     }
 
-    public String getId_province() {
-        return id_province;
+    public String getProvince_id() {
+        return province_id;
     }
 
     public String getCity() {
         return city;
     }
 
-    public String getId_city() {
-        return id_city;
+    public String getCity_id() {
+        return city_id;
     }
 
     public String getPostal_code() {
@@ -65,7 +65,7 @@ public class ShippingAddress {
         return status;
     }
 
-    public int getUser_id() {
-        return user_id;
+    public String getEmail() {
+        return email;
     }
 }

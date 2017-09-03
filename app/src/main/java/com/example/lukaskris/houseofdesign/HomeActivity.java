@@ -81,6 +81,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
         Menu nav_Menu = navigationView.getMenu();
         nav_Menu.findItem(R.id.nav_logout).setVisible(false);
+        nav_Menu.findItem(R.id.nav_profile).setVisible(false);
+        nav_Menu.findItem(R.id.nav_orders).setVisible(false);
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if(user != null){
 
@@ -104,6 +106,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             mName.setText(name);
 
             nav_Menu.findItem(R.id.nav_logout).setVisible(true);
+            nav_Menu.findItem(R.id.nav_profile).setVisible(true);
+            nav_Menu.findItem(R.id.nav_orders).setVisible(true);
             Glide.with(this)
                     .load(photo)
                     .override(100, 100)

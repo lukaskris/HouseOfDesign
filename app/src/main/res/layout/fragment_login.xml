@@ -10,6 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
+
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -19,10 +20,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/prompt_email"
+                android:imeOptions="actionNext"
                 android:inputType="textEmailAddress"
-                    android:maxLines="1"
-                    android:nextFocusDown="@+id/password"
-                android:imeOptions="actionNext"/>
+                android:maxLines="1"
+                android:nextFocusDown="@+id/password" />
 
         </android.support.design.widget.TextInputLayout>
 
@@ -50,25 +51,26 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:theme="@style/MyButton"
+            android:text="@string/action_sign_in"
             android:textColor="@color/colorWhite"
-            android:text="@string/action_sign_in" />
+            android:theme="@style/MyButton" />
 
         <Button
             android:id="@+id/sign_in_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:theme="@style/ConfirmButton"
+            android:text="Login with Google"
             android:textColor="@color/colorWhite"
-            android:text="Login with Google"/>
+            android:theme="@style/ConfirmButton" />
+
         <TextView
             android:id="@+id/login_register"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:clickable="true"
             android:layout_marginTop="10dp"
+            android:layout_gravity="center"
             android:background="?attr/selectableItemBackground"
-            android:textAlignment="center"
+            android:clickable="true"
             android:text="@string/action_register"/>
     </LinearLayout>
 

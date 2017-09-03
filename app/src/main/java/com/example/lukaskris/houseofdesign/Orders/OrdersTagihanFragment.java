@@ -1,7 +1,5 @@
 package com.example.lukaskris.houseofdesign.Orders;
 
-import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -85,7 +83,7 @@ public class OrdersTagihanFragment extends Fragment {
             LayoutInflater inflater = LayoutInflater.from(
                     parent.getContext());
             View v =
-                    inflater.inflate(R.layout.orders_row_item, parent, false);
+                    inflater.inflate(R.layout.orders_row_item_tagihan, parent, false);
             // set the view's size, margins, paddings and layout parameters
             OrderItemAdapter.ItemHolder vh = new OrderItemAdapter.ItemHolder(v);
             return vh;

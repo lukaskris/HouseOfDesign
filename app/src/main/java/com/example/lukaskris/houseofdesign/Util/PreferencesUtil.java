@@ -3,6 +3,8 @@ package com.example.lukaskris.houseofdesign.Util;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.example.lukaskris.houseofdesign.Model.CategoryItem;
+import com.example.lukaskris.houseofdesign.Model.Items;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
@@ -21,10 +23,12 @@ public class PreferencesUtil {
     static final String CART_KEY = "carts";
     static final String FAVORITES = "LOCAL_FAVORITES";
     static final String FAVORITES_KEY = "favorites";
+    static final String HOME = "LOCAL_HOME";
+    static final String HOME_KEY = "home";
 
     private PreferencesUtil(){}
 
-    private static void saveCart(Context context, List<Item> carts){
+    public static void saveCart(Context context, List<Item> carts){
         SharedPreferences sharedPreferences;
         SharedPreferences.Editor editor;
         sharedPreferences = context.getSharedPreferences(CART,Context.MODE_PRIVATE);
@@ -32,6 +36,17 @@ public class PreferencesUtil {
         Gson gson = new Gson();
         String jsonCart = gson.toJson(carts);
         editor.putString(CART_KEY,jsonCart);
+        editor.commit();
+    }
+
+    public static void saveHome(Context context, List<CategoryItem> category){
+        SharedPreferences sharedPreferences;
+        SharedPreferences.Editor editor;
+        sharedPreferences = context.getSharedPreferences(HOME,Context.MODE_PRIVATE);
+        editor = sharedPreferences.edit();
+        Gson gson = new Gson();
+        String jsonCart = gson.toJson(category);
+        editor.putString(HOME_KEY,jsonCart);
         editor.commit();
     }
 
@@ -68,6 +83,22 @@ public class PreferencesUtil {
         return (ArrayList<Item>)carts;
     }
 
+    public static ArrayList<CategoryItem> getHome(Context context){
+        SharedPreferences sharedPreferences;
+        List<CategoryItem> home;
+        sharedPreferences = context.getSharedPreferences(HOME, Context.MODE_PRIVATE);
+        if(sharedPreferences.contains(HOME_KEY)){
+            String json = sharedPreferences.getString(CART_KEY,null);
+            Gson gson = new Gson();
+            CategoryItem[] cart = gson.fromJson(json, CategoryItem[].class);
+            home = Arrays.asList(cart);
+            home = new ArrayList<CategoryItem>(home);
+        }
+        else
+            return null;
+
+        return (ArrayList<CategoryItem>)home;
+    }
 
 
 }

@@ -24,7 +24,9 @@
     <style name="MyButton">
         <item name="colorButtonNormal">@color/colorPrimary</item>
     </style>
-
+    <style name="MyButton2">
+        <item name="colorButtonNormal">@color/colorInactive</item>
+    </style>
     <style name="ConfirmButton">
         <item name="colorButtonNormal">@color/colorAccent</item>
     </style>

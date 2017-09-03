@@ -10,13 +10,55 @@
         android:padding="10dp"
         android:id="@+id/address_recycler"
         android:layout_height="match_parent"/>
-    <TextView
+    <LinearLayout
         android:id="@+id/address_no_data"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center"
-        android:text="@string/title_no_data"
-        android:visibility="gone"/>
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:gravity="center">
+        <ImageView
+            android:id="@+id/address_home_icon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:tint="@android:color/darker_gray"
+            android:src="@drawable/ic_home_black_24dp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/title_no_data"/>
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/address_error"
+        android:layout_width="150dp"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:clickable="true"
+        android:layout_gravity="center"
+        android:background="?attr/selectableItemBackground"
+        android:gravity="center">
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:tint="@android:color/darker_gray"
+            android:src="@drawable/ic_refresh_black_24dp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/title_error"/>
+    </LinearLayout>
+    <com.wang.avi.AVLoadingIndicatorView
+        android:id="@+id/address_loading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone"
+        app:indicatorColor="@android:color/darker_gray"
+        app:indicatorName="BallPulseIndicator"
+        />
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/address_fab"
         android:layout_width="wrap_content"

@@ -37,13 +37,23 @@
                     app:pageColor="#223760"
                     app:snap="false" />
             </RelativeLayout>
-            <android.support.v7.widget.RecyclerView
-                android:padding="10dp"
-                android:id="@+id/home_recyclerview"
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                />
-
+                android:layout_height="match_parent">
+                <com.wang.avi.AVLoadingIndicatorView
+                    android:id="@+id/home_loading"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    app:indicatorName="BallSpinFadeLoaderIndicator"
+                    app:indicatorColor="@android:color/darker_gray"
+                    android:layout_centerInParent="true"/>
+                <android.support.v7.widget.RecyclerView
+                    android:padding="10dp"
+                    android:id="@+id/home_recyclerview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    />
+            </RelativeLayout>
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
 
