@@ -23,13 +23,17 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.lukaskris.houseofdesign.Callback.Callback;
+import com.example.lukaskris.houseofdesign.Model.Items;
+import com.example.lukaskris.houseofdesign.Model.SubItem;
 import com.example.lukaskris.houseofdesign.R;
 import com.example.lukaskris.houseofdesign.Services.MyServicesAPI;
 import com.example.lukaskris.houseofdesign.Util.AndroidUtil;
+import com.example.lukaskris.houseofdesign.Util.CurrencyUtil;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -38,11 +42,17 @@ import com.google.firebase.database.ValueEventListener;
 import com.viewpagerindicator.CirclePageIndicator;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 import endpoint.backend.itemApi.model.Item;
 import endpoint.backend.itemApi.model.Type;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
+
+import static com.example.lukaskris.houseofdesign.Services.ServiceFactory.service;
 
 public class DetailActivity extends AppCompatActivity {
     private ViewPager mViewPager;
@@ -75,11 +85,13 @@ public class DetailActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         imageUrl = new ArrayList<>();
-        String iditem = getIntent().getStringExtra("iditem");
-        final String idfb = getIntent().getStringExtra("idfirebase");
-        String category = getIntent().getStringExtra("category");
+        Items item = (Items) getIntent().getSerializableExtra("item");
+//
+//        String iditem = getIntent().getStringExtra("iditem");
+//        final String idfb = getIntent().getStringExtra("idfirebase");
+//        String category = getIntent().getStringExtra("category");
 
-        mDatabase = FirebaseDatabase.getInstance().getReference().child("category/"+category);
+//        mDatabase = FirebaseDatabase.getInstance().getReference().child("category/"+category);
 
         mName = (TextView) findViewById(R.id.detail_name);
         mPrice = (TextView) findViewById(R.id.detail_price);
@@ -88,12 +100,12 @@ public class DetailActivity extends AppCompatActivity {
         mAddToCart = (Button) findViewById(R.id.detail_add_to_cart);
         mBuyNow = (Button) findViewById(R.id.detail_buy_now);
 
-        mBuyNow.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        mName.setText(item.getName());
+        mPrice.setText(CurrencyUtil.rupiah(new BigDecimal(item.getPrice())));
+        mDescription.setText(item.getDesc());
 
-            }
-        });
+        getSubItem(item);
+
 
         mAddToCart.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -135,8 +147,8 @@ public class DetailActivity extends AppCompatActivity {
             }
         });
 
-        getImage(idfb);
-        getSize(iditem);
+//        getImage(idfb);
+//        getSize(iditem);
     }
 
     @Override
@@ -160,6 +172,28 @@ public class DetailActivity extends AppCompatActivity {
                 break;
         }
         return true;
+    }
+
+    private void getSubItem(Items item){
+        mProgressDialog = new ProgressDialog(this);
+        mProgressDialog.setMessage("Please wait");
+        mProgressDialog.show();
+        service.getSubItems(item.getId())
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(new Consumer<List<SubItem>>() {
+                @Override
+                public void accept(List<SubItem> subItems) throws Exception {
+                    mProgressDialog.dismiss();
+                    Toast.makeText(DetailActivity.this, subItems.size(), Toast.LENGTH_SHORT).show();
+                }
+            }, new Consumer<Throwable>() {
+                @Override
+                public void accept(Throwable throwable) throws Exception {
+                    mProgressDialog.dismiss();
+                    Toast.makeText(DetailActivity.this, throwable.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
     }
 
     private void getSize(String iditem){

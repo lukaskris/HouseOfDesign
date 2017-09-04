@@ -15,7 +15,7 @@ public class Items implements Serializable {
     private String desc;
     private String category_id;
     private List<String> image;
-    private String id;
+    private int id;
     private String thumbnail;
 
     public Items() {
@@ -26,6 +26,15 @@ public class Items implements Serializable {
         this.price = price;
         this.desc = desc;
         this.category_id = category;
+        this.image = image;
+        this.thumbnail = thumbnail;
+    }
+
+    public Items(String name, String price, String desc, String category_id, List<String> image, int id, String thumbnail) {
+        this.name = name;
+        this.price = price;
+        this.desc = desc;
+        this.category_id = category_id;
         this.image = image;
         this.id = id;
         this.thumbnail = thumbnail;
@@ -80,11 +89,11 @@ public class Items implements Serializable {
         this.image = image;
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 }

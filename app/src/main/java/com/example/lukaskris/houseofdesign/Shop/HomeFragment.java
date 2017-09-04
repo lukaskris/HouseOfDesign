@@ -406,10 +406,9 @@ public class HomeFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                     //TODO: click per item menuju detail
-//                    Intent inten = new Intent(HomeActivity.this,DetailItemActivity.class);
-//                    inten.putExtra("iditem",item.getId());
-//
-//                    startActivity(inten);
+                    Intent inten = new Intent(getActivity(),DetailActivity.class);
+                    inten.putExtra("item",item);
+                    startActivity(inten);
                 }
             });
         }
