@@ -102,8 +102,10 @@ public class DetailActivity extends AppCompatActivity {
 
         mName.setText(item.getName());
         mPrice.setText(CurrencyUtil.rupiah(new BigDecimal(item.getPrice())));
-        mDescription.setText(item.getDesc());
-
+        mDescription.setText(item.getDescription());
+        for(String s : item.getImages()){
+            mViewPagerAdapter.addItem("https://storage.googleapis.com/houseofdesign/"+s.trim());
+        }
         getSubItem(item);
 
 
@@ -185,7 +187,7 @@ public class DetailActivity extends AppCompatActivity {
                 @Override
                 public void accept(List<SubItem> subItems) throws Exception {
                     mProgressDialog.dismiss();
-                    Toast.makeText(DetailActivity.this, subItems.size(), Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(DetailActivity.this, subItems.size(), Toast.LENGTH_SHORT).show();
                 }
             }, new Consumer<Throwable>() {
                 @Override

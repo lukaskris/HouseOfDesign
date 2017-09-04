@@ -30,6 +30,9 @@ public interface MyService {
     @GET("item/{category}/{offset}/{limit}")
     Observable<List<Items>> getItems(@Path("category") int category, @Path("offset") int offset, @Path("limit") int limit);
 
+    @GET("items")
+    Observable<List<Items>> getItems();
+
     @GET("sub_item/{id}")
     Observable<List<SubItem>> getSubItems(@Path("id") int item_id);
 

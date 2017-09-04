@@ -69,6 +69,7 @@ public class HomeFragment extends Fragment {
     ItemViewAdapter mRecyclerViewAdapter;
     ProgressDialog mProgress;
     AVLoadingIndicatorView mLoading;
+    LinearLayout mNoData;
 
     private DatabaseReference mDatabase;
 
@@ -79,6 +80,7 @@ public class HomeFragment extends Fragment {
 
     private CategoryListAdapter adapter;
     private ArrayList<CategoryItem> allCategory;
+    private ArrayList<Items> allItems;
 
     public HomeFragment() {}
 
@@ -95,13 +97,15 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
+
+
         /* Setting Firebase */
         if(!calledActivity){
             FirebaseDatabase.getInstance().setPersistenceEnabled(true);
             calledActivity=true;
         }
-        mDatabase = FirebaseDatabase.getInstance().getReference().child("category");
-        mDatabase.keepSynced(true);
+//        mDatabase = FirebaseDatabase.getInstance().getReference().child("category");
+//        mDatabase.keepSynced(true);
         /* End Setting Firebase*/
 
         getActivity().setTitle("Home");
@@ -113,6 +117,9 @@ public class HomeFragment extends Fragment {
 
         mIndicator = (CirclePageIndicator) view.findViewById(R.id.home_circlePageIndicator);
         mIndicator.setViewPager(mViewPager);
+
+        mNoData = (LinearLayout) view.findViewById(R.id.home_no_data);
+        mNoData.setVisibility(View.GONE);
 
         mLoading = (AVLoadingIndicatorView) view.findViewById(R.id.home_loading);
 
@@ -140,18 +147,13 @@ public class HomeFragment extends Fragment {
             @Override
             public void onPageSelected(int position) {
                 currentPage = position;
-
             }
 
             @Override
-            public void onPageScrolled(int pos, float arg1, int arg2) {
-
-            }
+            public void onPageScrolled(int pos, float arg1, int arg2) {}
 
             @Override
-            public void onPageScrollStateChanged(int pos) {
-
-            }
+            public void onPageScrollStateChanged(int pos) {}
         });
         /* End Setting Banner*/
 
@@ -160,8 +162,37 @@ public class HomeFragment extends Fragment {
         mProgress.setMessage("Loading...");
         /* End Setting ProgressBar*/
 
-        createCategory();
+        allCategory = new ArrayList<>();
+//        createCategory();
+        allItems = new ArrayList<>();
+        if(getActivity().getIntent().hasExtra("category") && getActivity().getIntent().hasExtra("items")) {
+            List<Category> category = (ArrayList<Category>) getActivity().getIntent().getSerializableExtra("category");
+            allItems = (ArrayList<Items>) getActivity().getIntent().getSerializableExtra("items");
+            for(Category c:category){
+                CategoryItem cm = new CategoryItem(c.getId(),c.getName());
 
+                ArrayList<Items> temp = new ArrayList<>();
+                for(Items i: allItems){
+                    if(i.getCategory() == c.getId()){
+                        temp.add(i);
+                    }
+                }
+                cm.setAllItemsInSection(temp);
+                mLoading.setVisibility(View.GONE);
+                allCategory.add(cm);
+            }
+        }else{
+            if(getActivity().getIntent().hasExtra("error")){
+                Toast.makeText(getContext(),getActivity().getIntent().getStringExtra("error").toString(),Toast.LENGTH_LONG).show();
+            }
+            ArrayList<CategoryItem> temp =PreferencesUtil.getHome(getContext());
+            if(temp!=null && temp.size()>0){
+                allCategory.addAll(temp);
+            }
+            else {
+                mNoData.setVisibility(View.VISIBLE);
+            }
+        }
         RecyclerView my_recycler_view = (RecyclerView) view.findViewById(R.id.home_recyclerview);
         my_recycler_view.setHasFixedSize(true);
         my_recycler_view.setNestedScrollingEnabled(false);
@@ -172,7 +203,8 @@ public class HomeFragment extends Fragment {
         return view;
     }
     private void createCategory(){
-        allCategory = new ArrayList<>();
+
+
 //        CategoryItem cm = new CategoryItem("Pria");
 //        CategoryItem cm1 = new CategoryItem("Wanita");
 //        CategoryItem cm2 = new CategoryItem("Anak");
@@ -180,46 +212,7 @@ public class HomeFragment extends Fragment {
 //        allCategory.add(cm1);
 //        allCategory.add(cm2);
 
-        service.getCategory()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<List<Category>>() {
-                    @Override
-                    public void accept(List<Category> categories) throws Exception {
-                        if(categories.size()>0){
-                            for (final Category c: categories){
 
-                                service.getItems(c.getId(),0,5)
-                                        .subscribeOn(Schedulers.io())
-                                        .observeOn(AndroidSchedulers.mainThread())
-                                        .subscribe(new Consumer<List<Items>>() {
-                                            @Override
-                                            public void accept(List<Items> itemses) throws Exception {
-                                                ArrayList<Items> listItem = new ArrayList<>();
-                                                if(itemses.size()>0) {
-                                                    listItem.addAll(itemses);
-                                                }
-                                                CategoryItem ci = new CategoryItem(c.getId(),c.getName());
-                                                ci.setAllItemsInSection(listItem);
-                                                allCategory.add(ci);
-                                                adapter.notifyDataSetChanged();
-                                            }
-                                        }, new Consumer<Throwable>() {
-                                            @Override
-                                            public void accept(Throwable throwable) throws Exception {
-
-                                            }
-                                        });
-                            }
-                            mLoading.setVisibility(View.GONE);
-                        }
-                    }
-                }, new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable throwable) throws Exception {
-                        Toast.makeText(getContext(),throwable.getLocalizedMessage(),Toast.LENGTH_LONG).show();
-                    }
-                });
     }
 
 
@@ -330,13 +323,11 @@ public class HomeFragment extends Fragment {
             TextView itemTitle;
             RecyclerView recycler_view_list;
             Button btnMore;
-            AVLoadingIndicatorView mLoading;
             CategoryViewHolder(View itemView) {
                 super(itemView);
                 this.itemTitle = (TextView) itemView.findViewById(R.id.category_title);
                 this.recycler_view_list = (RecyclerView) itemView.findViewById(R.id.category_recycler);
                 this.btnMore= (Button) itemView.findViewById(R.id.btnMore);
-                this.mLoading = (AVLoadingIndicatorView) itemView.findViewById(R.id.category_loading);
             }
         }
     }

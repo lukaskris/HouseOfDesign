@@ -1,10 +1,12 @@
 package com.example.lukaskris.houseofdesign.Model;
 
+import java.io.Serializable;
+
 /**
  * Created by xub on 29/08/17.
  */
 
-public class Category {
+public class Category implements Serializable {
     int id;
     String name;
 

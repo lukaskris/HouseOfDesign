@@ -43,13 +43,6 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-    <com.wang.avi.AVLoadingIndicatorView
-        android:id="@+id/category_loading"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:indicatorName="BallPulseIndicator"
-        app:indicatorColor="@android:color/darker_gray"
-        android:layout_centerInParent="true"/>
     <android.support.v7.widget.RecyclerView
         android:id="@+id/category_recycler"
         android:layout_width="match_parent"

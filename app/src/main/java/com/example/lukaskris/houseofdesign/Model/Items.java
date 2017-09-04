@@ -1,6 +1,10 @@
 package com.example.lukaskris.houseofdesign.Model;
 
+import android.util.Log;
+
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -12,30 +16,31 @@ import java.util.List;
 public class Items implements Serializable {
     private String name;
     private String price;
-    private String desc;
-    private String category_id;
-    private List<String> image;
+    private String description;
+    private int category_id;
+
+    private String images;
     private int id;
     private String thumbnail;
 
     public Items() {
     }
 
-    public Items(String name, String price, String desc, String category, List<String> image, String thumbnail) {
+    public Items(String name, String price, String desc, int category, String image, String thumbnail) {
         this.name = name;
         this.price = price;
-        this.desc = desc;
+        this.description = desc;
         this.category_id = category;
-        this.image = image;
+        this.images = image;
         this.thumbnail = thumbnail;
     }
 
-    public Items(String name, String price, String desc, String category_id, List<String> image, int id, String thumbnail) {
+    public Items(String name, String price, String desc, int category_id, String image, int id, String thumbnail) {
         this.name = name;
         this.price = price;
-        this.desc = desc;
+        this.description = desc;
         this.category_id = category_id;
-        this.image = image;
+        this.images = image;
         this.id = id;
         this.thumbnail = thumbnail;
     }
@@ -65,28 +70,36 @@ public class Items implements Serializable {
         this.price = price;
     }
 
-    public String getDesc() {
-        return desc;
+    public String getDescription() {
+        return description;
     }
 
     public void setDesc(String desc) {
-        this.desc = desc;
+        this.description = desc;
     }
 
-    public String getCategory() {
+    public int getCategory() {
         return category_id;
     }
 
-    public void setCategory(String category) {
+    public void setCategory(int category) {
         this.category_id = category;
     }
 
-    public List<String> getImage() {
-        return image;
+    public List<String> getImages() {
+        String temp = images.replace("[","");
+        temp = temp.replace("]","");
+        temp = temp.replace("\"","");
+        temp = temp.replace("\\","");
+        String[] image = temp.split(";");
+        Log.d("Image", image.toString());
+        Log.d("temp", temp);
+        List<String> listTemp = new ArrayList<>(Arrays.asList(temp));
+        return listTemp;
     }
 
-    public void setImage(List<String> image) {
-        this.image = image;
+    public void setImages(String image) {
+        this.images = image;
     }
 
     public int getId() {
