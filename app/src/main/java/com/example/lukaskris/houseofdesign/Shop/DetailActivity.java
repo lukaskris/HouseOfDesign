@@ -76,9 +76,11 @@ public class DetailActivity extends AppCompatActivity {
     private RecyclerView mRecyclerSize;
     private RecyclerView mRecyclerColor;
     private Button mAddToCart;
+    private TextView mQuantity;
 
     private Item mItem;
-
+    private String size;
+    private List<Integer> mStock;
     private TypeAdapter sizeAdapter;
     private TypeAdapter colorAdapter;
 
@@ -107,7 +109,7 @@ public class DetailActivity extends AppCompatActivity {
         mName = (TextView) findViewById(R.id.detail_name);
         mPrice = (TextView) findViewById(R.id.detail_price);
         mDescription = (TextView) findViewById(R.id.detail_description);
-
+        mQuantity = (TextView)findViewById(R.id.detail_quantity);
         mAddToCart = (Button) findViewById(R.id.detail_add_to_cart);
 
 
@@ -124,7 +126,7 @@ public class DetailActivity extends AppCompatActivity {
         }
         getSubItem(item);
 
-
+        mStock = new ArrayList<>();
         mAddToCart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -234,11 +236,36 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void setTypeList(){
+        sizeList.clear();
         for(SubItem s:subItems){
             if(!sizeList.contains(s.getSize())){
                 sizeList.add(s.getSize());
             }
         }
+    }
+
+    private void setTypeColor(String size){
+        colorList.clear();
+        mStock.clear();
+        this.size=size;
+        for(SubItem s:subItems){
+            if(s.getSize().equals(size)){
+                if(!colorList.contains(s.getColor())){
+                    colorList.add(s.getColor());
+                    mStock.add(s.getQuantity());
+                }
+            }
+        }
+        colorAdapter.notifyDataSetChanged();
+    }
+
+    private void clearTypeColor(){
+        colorList.clear();
+        colorAdapter.notifyDataSetChanged();
+    }
+
+    private void getQty(String color){
+
     }
 
     private class TypeAdapter extends RecyclerView.Adapter<TypeAdapter.TypeViewHolder>{
@@ -263,8 +290,8 @@ public class DetailActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onBindViewHolder(final TypeViewHolder holder, int position) {
-            String type = mList.get(position);
+        public void onBindViewHolder(final TypeViewHolder holder, final int position) {
+            final String type = mList.get(position);
             holder.type.setText(type);
 
             holder.button.setOnClickListener(new View.OnClickListener() {
@@ -272,9 +299,21 @@ public class DetailActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     ContextCompat.getDrawable(v.getContext(), R.drawable.button_pressed);
 
-                    if(holder.clicked)
+                    if(holder.clicked) {
                         holder.disableState();
-                    else {
+                        if(mark==0)
+                            clearTypeColor();
+                    }else {
+                        if(mark == 0){
+                            setTypeColor(type);
+                        }else{
+                            mQuantity.setText("Sisa: "+mStock.get(position));
+                            if(mStock.get(position) <=0){
+                                holder.button.setEnabled(false);
+                            }else {
+                                holder.button.setEnabled(true);
+                            }
+                        }
                         holder.enableState();
                         if(prevHolder != null && !prevHolder.equals(holder)){
                             prevHolder.disableState();

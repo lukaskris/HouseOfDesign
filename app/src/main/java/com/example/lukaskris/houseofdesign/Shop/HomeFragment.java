@@ -10,10 +10,12 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -34,6 +36,7 @@ import com.example.lukaskris.houseofdesign.Services.MyService;
 import com.example.lukaskris.houseofdesign.Services.ServiceFactory;
 import com.example.lukaskris.houseofdesign.Splash.SplashActivity;
 import com.example.lukaskris.houseofdesign.Util.CurrencyUtil;
+import com.example.lukaskris.houseofdesign.Util.NetworkUtil;
 import com.example.lukaskris.houseofdesign.Util.PreferencesUtil;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DatabaseReference;
@@ -73,6 +76,8 @@ public class HomeFragment extends Fragment {
     AVLoadingIndicatorView mLoading;
     LinearLayout mNoData;
 
+    SwipeRefreshLayout swipeRefreshLayout;
+
     int [] mResources = {
             R.drawable.banner1,
             R.drawable.banner2
@@ -82,7 +87,8 @@ public class HomeFragment extends Fragment {
     private ArrayList<CategoryItem> categoryItems;
     private ArrayList<Items> allItems;
     private ArrayList<Category> allCategory;
-
+    Runnable runnable;
+    Handler handler;
     public HomeFragment() {}
 
     @Override
@@ -112,12 +118,41 @@ public class HomeFragment extends Fragment {
         mViewPager = (ViewPager) view.findViewById(R.id.home_viewpager);
         mViewPagerAdapter = new ViewPagerAdapter(getContext());
         mViewPager.setAdapter(mViewPagerAdapter);
+        mViewPager.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                mViewPager.getParent().requestDisallowInterceptTouchEvent(true);
+                return false;
+            }
+        });
 
         mIndicator = (CirclePageIndicator) view.findViewById(R.id.home_circlePageIndicator);
         mIndicator.setViewPager(mViewPager);
 
         mNoData = (LinearLayout) view.findViewById(R.id.home_no_data);
         mNoData.setVisibility(View.GONE);
+
+
+
+        swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.home_swipe);
+//        swipeRefreshLayout.setColorScheme(getResources().getColor(android.R.color.holo_blue_bright),
+//                getResources().getColor(android.R.color.holo_green_light),
+//                getResources().getColor(android.R.color.holo_orange_light),
+//                getResources().getColor(android.R.color.holo_red_light));
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(NetworkUtil.isOnline(getContext())) {
+                            fetchData();
+                        }
+                        swipeRefreshLayout.setRefreshing(false);
+                    }
+                },3000);
+            }
+        });
 
         mLoading = (AVLoadingIndicatorView) view.findViewById(R.id.home_loading);
 
@@ -189,11 +224,29 @@ public class HomeFragment extends Fragment {
         adapter = new CategoryListAdapter(getContext(), categoryItems);
         my_recycler_view.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         my_recycler_view.setAdapter(adapter);
-
+        autoRefreshWhenOff();
         return view;
     }
 
+    void autoRefreshWhenOff(){
+        handler = new Handler();
+        runnable = new Runnable() {
+            public void run() {
+                if(NetworkUtil.isOnline(getContext())){
+                    fetchData();
+                    handler.removeCallbacks(runnable);
+                }else {
+                    noInternetConnection();
+                }
+                handler.postDelayed(this, 1000);
+            }
+        };
+        runnable.run();
+
+    }
+
     void migrateToCategoryItem(){
+        categoryItems.clear();
         for(Category c:allCategory){
             CategoryItem cm = new CategoryItem(c.getId(),c.getName());
 
@@ -210,7 +263,7 @@ public class HomeFragment extends Fragment {
         PreferencesUtil.saveHome(getContext(),categoryItems);
     }
 
-    private void fetchData(){
+    void fetchData(){
 
         service.getCategory()
                 .subscribeOn(Schedulers.io())
@@ -238,7 +291,7 @@ public class HomeFragment extends Fragment {
 
     }
 
-    private void getItem(){
+    void getItem(){
         service.getItems()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
