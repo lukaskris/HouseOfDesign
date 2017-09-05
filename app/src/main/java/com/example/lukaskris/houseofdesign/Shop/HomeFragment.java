@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -23,6 +24,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.example.lukaskris.houseofdesign.HomeActivity;
 import com.example.lukaskris.houseofdesign.Model.Category;
 import com.example.lukaskris.houseofdesign.Model.CategoryItem;
 import com.example.lukaskris.houseofdesign.Model.Items;
@@ -30,6 +32,7 @@ import com.example.lukaskris.houseofdesign.Model.SubItem;
 import com.example.lukaskris.houseofdesign.R;
 import com.example.lukaskris.houseofdesign.Services.MyService;
 import com.example.lukaskris.houseofdesign.Services.ServiceFactory;
+import com.example.lukaskris.houseofdesign.Splash.SplashActivity;
 import com.example.lukaskris.houseofdesign.Util.CurrencyUtil;
 import com.example.lukaskris.houseofdesign.Util.PreferencesUtil;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -40,6 +43,7 @@ import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import com.viewpagerindicator.CirclePageIndicator;
 import com.wang.avi.AVLoadingIndicatorView;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -65,13 +69,9 @@ public class HomeFragment extends Fragment {
     private static int currentPage = 0;
     private static int NUM_PAGES = 0;
     CirclePageIndicator mIndicator;
-    RecyclerView mRecycler;
-    ItemViewAdapter mRecyclerViewAdapter;
     ProgressDialog mProgress;
     AVLoadingIndicatorView mLoading;
     LinearLayout mNoData;
-
-    private DatabaseReference mDatabase;
 
     int [] mResources = {
             R.drawable.banner1,
@@ -79,8 +79,9 @@ public class HomeFragment extends Fragment {
     };
 
     private CategoryListAdapter adapter;
-    private ArrayList<CategoryItem> allCategory;
+    private ArrayList<CategoryItem> categoryItems;
     private ArrayList<Items> allItems;
+    private ArrayList<Category> allCategory;
 
     public HomeFragment() {}
 
@@ -92,11 +93,11 @@ public class HomeFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) { }
 
+    @SuppressWarnings("unchecked")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
-
 
 
         /* Setting Firebase */
@@ -104,9 +105,6 @@ public class HomeFragment extends Fragment {
             FirebaseDatabase.getInstance().setPersistenceEnabled(true);
             calledActivity=true;
         }
-//        mDatabase = FirebaseDatabase.getInstance().getReference().child("category");
-//        mDatabase.keepSynced(true);
-        /* End Setting Firebase*/
 
         getActivity().setTitle("Home");
 
@@ -141,6 +139,7 @@ public class HomeFragment extends Fragment {
                 handler.post(Update);
             }
         }, 3000, 3000);
+
         // Pager listener over indicator
         mIndicator.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 
@@ -163,31 +162,22 @@ public class HomeFragment extends Fragment {
         /* End Setting ProgressBar*/
 
         allCategory = new ArrayList<>();
-//        createCategory();
+        categoryItems = new ArrayList<>();
         allItems = new ArrayList<>();
-        if(getActivity().getIntent().hasExtra("category") && getActivity().getIntent().hasExtra("items")) {
-            List<Category> category = (ArrayList<Category>) getActivity().getIntent().getSerializableExtra("category");
-            allItems = (ArrayList<Items>) getActivity().getIntent().getSerializableExtra("items");
-            for(Category c:category){
-                CategoryItem cm = new CategoryItem(c.getId(),c.getName());
 
-                ArrayList<Items> temp = new ArrayList<>();
-                for(Items i: allItems){
-                    if(i.getCategory() == c.getId()){
-                        temp.add(i);
-                    }
-                }
-                cm.setAllItemsInSection(temp);
-                mLoading.setVisibility(View.GONE);
-                allCategory.add(cm);
-            }
+        if(getActivity().getIntent().hasExtra("category") && getActivity().getIntent().hasExtra("items")) {
+            allCategory = (ArrayList<Category>) getActivity().getIntent().getSerializableExtra("category");
+            allItems = (ArrayList<Items>) getActivity().getIntent().getSerializableExtra("items");
+            migrateToCategoryItem();
         }else{
             if(getActivity().getIntent().hasExtra("error")){
-                Toast.makeText(getContext(),getActivity().getIntent().getStringExtra("error").toString(),Toast.LENGTH_LONG).show();
+                noInternetConnection();
+//                Toast.makeText(getContext(), getActivity().getIntent().getStringExtra("error"),Toast.LENGTH_LONG).show();
             }
             ArrayList<CategoryItem> temp =PreferencesUtil.getHome(getContext());
+            mLoading.setVisibility(View.GONE);
             if(temp!=null && temp.size()>0){
-                allCategory.addAll(temp);
+                categoryItems.addAll(temp);
             }
             else {
                 mNoData.setVisibility(View.VISIBLE);
@@ -196,26 +186,91 @@ public class HomeFragment extends Fragment {
         RecyclerView my_recycler_view = (RecyclerView) view.findViewById(R.id.home_recyclerview);
         my_recycler_view.setHasFixedSize(true);
         my_recycler_view.setNestedScrollingEnabled(false);
-        adapter = new CategoryListAdapter(getContext(), allCategory);
-
+        adapter = new CategoryListAdapter(getContext(), categoryItems);
         my_recycler_view.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         my_recycler_view.setAdapter(adapter);
+
         return view;
     }
-    private void createCategory(){
 
+    void migrateToCategoryItem(){
+        for(Category c:allCategory){
+            CategoryItem cm = new CategoryItem(c.getId(),c.getName());
 
-//        CategoryItem cm = new CategoryItem("Pria");
-//        CategoryItem cm1 = new CategoryItem("Wanita");
-//        CategoryItem cm2 = new CategoryItem("Anak");
-//        allCategory.add(cm);
-//        allCategory.add(cm1);
-//        allCategory.add(cm2);
+            ArrayList<Items> temp = new ArrayList<>();
+            for(Items i: allItems){
+                if(i.getCategory() == c.getId()){
+                    temp.add(i);
+                }
+            }
+            cm.setAllItemsInSection(temp);
+            mLoading.setVisibility(View.GONE);
+            categoryItems.add(cm);
+        }
+        PreferencesUtil.saveHome(getContext(),categoryItems);
+    }
+
+    private void fetchData(){
+
+        service.getCategory()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<List<Category>>() {
+                    @Override
+                    public void accept(List<Category> categories) throws Exception {
+                        if(categories.size()>0){
+                            allCategory.clear();
+                            allCategory.addAll(categories);
+                            getItem();
+                            migrateToCategoryItem();
+                        }
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        if(throwable.getCause().getLocalizedMessage().equalsIgnoreCase("android_getaddrinfo failed: EAI_NODATA (No address associated with hostname)")) {
+                            noInternetConnection();
+                        }
+
+                    }
+                });
 
 
     }
 
+    private void getItem(){
+        service.getItems()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<List<Items>>() {
+                    @Override
+                    public void accept(List<Items> itemses) throws Exception {
+                        if (itemses.size() > 0) {
+                            allItems.clear();
+                            allItems.addAll(itemses);
+                        }
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
 
+                    }
+                });
+
+    }
+
+    void noInternetConnection(){
+        Snackbar
+            .make(mNoData, "No Internet Connection", Snackbar.LENGTH_LONG)
+            .setAction("RETRY", new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    fetchData();
+                }
+            }).show();
+    }
+
+    //ADAPTER CLASS
 
     class CategoryListAdapter extends RecyclerView.Adapter<CategoryListAdapter.CategoryViewHolder>{
         private ArrayList<CategoryItem> dataList;
@@ -272,27 +327,6 @@ public class HomeFragment extends Fragment {
 
 
             final ItemViewAdapter adpt = new ItemViewAdapter(mContext,dataList.get(position).getAllItemsInSection());
-//            service.getItems(dataList.get(position).getIdCategory(),0,5)
-//                    .subscribeOn(Schedulers.io())
-//                    .observeOn(AndroidSchedulers.mainThread())
-//                    .subscribe(new Consumer<List<Items>>() {
-//                        @Override
-//                        public void accept(List<Items> itemses) throws Exception {
-//                            ArrayList<Items> listItem = new ArrayList<>();
-//                            if(itemses.size()>0) {
-//                                listItem.addAll(itemses);
-//                            }
-//                            holder.mLoading.setVisibility(View.GONE);
-//                            dataList.get(position).setAllItemsInSection(listItem);
-//                            adpt.notifyDataSetChanged();
-//                            PreferencesUtil.saveHome(mContext,dataList);
-//                        }
-//                    }, new Consumer<Throwable>() {
-//                        @Override
-//                        public void accept(Throwable throwable) throws Exception {
-//
-//                        }
-//                    });
             holder.recycler_view_list.setHasFixedSize(true);
             LinearLayoutManager lm = new LinearLayoutManager(mContext,LinearLayoutManager.HORIZONTAL,false);
             holder.recycler_view_list.setLayoutManager(lm);
@@ -302,14 +336,11 @@ public class HomeFragment extends Fragment {
             holder.btnMore.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    //TODO: MORE ITEM
-//                    Toast.makeText(v.getContext(), "click event on more, "+sectionName , Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(getActivity(),ShowAllActivity.class);
                     intent.putExtra("category",sectionName);
                     startActivity(intent);
                 }
             });
-//        getDataFromFirebase(adapter.itemList);
     /* End Setting Adapter*/
         }
 
@@ -369,11 +400,11 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    public class ItemViewAdapter  extends RecyclerView.Adapter<ItemViewHolder>{
+    private class ItemViewAdapter  extends RecyclerView.Adapter<ItemViewHolder>{
         private List<Items> itemList;
         private Context context;
 
-        public ItemViewAdapter(Context context, List<Items> list) {
+        ItemViewAdapter(Context context, List<Items> list) {
             this.context = context;
             if(list != null)
                 this.itemList = list;
@@ -412,12 +443,12 @@ public class HomeFragment extends Fragment {
 
     }
 
-    public static class ItemViewHolder extends RecyclerView.ViewHolder{
+    private class ItemViewHolder extends RecyclerView.ViewHolder{
         TextView item_nama;
         TextView item_price;
         ImageView item_image;
         View mView;
-        public ItemViewHolder(View itemView) {
+        ItemViewHolder(View itemView) {
             super(itemView);
             mView = itemView;
             item_nama = (TextView)mView.findViewById(R.id.item_nama);
@@ -437,7 +468,7 @@ public class HomeFragment extends Fragment {
         }
 
         void setHarga(String harga){
-            item_price.setText(harga);
+            item_price.setText(CurrencyUtil.rupiah(new BigDecimal(harga)));
         }
 
         void setImage(final Context ctx, final String image) {

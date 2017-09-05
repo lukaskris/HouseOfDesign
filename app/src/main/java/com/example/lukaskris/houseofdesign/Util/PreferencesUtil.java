@@ -36,7 +36,7 @@ public class PreferencesUtil {
         Gson gson = new Gson();
         String jsonCart = gson.toJson(carts);
         editor.putString(CART_KEY,jsonCart);
-        editor.commit();
+        editor.apply();
     }
 
     public static void saveHome(Context context, List<CategoryItem> category){
@@ -47,7 +47,7 @@ public class PreferencesUtil {
         Gson gson = new Gson();
         String jsonCart = gson.toJson(category);
         editor.putString(HOME_KEY,jsonCart);
-        editor.commit();
+        editor.apply();
     }
 
     public static void addCart(Context context, Item cart){
@@ -75,7 +75,7 @@ public class PreferencesUtil {
             Gson gson = new Gson();
             Item[] cart = gson.fromJson(json, Item[].class);
             carts = Arrays.asList(cart);
-            carts = new ArrayList<Item>(carts);
+            carts = new ArrayList<>(carts);
         }
         else
             return null;
@@ -88,11 +88,11 @@ public class PreferencesUtil {
         List<CategoryItem> home;
         sharedPreferences = context.getSharedPreferences(HOME, Context.MODE_PRIVATE);
         if(sharedPreferences.contains(HOME_KEY)){
-            String json = sharedPreferences.getString(CART_KEY,null);
+            String json = sharedPreferences.getString(HOME_KEY,null);
             Gson gson = new Gson();
-            CategoryItem[] cart = gson.fromJson(json, CategoryItem[].class);
-            home = Arrays.asList(cart);
-            home = new ArrayList<CategoryItem>(home);
+            CategoryItem[] categoryItems = gson.fromJson(json, CategoryItem[].class);
+            home = Arrays.asList(categoryItems);
+            home = new ArrayList<>(home);
         }
         else
             return null;

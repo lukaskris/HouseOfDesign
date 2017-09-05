@@ -101,32 +101,88 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:padding="10dp">
-
-                    <RelativeLayout
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="10dp"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentRight="true"
-                            android:background="?attr/selectableItemBackgroundBorderless"
-                            android:clickable="true"
-                            android:text="Select"
-                            android:textColor="@color/colorBlue"
-                            android:id="@+id/detail_select"
-                            android:textSize="16sp" />
+                        android:orientation="vertical">
 
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Color, Size"
+                            android:text="Size"
                             android:textColor="@android:color/black"
-                            android:textSize="18sp" />
+                            android:textSize="18sp"
+                            android:layout_marginBottom="10dp"/>
 
-                    </RelativeLayout>
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="@color/colorLightGrey" />
+
+                        <android.support.v7.widget.RecyclerView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:id="@+id/detail_recycler_size"
+                            android:nestedScrollingEnabled="false"
+                            android:layout_marginTop="10dp"/>
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/colorLightGrey" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Color"
+                            android:textColor="@android:color/black"
+                            android:textSize="18sp"
+                            android:layout_marginBottom="10dp"/>
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="@color/colorLightGrey" />
+
+                        <android.support.v7.widget.RecyclerView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:id="@+id/detail_recycler_color"
+                            android:nestedScrollingEnabled="false"
+                            android:layout_marginTop="10dp"/>
+                    </LinearLayout>
+                    <!--<RelativeLayout-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:layout_marginBottom="10dp"-->
+                        <!--android:orientation="horizontal">-->
+
+                        <!--<TextView-->
+                            <!--android:layout_width="wrap_content"-->
+                            <!--android:layout_height="wrap_content"-->
+                            <!--android:layout_alignParentRight="true"-->
+                            <!--android:background="?attr/selectableItemBackgroundBorderless"-->
+                            <!--android:clickable="true"-->
+                            <!--android:text="Select"-->
+                            <!--android:textColor="@color/colorBlue"-->
+                            <!--android:id="@+id/detail_select"-->
+                            <!--android:textSize="16sp" />-->
+
+                        <!--<TextView-->
+                            <!--android:layout_width="match_parent"-->
+                            <!--android:layout_height="wrap_content"-->
+                            <!--android:text="Color"-->
+                            <!--android:textColor="@android:color/black"-->
+                            <!--android:textSize="18sp" />-->
+
+                    <!--</RelativeLayout>-->
 
                     <View
                         android:layout_width="match_parent"
@@ -143,28 +199,13 @@
 
                         <Button
                             android:id="@+id/detail_add_to_cart"
-                            android:layout_width="0dp"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_weight="0.4"
                             android:background="@color/colorLightOrange"
                             android:foreground="?android:attr/selectableItemBackground"
                             android:text="Add to cart"
                             android:textColor="@color/colorRed" />
 
-                        <android.support.v4.widget.Space
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:layout_weight="0.05" />
-
-                        <Button
-                            android:id="@+id/detail_buy_now"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="0.4"
-                            android:background="@color/colorRed"
-                            android:foreground="?android:attr/selectableItemBackground"
-                            android:text="Buy now"
-                            android:textColor="@color/colorWhite" />
                     </LinearLayout>
                 </LinearLayout>
             </android.support.v7.widget.CardView>

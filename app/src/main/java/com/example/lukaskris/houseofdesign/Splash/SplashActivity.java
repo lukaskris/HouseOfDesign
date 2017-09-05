@@ -23,6 +23,7 @@ import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
 import static com.example.lukaskris.houseofdesign.Services.ServiceFactory.service;
@@ -40,6 +41,7 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     private void fetchData(){
+
         service.getCategory()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -54,7 +56,11 @@ public class SplashActivity extends AppCompatActivity {
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable throwable) throws Exception {
-                        Toast.makeText(SplashActivity.this,throwable.getLocalizedMessage(),Toast.LENGTH_LONG).show();
+//                        Toast.makeText(SplashActivity.this,throwable.getLocalizedMessage(),Toast.LENGTH_LONG).show();
+                        Intent intent = new Intent(SplashActivity.this, HomeActivity.class);
+                        intent.putExtra("error", "No Internet Connection");
+                        startActivity(intent);
+                        finish();
                     }
                 });
 
@@ -62,63 +68,33 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     private void getItem(){
-        if(NetworkUtil.isOnline(this)) {
-            service.getItems()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<List<Items>>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-
+        service.getItems()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(new Consumer<List<Items>>() {
+                @Override
+                public void accept(List<Items> itemses) throws Exception {
+                    if (itemses.size() > 0) {
+                        itemsList.addAll(itemses);
+                        Intent intent = new Intent(SplashActivity.this, HomeActivity.class);
+                        intent.putExtra("category", (Serializable) categoryList);
+                        intent.putExtra("items", (Serializable) itemsList);
+                        Log.e("debug category", categoryList.toString());
+                        Log.e("debug items", itemsList.toString());
+                        startActivity(intent);
+                        finish();
                     }
+                }
+            }, new Consumer<Throwable>() {
+                @Override
+                public void accept(Throwable throwable) throws Exception {
+                    Log.e("error ", throwable.getLocalizedMessage());
+                    Intent intent = new Intent(SplashActivity.this, HomeActivity.class);
+                    intent.putExtra("error", throwable.getLocalizedMessage());
+                    startActivity(intent);
+                    finish();
+                }
+            });
 
-                    @Override
-                    public void onNext(List<Items> value) {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-
-                    }
-
-                    @Override
-                    public void onComplete() {
-
-                    }
-                });
-
-
-//                    .subscribe(new Consumer<List<Items>>() {
-//                @Override
-//                public void accept(List<Items> itemses) throws Exception {
-//                    if (itemses.size() > 0) {
-//                        itemsList.addAll(itemses);
-//                        Intent intent = new Intent(SplashActivity.this, HomeActivity.class);
-//                        intent.putExtra("category", (Serializable) categoryList);
-//                        intent.putExtra("items", (Serializable) itemsList);
-//                        Log.e("debug category", categoryList.toString());
-//                        Log.e("debug items", itemsList.toString());
-//                        startActivity(intent);
-//                        finish();
-//                    }
-//                }
-//            }, new Consumer<Throwable>() {
-//                @Override
-//                public void accept(Throwable throwable) throws Exception {
-//                    Log.e("error ", throwable.getLocalizedMessage());
-//                    Intent intent = new Intent(SplashActivity.this, HomeActivity.class);
-//                    intent.putExtra("error", throwable.getLocalizedMessage());
-//                    startActivity(intent);
-//                    finish();
-//                }
-//            });
-        }else{
-
-            Intent intent = new Intent(SplashActivity.this, HomeActivity.class);
-            intent.putExtra("error", "No Internet Connection");
-            startActivity(intent);
-            finish();
-        }
     }
 }

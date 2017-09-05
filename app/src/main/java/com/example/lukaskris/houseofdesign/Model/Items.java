@@ -91,10 +91,10 @@ public class Items implements Serializable {
         temp = temp.replace("]","");
         temp = temp.replace("\"","");
         temp = temp.replace("\\","");
-        String[] image = temp.split(";");
-        Log.d("Image", image.toString());
-        Log.d("temp", temp);
-        List<String> listTemp = new ArrayList<>(Arrays.asList(temp));
+        String[] image = temp.split(",");
+
+        List<String> listTemp;
+        listTemp = new ArrayList<>(Arrays.asList(image));
         return listTemp;
     }
 

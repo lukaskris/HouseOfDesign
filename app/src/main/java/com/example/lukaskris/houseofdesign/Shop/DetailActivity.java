@@ -6,10 +6,13 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -30,6 +33,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.lukaskris.houseofdesign.Callback.Callback;
 import com.example.lukaskris.houseofdesign.Model.Items;
 import com.example.lukaskris.houseofdesign.Model.SubItem;
+import com.example.lukaskris.houseofdesign.Multimedia.FullScreenImageViewerActivity;
 import com.example.lukaskris.houseofdesign.R;
 import com.example.lukaskris.houseofdesign.Services.MyServicesAPI;
 import com.example.lukaskris.houseofdesign.Util.AndroidUtil;
@@ -42,8 +46,10 @@ import com.google.firebase.database.ValueEventListener;
 import com.viewpagerindicator.CirclePageIndicator;
 
 import java.io.Serializable;
+import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import endpoint.backend.itemApi.model.Item;
@@ -60,16 +66,21 @@ public class DetailActivity extends AppCompatActivity {
     ViewPagerAdapter mViewPagerAdapter;
     CirclePageIndicator mIndicator;
     ArrayList<String> imageUrl;
+    ArrayList<SubItem> subItems;
+    ArrayList<String> sizeList;
+    ArrayList<String> colorList;
 
     private TextView mName;
     private TextView mPrice;
     private TextView mDescription;
-    private TextView mSelect;
-
+    private RecyclerView mRecyclerSize;
+    private RecyclerView mRecyclerColor;
     private Button mAddToCart;
-    private Button mBuyNow;
 
     private Item mItem;
+
+    private TypeAdapter sizeAdapter;
+    private TypeAdapter colorAdapter;
 
     private DatabaseReference mDatabase;
 
@@ -98,11 +109,16 @@ public class DetailActivity extends AppCompatActivity {
         mDescription = (TextView) findViewById(R.id.detail_description);
 
         mAddToCart = (Button) findViewById(R.id.detail_add_to_cart);
-        mBuyNow = (Button) findViewById(R.id.detail_buy_now);
+
+
+        mRecyclerColor = (RecyclerView) findViewById(R.id.detail_recycler_color);
+        mRecyclerSize = (RecyclerView) findViewById(R.id.detail_recycler_size);
 
         mName.setText(item.getName());
         mPrice.setText(CurrencyUtil.rupiah(new BigDecimal(item.getPrice())));
         mDescription.setText(item.getDescription());
+
+        mViewPagerAdapter = new ViewPagerAdapter(this);
         for(String s : item.getImages()){
             mViewPagerAdapter.addItem("https://storage.googleapis.com/houseofdesign/"+s.trim());
         }
@@ -123,31 +139,44 @@ public class DetailActivity extends AppCompatActivity {
 
         mViewPager = (ViewPager) findViewById(R.id.detail_viewpager);
 
-        mViewPagerAdapter = new ViewPagerAdapter(this);
         mViewPager.setAdapter(mViewPagerAdapter);
         mIndicator = (CirclePageIndicator) findViewById(R.id.detail_circlePageIndicator);
         mIndicator.setViewPager(mViewPager);
 
-        mSelect = (TextView) findViewById(R.id.detail_select);
-        mSelect.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                List<Type> types = new ArrayList<>();
-//                if(!mItem.getType().equals(null))
-//                    types.addAll(mItem.getType());
-                Type type = new Type();
-                type.setSize("L");
-                type.setColor("Red");
-                type.setQty(10);
-                types.add(type);
-                Intent intent = new Intent(DetailActivity.this, TypeActivity.class);
-                intent.putExtra("type", (Serializable) types);
-                intent.putExtra("nama", mName.getText());
-                intent.putExtra("harga",mPrice.getText());
-                intent.putExtra("foto",imageUrl.get(0));
-                startActivity(intent);
-            }
-        });
+        subItems = new ArrayList<>();
+        sizeList = new ArrayList<>();
+        colorList = new ArrayList<>();
+
+        sizeAdapter = new TypeAdapter(this, sizeList,0);
+        mRecyclerSize.setLayoutManager(new GridLayoutManager(this,4));
+        mRecyclerSize.setHasFixedSize(true);
+        mRecyclerSize.setAdapter(sizeAdapter);
+
+        colorAdapter = new TypeAdapter(this,colorList,1);
+        mRecyclerColor.setLayoutManager(new GridLayoutManager(this,4));
+        mRecyclerColor.setHasFixedSize(true);
+        mRecyclerColor.setAdapter(colorAdapter);
+
+//        mSelect = (TextView) findViewById(R.id.detail_select);
+//        mSelect.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                List<Type> types = new ArrayList<>();
+////                if(!mItem.getType().equals(null))
+////                    types.addAll(mItem.getType());
+//                Type type = new Type();
+//                type.setSize("L");
+//                type.setColor("Red");
+//                type.setQty(10);
+//                types.add(type);
+//                Intent intent = new Intent(DetailActivity.this, TypeActivity.class);
+//                intent.putExtra("type", (Serializable) types);
+//                intent.putExtra("nama", mName.getText());
+//                intent.putExtra("harga",mPrice.getText());
+//                intent.putExtra("foto",imageUrl.get(0));
+//                startActivity(intent);
+//            }
+//        });
 
 //        getImage(idfb);
 //        getSize(iditem);
@@ -185,9 +214,15 @@ public class DetailActivity extends AppCompatActivity {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(new Consumer<List<SubItem>>() {
                 @Override
-                public void accept(List<SubItem> subItems) throws Exception {
+                public void accept(List<SubItem> result) throws Exception {
                     mProgressDialog.dismiss();
 //                    Toast.makeText(DetailActivity.this, subItems.size(), Toast.LENGTH_SHORT).show();
+                    if(result.size()>0){
+                        subItems.addAll(result);
+                        setTypeList();
+                        sizeAdapter.notifyDataSetChanged();
+                        colorAdapter.notifyDataSetChanged();
+                    }
                 }
             }, new Consumer<Throwable>() {
                 @Override
@@ -198,49 +233,108 @@ public class DetailActivity extends AppCompatActivity {
             });
     }
 
-    private void getSize(String iditem){
-        MyServicesAPI.getInstance().getItem(this, iditem, new Callback() {
-            @Override
-            public void onSuccess(Object... params) {
-//                mProgressDialog.dismiss();
-                Item item = (Item) params[0];
-                mItem = item;
+    private void setTypeList(){
+        for(SubItem s:subItems){
+            if(!sizeList.contains(s.getSize())){
+                sizeList.add(s.getSize());
             }
-
-            @Override
-            public void onError(Object... params) {
-//                mProgressDialog.dismiss();
-                Log.d("Result",params[0].toString());
-            }
-        });
+        }
     }
 
-    private void getImage(String id){
-        mProgressDialog = new ProgressDialog(this);
-        mProgressDialog.setMessage("Please wait");
-        mProgressDialog.show();
-        mDatabase.child(id).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if(dataSnapshot.child("image").exists()){
-                    DataSnapshot image = dataSnapshot.child("image");
-                    for (DataSnapshot img : image.getChildren()){
-                        mViewPagerAdapter.addItem(img.getValue().toString().trim());
+    class ChairWeightComparator implements Comparator<String> {
+        public int compare(String type1, String type2) {
+            if(type1.equalsIgnoreCase("s") && type2.equalsIgnoreCase(""))
+            return 0;
+        }
+    }
+
+    private class TypeAdapter extends RecyclerView.Adapter<TypeAdapter.TypeViewHolder>{
+        List<String> mList;
+        Context context;
+        boolean selected;
+        TypeViewHolder prevHolder;
+        int mark;
+
+        public TypeAdapter(Context context, List<String> mList, int type){
+            this.context = context;
+            this.mList = mList;
+            mark = type;
+        }
+
+        @Override
+        public TypeViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            Context context = parent.getContext();
+            LayoutInflater inflater = LayoutInflater.from(context);
+            View view = inflater.inflate(R.layout.button_layout,parent,false);
+            return new TypeViewHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(final TypeViewHolder holder, int position) {
+            String type = mList.get(position);
+            holder.type.setText(type);
+
+            holder.button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ContextCompat.getDrawable(v.getContext(), R.drawable.button_pressed);
+
+                    if(holder.clicked)
+                        holder.disableState();
+                    else {
+                        holder.enableState();
+                        if(prevHolder != null && !prevHolder.equals(holder)){
+                            prevHolder.disableState();
+                        }
                     }
-                    mName.setText(dataSnapshot.child("name").getValue().toString());
-                    mPrice.setText(dataSnapshot.child("price").getValue().toString());
-                    mDescription.setText(dataSnapshot.child("desc").getValue().toString());
+                    prevHolder = holder;
                 }
-                mProgressDialog.dismiss();
+            });
+        }
+
+        @Override
+        public void onBindViewHolder(TypeViewHolder holder, int position, List<Object> payloads) {
+            if(payloads.isEmpty()){
+                selected=false;
+                onBindViewHolder(holder,position);
+            }else {
+                for(Object payload: payloads){
+                    if(payload instanceof Type){
+                        holder.disableState();
+                    }
+                }
+            }
+        }
+
+        @Override
+        public int getItemCount() {
+            return (null != mList ? mList.size() : 0);
+        }
+
+        class TypeViewHolder extends RecyclerView.ViewHolder {
+            TextView type;
+            View mView;
+            ViewGroup button;
+            Boolean clicked=false;
+
+            public TypeViewHolder (View itemView) {
+                super(itemView);
+                mView = itemView;
+                button = (ViewGroup) itemView.findViewById(R.id.button);
+                type= (TextView) itemView.findViewById(R.id.size);
             }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
+            public void disableState(){
+                clicked=false;
+                button.setSelected(false);
             }
-        });
-
+            public void enableState(){
+                clicked=true;
+                button.setSelected(true);
+            }
+        }
     }
+
 
     private class ViewPagerAdapter extends PagerAdapter {
 
@@ -277,9 +371,17 @@ public class DetailActivity extends AppCompatActivity {
             container.removeView((LinearLayout) object);
         }
 
-        public Object instantiateItem(ViewGroup container, int position) {
+        public Object instantiateItem(ViewGroup container, final int position) {
             View itemView = mLayoutInflater.inflate(R.layout.home_viewpager_row, container, false);
-
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(DetailActivity.this, FullScreenImageViewerActivity.class);
+                    intent.putExtra("images",imageUrl);
+                    intent.putExtra("posisi",position);
+                    startActivity(intent);
+                }
+            });
             ImageView imageView = (ImageView) itemView.findViewById(R.id.home_viewpager_imageView);
 //            imageView.setImageResource();
             Glide.with(DetailActivity.this).load(imageUrl.get(position)).diskCacheStrategy(DiskCacheStrategy.ALL).into(imageView);

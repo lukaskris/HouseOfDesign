@@ -61,7 +61,7 @@ dependencies {
     compile('com.google.http-client:google-http-client-gson:1.17.0-rc') {
         exclude module: 'httpclient'
     }
-    compile project(path: ':endpoint-backend', configuration: 'android-endpoints')
+//    compile project(path: ':endpoint-backend', configuration: 'android-endpoints')
 
 
     compile 'com.android.support:multidex:1.0.0'
@@ -74,6 +74,7 @@ dependencies {
     compile 'com.github.JakeWharton:ViewPagerIndicator:2.4.1'
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support:design:25.3.1'
+    compile 'com.alexvasilkov:gesture-views:2.3.0'
     compile 'com.ms-square:expandableTextView:0.1.4'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'de.hdodenhof:circleimageview:2.1.0'
