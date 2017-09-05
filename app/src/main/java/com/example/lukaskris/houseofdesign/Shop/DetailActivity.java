@@ -241,13 +241,6 @@ public class DetailActivity extends AppCompatActivity {
         }
     }
 
-    class ChairWeightComparator implements Comparator<String> {
-        public int compare(String type1, String type2) {
-            if(type1.equalsIgnoreCase("s") && type2.equalsIgnoreCase(""))
-            return 0;
-        }
-    }
-
     private class TypeAdapter extends RecyclerView.Adapter<TypeAdapter.TypeViewHolder>{
         List<String> mList;
         Context context;
