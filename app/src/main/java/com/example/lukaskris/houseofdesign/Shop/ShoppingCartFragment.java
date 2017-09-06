@@ -63,7 +63,7 @@ public class ShoppingCartFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_shopping_cart, container, false);
         getActivity().setTitle("Shopping cart");
 
@@ -79,24 +79,10 @@ public class ShoppingCartFragment extends Fragment {
         mNoData = (LinearLayout) view.findViewById(R.id.shopping_no_data);
 
 
-        if(mCarts.size()==0){
+        if(mCarts == null || mCarts.size()==0){
             mNoData.setVisibility(View.VISIBLE);
         }
-//        List<Item> items = AdapterCachingUtil.load(getContext(),CACHE_NAME_SHOPPING);
-//        items = new ArrayList<>();
-//        Item item = new Item();
-//        item.setId("BA");
-//        item.setName("Baju 1");
-//        item.setPrice("35000");
-//        item.setCategory("Pria");
-//        Type type = new Type();
-//        type.setColor("Red");
-//        type.setQty(5);
-//        type.setSize("M");
-//        List<Type> types = new ArrayList<>();
-//        types.add(type);
-//        item.setType(types);
-//        items.add(item);
+
         recyclerView = (RecyclerView) view.findViewById(R.id.shopping_cart_recyclerview);
         adapter = new ShoppingCartAdapter(getContext() ,mCarts);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -106,15 +92,13 @@ public class ShoppingCartFragment extends Fragment {
         mConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(getActivity(), ConfirmationActivity.class));
+                Intent intent= new Intent(getActivity(), ConfirmationActivity.class);
+                intent.putExtra("total",total);
+                startActivity(intent);
             }
         });
 
         return view;
-    }
-
-    private void getQuantity(int pos){
-
     }
 
     private class ShoppingCartAdapter extends RecyclerView.Adapter<ShoppingCartAdapter.ShoppingCartViewHolder>{

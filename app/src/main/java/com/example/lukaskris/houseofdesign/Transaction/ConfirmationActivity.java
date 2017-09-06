@@ -1,10 +1,12 @@
 package com.example.lukaskris.houseofdesign.Transaction;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -20,6 +22,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.lukaskris.houseofdesign.Account.AddressActivity;
 import com.example.lukaskris.houseofdesign.Model.Courier;
 import com.example.lukaskris.houseofdesign.R;
 import com.example.lukaskris.houseofdesign.Util.CurrencyUtil;
@@ -41,16 +44,34 @@ public class ConfirmationActivity extends AppCompatActivity {
     Spinner mService;
     TextView mPrice;
     List<Courier> mPackage;
+    TextView mChange;
+    TextView mTotal;
+
+    int total;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_confirmation);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         String destination = "444";
         String weight = "1000";
         getSupportActionBar().setTitle("Confirmation");
         mCourier = (Spinner) findViewById(R.id.confirmation_courier_name);
         mService = (Spinner) findViewById(R.id.confirmation_courier_package);
         mPrice = (TextView) findViewById(R.id.confirmation_courier_price);
+        mChange = (TextView) findViewById(R.id.confirmation_change);
+        mTotal = (TextView) findViewById(R.id.confirmation_total);
+
+        total = getIntent().getIntExtra("total",0);
+
+        mChange.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivityForResult(new Intent(ConfirmationActivity.this, AddressActivity.class),1);
+            }
+        });
+
         mPackage = new ArrayList<>();
         getService();
         mService.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -67,6 +88,14 @@ public class ConfirmationActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case android.R.id.home:
+                finish();
+        }
+        return true;
+    }
 
     private void getService(){
         String url = "http://api.rajaongkir.com/starter/cost";

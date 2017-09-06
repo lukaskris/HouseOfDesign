@@ -9,46 +9,41 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/colorInactive"
         android:layout_above="@+id/confirmation_layout_bottom"
         android:scrollbars="none">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/colorInactive"
             android:orientation="vertical">
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/colorWhite"
                 android:orientation="vertical"
-                android:layout_marginBottom="15dp"
-                android:padding="10dp">
+                android:layout_marginBottom="15dp">
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/title_shipping_address"
                     android:layout_marginBottom="10dp"
+                    android:padding="10dp"
                     android:textAppearance="@style/Base.TextAppearance.AppCompat.Body2"/>
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="0.5dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
                     android:background="@color/colorInactive"/>
-                <RelativeLayout
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:padding="10dp"
                     android:layout_height="wrap_content">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Change"
-                        android:clickable="true"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:textColor="@color/colorAccent"
-                        android:layout_alignParentRight="true"
-                        android:layout_centerVertical="true"/>
+
                     <LinearLayout
-                        android:layout_width="match_parent"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_weight="0.8"
+                        android:padding="15dp"
                         android:orientation="vertical">
                         <TextView
                             android:layout_width="match_parent"
@@ -71,7 +66,18 @@
                             android:text="08982250884"/>
 
                     </LinearLayout>
-                </RelativeLayout>
+
+                    <TextView
+                        android:id="@+id/confirmation_change"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:background="?attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:gravity="center"
+                        android:padding="10dp"
+                        android:text="Change"
+                        android:textColor="@color/colorAccent" />
+                </LinearLayout>
             </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
@@ -120,12 +126,12 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_alignParentLeft="true"
+                            android:layout_alignParentStart="true"
                             android:text="Biaya Kirim"/>
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true"
+                        android:layout_alignParentEnd="true"
                         android:id="@+id/confirmation_courier_price"
                         android:text="Rp 15000"/>
                     </RelativeLayout>
@@ -133,13 +139,40 @@
 
             </LinearLayout>
 
+
         </LinearLayout>
     </ScrollView>
     <LinearLayout
         android:id="@+id/confirmation_layout_bottom"
         android:layout_width="match_parent"
         android:layout_alignParentBottom="true"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="@color/colorLightGrey"/>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorWhite"
+            android:padding="10dp">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:text="Total:"/>
+            <TextView
+                android:id="@+id/confirmation_total"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:text="Rp.123.000,-"/>
+        </RelativeLayout>
+
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

@@ -125,17 +125,17 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             mBackPressed = System.currentTimeMillis();
 
             FragmentManager fm = getSupportFragmentManager();
-            FragmentTransaction ft = fm.beginTransaction();
+            HomeFragment homeFragment = HomeFragment.newInstance();
+
             if (drawer.isDrawerOpen(GravityCompat.START)) {
                 drawer.closeDrawer(GravityCompat.START);
-            } else if (fm.getBackStackEntryCount() > 0) {
-                fm.popBackStack(BACK_STACK_ROOT_TAG, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
-                ft.commit();
-
+            } else if (fm.getBackStackEntryCount() > 1) {
+                fm.popBackStackImmediate();
+            }else if(!selectedFragment.getClass().equals(homeFragment.getClass())) {
+                fm.beginTransaction().replace(R.id.content_frame,homeFragment,"home").commit();
+                selectedFragment = homeFragment;
                 navigationView.getMenu().getItem(0).setChecked(true);
-
-            } else if (doubleBackToExitPressedOnce) {
+            }else if (doubleBackToExitPressedOnce) {
                 super.onBackPressed();
                 return;
             }else {
@@ -180,9 +180,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onResume() {
         super.onResume();
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.content_frame, selectedFragment);
-        ft.commit();
     }
 
     @Override
@@ -194,17 +191,27 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     private void selectedFragment(int id){
         drawer.closeDrawers();
         Fragment fragment = null;
+        String title = "";
+        String tag = "";
         if(id == R.id.nav_home) {
             fragment = new HomeFragment();
+            title = "Home";
+            tag="home";
         }else if (id == R.id.nav_profile) {
             fragment = new ProfileFragment();
+            title="Profile";
+            tag="profile";
         } else if (id == R.id.nav_cart || id == R.id.home_action_cart) {
             fragment = new ShoppingCartFragment();
-
+            title="Shopping Cart";
+            tag="cart";
         } else if (id == R.id.nav_orders) {
             fragment = OrdersFragment.newInstance();
+            title="Orders";
+            tag="orders";
         } else if (id == R.id.nav_favorite) {
-
+            title="Favorites";
+            tag="favorites";
         }else if (id == R.id.nav_logout){
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("Confirmation Logout");
@@ -230,15 +237,17 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             selectedFragment = fragment;
             final Fragment finalFragment = fragment;
 
+            final String finalTitle = title;
+            final String finalTag = tag;
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
 
                     FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
                     ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-                    ft.replace(R.id.content_frame, finalFragment)
-                            .addToBackStack(BACK_STACK_ROOT_TAG)
+                    ft.replace(R.id.content_frame, finalFragment, finalTag)
                             .commit();
+                    setTitle(finalTitle);
                 }
             }, 200);
 

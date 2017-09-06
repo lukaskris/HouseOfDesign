@@ -96,6 +96,13 @@ public class HomeFragment extends Fragment {
         super.onCreate(savedInstanceState);
     }
 
+    public static HomeFragment newInstance() {
+        HomeFragment fragment = new HomeFragment();
+        Bundle args = new Bundle();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     @Override
     public void onSaveInstanceState(Bundle outState) { }
 
@@ -224,7 +231,7 @@ public class HomeFragment extends Fragment {
         adapter = new CategoryListAdapter(getContext(), categoryItems);
         my_recycler_view.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         my_recycler_view.setAdapter(adapter);
-        autoRefreshWhenOff();
+//        autoRefreshWhenOff();
         return view;
     }
 
@@ -266,31 +273,33 @@ public class HomeFragment extends Fragment {
     }
 
     void fetchData(){
-
-        service.getCategory()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<List<Category>>() {
-                    @Override
-                    public void accept(List<Category> categories) throws Exception {
-                        if(categories.size()>0){
-                            allCategory.clear();
-                            allCategory.addAll(categories);
-                            getItem();
-                            migrateToCategoryItem();
+        try {
+            service.getCategory()
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Consumer<List<Category>>() {
+                        @Override
+                        public void accept(List<Category> categories) throws Exception {
+                            if (categories.size() > 0) {
+                                allCategory.clear();
+                                allCategory.addAll(categories);
+                                getItem();
+                                migrateToCategoryItem();
+                            }
                         }
-                    }
-                }, new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable throwable) throws Exception {
-                        if(throwable.getLocalizedMessage().equalsIgnoreCase("android_getaddrinfo failed: EAI_NODATA (No address associated with hostname)")) {
-                            noInternetConnection();
+                    }, new Consumer<Throwable>() {
+                        @Override
+                        public void accept(Throwable throwable) throws Exception {
+                            if (throwable.getLocalizedMessage().equalsIgnoreCase("android_getaddrinfo failed: EAI_NODATA (No address associated with hostname)")) {
+                                noInternetConnection();
+                            }
+
                         }
+                    });
 
-                    }
-                });
-
-
+        }catch (Exception e){
+            Toast.makeText(getContext(),e.getLocalizedMessage(),Toast.LENGTH_LONG).show();
+        }
     }
 
     void getItem(){
