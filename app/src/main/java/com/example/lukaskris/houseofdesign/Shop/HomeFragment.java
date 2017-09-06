@@ -232,11 +232,13 @@ public class HomeFragment extends Fragment {
         handler = new Handler();
         runnable = new Runnable() {
             public void run() {
-                if(NetworkUtil.isOnline(getContext())){
-                    fetchData();
-                    handler.removeCallbacks(runnable);
-                }else {
-                    noInternetConnection();
+                if(getContext()!=null ){
+                    if(NetworkUtil.isOnline(getContext())){
+                        fetchData();
+                        handler.removeCallbacks(runnable);
+                    }else {
+                        noInternetConnection();
+                    }
                 }
                 handler.postDelayed(this, 1000);
             }
@@ -281,7 +283,7 @@ public class HomeFragment extends Fragment {
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable throwable) throws Exception {
-                        if(throwable.getCause().getLocalizedMessage().equalsIgnoreCase("android_getaddrinfo failed: EAI_NODATA (No address associated with hostname)")) {
+                        if(throwable.getLocalizedMessage().equalsIgnoreCase("android_getaddrinfo failed: EAI_NODATA (No address associated with hostname)")) {
                             noInternetConnection();
                         }
 

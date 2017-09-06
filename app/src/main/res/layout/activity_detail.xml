@@ -121,7 +121,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:padding="10dp">
+                        android:padding="15dp">
                         <RelativeLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -181,6 +181,31 @@
                             android:id="@+id/detail_recycler_color"
                             android:nestedScrollingEnabled="false"
                             android:layout_marginTop="10dp"/>
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="@color/colorLightGrey"/>
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Quantity"
+                            android:layout_marginTop="10dp"
+                            android:textColor="@android:color/black"
+                            android:textSize="18sp"
+                            android:layout_marginBottom="10dp"/>
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="@color/colorLightGrey"/>
+                        <me.himanshusoni.quantityview.QuantityView
+                            android:id="@+id/detail_quantity_input"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginBottom="10dp" />
                         <!--</LinearLayout>-->
                         <!--<RelativeLayout-->
                             <!--android:layout_width="match_parent"-->
@@ -223,7 +248,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:orientation="vertical"
-                        android:padding="10dp">
+                        android:padding="15dp">
 
                         <TextView
                             android:layout_width="match_parent"

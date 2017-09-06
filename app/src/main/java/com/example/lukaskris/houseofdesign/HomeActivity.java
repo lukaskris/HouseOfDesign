@@ -36,7 +36,7 @@ import com.google.firebase.auth.FirebaseUser;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-
+    private static final String BACK_STACK_ROOT_TAG = "root_fragment";
     boolean doubleBackToExitPressedOnce = false;
     private DrawerLayout drawer;
     private NavigationView navigationView;
@@ -123,14 +123,18 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         if (drawer != null) {
 
             mBackPressed = System.currentTimeMillis();
+
             FragmentManager fm = getSupportFragmentManager();
             FragmentTransaction ft = fm.beginTransaction();
             if (drawer.isDrawerOpen(GravityCompat.START)) {
                 drawer.closeDrawer(GravityCompat.START);
             } else if (fm.getBackStackEntryCount() > 0) {
-                fm.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                fm.popBackStack(BACK_STACK_ROOT_TAG, FragmentManager.POP_BACK_STACK_INCLUSIVE);
                 ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
                 ft.commit();
+
+                navigationView.getMenu().getItem(0).setChecked(true);
+
             } else if (doubleBackToExitPressedOnce) {
                 super.onBackPressed();
                 return;
@@ -222,19 +226,22 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             builder.show();
         }
 
-        if(fragment != null){
+        if(fragment != null && !fragment.isAdded()){
             selectedFragment = fragment;
             final Fragment finalFragment = fragment;
+
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
 
                     FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
                     ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-                    ft.replace(R.id.content_frame, finalFragment);
-                    ft.commit();
+                    ft.replace(R.id.content_frame, finalFragment)
+                            .addToBackStack(BACK_STACK_ROOT_TAG)
+                            .commit();
                 }
             }, 200);
+
 
         }
     }

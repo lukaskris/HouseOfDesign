@@ -23,8 +23,7 @@ public class Items implements Serializable {
     private int id;
     private String thumbnail;
 
-    public Items() {
-    }
+    public Items() {}
 
     public Items(String name, String price, String desc, int category, String image, String thumbnail) {
         this.name = name;

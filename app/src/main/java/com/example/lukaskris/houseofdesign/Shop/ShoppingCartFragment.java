@@ -1,5 +1,7 @@
 package com.example.lukaskris.houseofdesign.Shop;
 
+import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -16,14 +18,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.example.lukaskris.houseofdesign.Model.Cart;
+import com.example.lukaskris.houseofdesign.Model.SubItem;
 import com.example.lukaskris.houseofdesign.R;
 import com.example.lukaskris.houseofdesign.Transaction.ConfirmationActivity;
 import com.example.lukaskris.houseofdesign.Util.AdapterCachingUtil;
 import com.example.lukaskris.houseofdesign.Util.CurrencyUtil;
+import com.example.lukaskris.houseofdesign.Util.PreferencesUtil;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -31,7 +38,12 @@ import java.util.List;
 
 import endpoint.backend.itemApi.model.Item;
 import endpoint.backend.itemApi.model.Type;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 import me.himanshusoni.quantityview.QuantityView;
+
+import static com.example.lukaskris.houseofdesign.Services.ServiceFactory.service;
 
 public class ShoppingCartFragment extends Fragment {
     private String CACHE_NAME_SHOPPING = "shoppingcart";
@@ -40,6 +52,9 @@ public class ShoppingCartFragment extends Fragment {
     private ShoppingCartAdapter adapter;
     private Button mConfirm;
     private TextView mTotal;
+    List<Cart> mCarts;
+    private ProgressDialog mLoading;
+    LinearLayout mNoData;
     int total = 0;
 
     @Override
@@ -55,23 +70,35 @@ public class ShoppingCartFragment extends Fragment {
         mTotal = (TextView) view.findViewById(R.id.shopping_cart_total);
         mTotal.setText(CurrencyUtil.rupiah(new BigDecimal(total)));
 
-        List<Item> items = AdapterCachingUtil.load(getContext(),CACHE_NAME_SHOPPING);
-        items = new ArrayList<>();
-        Item item = new Item();
-        item.setId("BA");
-        item.setName("Baju 1");
-        item.setPrice("35000");
-        item.setCategory("Pria");
-        Type type = new Type();
-        type.setColor("Red");
-        type.setQty(5);
-        type.setSize("M");
-        List<Type> types = new ArrayList<>();
-        types.add(type);
-        item.setType(types);
-        items.add(item);
+        mLoading = new ProgressDialog(getContext());
+        mLoading.setMessage("Please wait...");
+
+        mCarts = new ArrayList<>();
+        mCarts = PreferencesUtil.getCarts(getContext());
+
+        mNoData = (LinearLayout) view.findViewById(R.id.shopping_no_data);
+
+
+        if(mCarts.size()==0){
+            mNoData.setVisibility(View.VISIBLE);
+        }
+//        List<Item> items = AdapterCachingUtil.load(getContext(),CACHE_NAME_SHOPPING);
+//        items = new ArrayList<>();
+//        Item item = new Item();
+//        item.setId("BA");
+//        item.setName("Baju 1");
+//        item.setPrice("35000");
+//        item.setCategory("Pria");
+//        Type type = new Type();
+//        type.setColor("Red");
+//        type.setQty(5);
+//        type.setSize("M");
+//        List<Type> types = new ArrayList<>();
+//        types.add(type);
+//        item.setType(types);
+//        items.add(item);
         recyclerView = (RecyclerView) view.findViewById(R.id.shopping_cart_recyclerview);
-        adapter = new ShoppingCartAdapter(getContext() ,items);
+        adapter = new ShoppingCartAdapter(getContext() ,mCarts);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
 
@@ -86,11 +113,15 @@ public class ShoppingCartFragment extends Fragment {
         return view;
     }
 
+    private void getQuantity(int pos){
+
+    }
+
     private class ShoppingCartAdapter extends RecyclerView.Adapter<ShoppingCartAdapter.ShoppingCartViewHolder>{
         Context context;
-        List<Item> itemList;
+        List<Cart> itemList;
 
-        ShoppingCartAdapter(Context context, List<Item> itemList){
+        ShoppingCartAdapter(Context context, List<Cart> itemList){
             this.context = context;
             this.itemList = itemList;
         }
@@ -103,24 +134,53 @@ public class ShoppingCartFragment extends Fragment {
         }
 
         @Override
-        public void onBindViewHolder(ShoppingCartViewHolder holder, final int position) {
-            final Item item = itemList.get(position);
-            holder.mName.setText(item.getName());
-            holder.mPrice.setText(CurrencyUtil.rupiah(new BigDecimal(item.getPrice())));
-            total = total + Integer.parseInt(item.getPrice()) * item.getType().get(0).getQty();
+        public void onBindViewHolder(final ShoppingCartViewHolder holder, @SuppressLint("RecyclerView") final int position) {
+            final Cart item = itemList.get(position);
+            holder.mName.setText(item.getItem().getName());
+            holder.mPrice.setText(CurrencyUtil.rupiah(new BigDecimal(item.getItem().getPrice())));
+            total = total + Integer.parseInt(item.getItem().getPrice()) * item.getQuantity();
             mTotal.setText(CurrencyUtil.rupiah(new BigDecimal(total)));
-            if(item.getImage() != null)
-                Glide.with(context).load(item.getImage().get(0)).diskCacheStrategy(DiskCacheStrategy.RESULT).override(75,100).into(holder.mImage);
-            String size = item.getType().get(0).getSize();
-            String color = item.getType().get(0).getColor();
+            if(item.getItem().getThumbnail() != null)
+                Glide.with(context).load("https://storage.googleapis.com/houseofdesign/"+item.getItem().getThumbnail()).diskCacheStrategy(DiskCacheStrategy.RESULT).override(75,100).into(holder.mImage);
+            String size = item.getSize();
+            String color = item.getColor();
             holder.mColorSize.setText(color + "; " + size);
-            holder.mQty.setQuantity(item.getType().get(0).getQty());
+            holder.mQty.setQuantity(item.getQuantity());
             holder.mQty.setMinQuantity(1);
             holder.mQty.setOnQuantityChangeListener(new QuantityView.OnQuantityChangeListener() {
                 @Override
-                public void onQuantityChanged(int oldQuantity, int newQuantity, boolean programmatically) {
-                    total = total + Integer.parseInt(item.getPrice()) * (newQuantity - oldQuantity);
-                    mTotal.setText(CurrencyUtil.rupiah(new BigDecimal(total)));
+                public void onQuantityChanged(final int oldQuantity, final int newQuantity, boolean programmatically) {
+                    final Cart c = mCarts.get(position);
+                    mLoading.show();
+                    service.getSubItems(c.getItem().getId())
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(new Consumer<List<SubItem>>() {
+                                @Override
+                                public void accept(List<SubItem> subItems) throws Exception {
+                                    if(subItems.size()>0){
+                                        for(SubItem s : subItems){
+                                            if(s.getId() == Integer.parseInt(c.getSubitem_id())){
+                                                if(newQuantity <= s.getQuantity()){
+                                                    total = total + Integer.parseInt(item.getItem().getPrice()) * (newQuantity - oldQuantity);
+                                                    mTotal.setText(CurrencyUtil.rupiah(new BigDecimal(total)));
+                                                }else{
+                                                    holder.mQty.setQuantity(oldQuantity);
+                                                    holder.mQty.setMaxQuantity(s.getQuantity());
+                                                }
+                                            }
+                                        }
+                                    }
+                                    mLoading.dismiss();
+                                }
+                            }, new Consumer<Throwable>() {
+                                @Override
+                                public void accept(Throwable throwable) throws Exception {
+                                    Toast.makeText(getContext(),throwable.getLocalizedMessage(),Toast.LENGTH_SHORT).show();
+                                    mLoading.dismiss();
+                                }
+                            });
+
                 }
 
                 @Override
@@ -137,10 +197,12 @@ public class ShoppingCartFragment extends Fragment {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             itemList.remove(position);
+                            if(itemList.size()==0)
+                                mNoData.setVisibility(View.VISIBLE);
+                            PreferencesUtil.saveCart(getContext(),itemList);
                             notifyDataSetChanged();
-                            total = total - Integer.parseInt(item.getPrice()) * item.getType().get(0).getQty();
+                            total = total - Integer.parseInt(item.getItem().getPrice()) * item.getQuantity();
                             mTotal.setText(CurrencyUtil.rupiah(new BigDecimal(total)));
-                            AdapterCachingUtil.store(getContext(), CACHE_NAME_SHOPPING, itemList);
                         }
                     });
                     builder.setNegativeButton("Cancel", null);
@@ -164,7 +226,7 @@ public class ShoppingCartFragment extends Fragment {
             ImageView mDelete;
             View mView;
             QuantityView mQty;
-            public ShoppingCartViewHolder(View itemView) {
+            ShoppingCartViewHolder(View itemView) {
                 super(itemView);
                 mView = itemView;
                 mName = (TextView) mView.findViewById(R.id.shopping_cart_row_name);

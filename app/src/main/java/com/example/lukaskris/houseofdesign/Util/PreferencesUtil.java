@@ -3,6 +3,7 @@ package com.example.lukaskris.houseofdesign.Util;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.example.lukaskris.houseofdesign.Model.Cart;
 import com.example.lukaskris.houseofdesign.Model.CategoryItem;
 import com.example.lukaskris.houseofdesign.Model.Items;
 import com.google.gson.Gson;
@@ -19,16 +20,16 @@ import endpoint.backend.itemApi.model.Item;
  */
 
 public class PreferencesUtil {
-    static final String CART = "LOCAL_CART";
-    static final String CART_KEY = "carts";
+    private static final String CART = "LOCAL_CART";
+    private static final String CART_KEY = "carts";
     static final String FAVORITES = "LOCAL_FAVORITES";
     static final String FAVORITES_KEY = "favorites";
-    static final String HOME = "LOCAL_HOME";
-    static final String HOME_KEY = "home";
+    private static final String HOME = "LOCAL_HOME";
+    private static final String HOME_KEY = "home";
 
     private PreferencesUtil(){}
 
-    public static void saveCart(Context context, List<Item> carts){
+    public static void saveCart(Context context, List<Cart> carts){
         SharedPreferences sharedPreferences;
         SharedPreferences.Editor editor;
         sharedPreferences = context.getSharedPreferences(CART,Context.MODE_PRIVATE);
@@ -50,37 +51,62 @@ public class PreferencesUtil {
         editor.apply();
     }
 
-    public static void addCart(Context context, Item cart){
-        List<Item> carts = getCarts(context);
-        if (carts == null)
+    public static void addCart(Context context, Cart cart){
+        List<Cart> carts = getCarts(context);
+
+        if (carts == null) {
             carts = new ArrayList<>();
-        carts.add(cart);
+            carts.add(cart);
+        }else if(containsCart(carts,cart)){
+            for(Cart c:carts){
+                if(c.getSubitem_id().equals(cart.getSubitem_id())){
+                    if(cart.getQuantity_max() >= c.getQuantity() + cart.getQuantity()){
+                        c.setQuantity(c.getQuantity() + cart.getQuantity());
+                    }else {
+                        c.setQuantity(cart.getQuantity_max());
+                        c.setQuantity_max(cart.getQuantity_max());
+                    }
+                }
+            }
+        }else {
+            carts.add(cart);
+        }
         saveCart(context,carts);
     }
 
-    public static void removeCart(Context context, Item cart){
-        List<Item> carts = getCarts(context);
+    private static boolean containsCart(List<Cart> carts, Cart cart){
+        for(Cart c : carts){
+            if(c.getSubitem_id().equals(cart.getSubitem_id())){
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public static void removeCart(Context context, Cart cart){
+        List<Cart> carts = getCarts(context);
         if (carts != null) {
             carts.remove(cart);
             saveCart(context,carts);
         }
     }
 
-    public static ArrayList<Item> getCarts(Context context){
+    public static ArrayList<Cart> getCarts(Context context){
         SharedPreferences sharedPreferences;
-        List<Item> carts;
+        List<Cart> carts;
         sharedPreferences = context.getSharedPreferences(CART, Context.MODE_PRIVATE);
         if(sharedPreferences.contains(CART_KEY)){
             String json = sharedPreferences.getString(CART_KEY,null);
             Gson gson = new Gson();
-            Item[] cart = gson.fromJson(json, Item[].class);
+            Cart[] cart = gson.fromJson(json, Cart[].class);
             carts = Arrays.asList(cart);
             carts = new ArrayList<>(carts);
         }
         else
             return null;
 
-        return (ArrayList<Item>)carts;
+        return (ArrayList<Cart>)carts;
     }
 
     public static ArrayList<CategoryItem> getHome(Context context){

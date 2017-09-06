@@ -36,7 +36,7 @@
             android:text="Confirm"
             android:textColor="#FFF" />
     </RelativeLayout>
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/shopping_cart_detail">
@@ -44,5 +44,24 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/shopping_cart_recyclerview"/>
-    </LinearLayout>
+        <LinearLayout
+            android:id="@+id/shopping_no_data"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:gravity="center">
+            <ImageView
+                android:id="@+id/address_home_icon"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:tint="@android:color/darker_gray"
+                android:src="@drawable/ic_shopping_cart_white_24dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="No item in cart."/>
+        </LinearLayout>
+    </RelativeLayout>
 </RelativeLayout>
