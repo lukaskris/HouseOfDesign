@@ -48,6 +48,9 @@ public interface MyService {
     @GET("shipping_address/{id}")
     Observable<List<ShippingAddress>> getAddress(@Path("id") String email);
 
+    @GET("default_shipping_address/{id}")
+    Observable<List<ShippingAddress>> getDefaultAddress(@Path("id") String email);
+
     @POST("shipping_address/{id}")
     Observable<List<ShippingAddress>> setDefaultAddress(@Path("id") String id, @Body ShippingAddress shippingAddress);
 }

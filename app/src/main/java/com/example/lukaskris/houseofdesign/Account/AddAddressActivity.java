@@ -18,6 +18,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
+
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -32,11 +33,13 @@ import com.example.lukaskris.houseofdesign.R;
 import com.example.lukaskris.houseofdesign.Services.ServiceFactory;
 import com.example.lukaskris.houseofdesign.Util.PreferencesUtil;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -45,17 +48,21 @@ import java.util.Map;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
+import okhttp3.OkHttpClient;
 
 import static com.example.lukaskris.houseofdesign.Services.ServiceFactory.service;
 
 public class AddAddressActivity extends AppCompatActivity {
     Spinner mProvince;
     Spinner mCity;
+    Spinner mSubdistrict;
     LinearLayout mLayoutCity;
+    LinearLayout mLayoutSubdistrict;
     RequestQueue queue;
     List<Provience> proviences;
     List<City> cities;
     ProgressBar dialog;
+    ProgressBar mDialog;
     Button mSave;
     EditText mName;
     EditText mAlamat;
@@ -65,6 +72,7 @@ public class AddAddressActivity extends AppCompatActivity {
     TextInputLayout mLayoutAlamat;
     TextInputLayout mLayoutKodePos;
     TextInputLayout mLayoutNoTelp;
+
 
 
     @Override
@@ -77,15 +85,17 @@ public class AddAddressActivity extends AppCompatActivity {
         proviences = new ArrayList<>();
         cities = new ArrayList<>();
         mLayoutCity = (LinearLayout) findViewById(R.id.add_address_kabupaten_layout);
+        mLayoutSubdistrict = (LinearLayout) findViewById(R.id.add_address_subdistrict_layout);
         mProvince = (Spinner) findViewById(R.id.add_address_provinsi);
         mCity = (Spinner) findViewById(R.id.add_address_kabupaten);
+        mSubdistrict = (Spinner) findViewById(R.id.add_address_subdistrict);
         dialog = (ProgressBar) findViewById(R.id.add_address_progress);
         mSave = (Button) findViewById(R.id.add_address_save);
         mName = (EditText) findViewById(R.id.add_address_name);
         mAlamat = (EditText) findViewById(R.id.add_address_alamat);
         mKodePos = (EditText) findViewById(R.id.add_address_kodepos);
         mNoTelp = (EditText) findViewById(R.id.add_address_no_telp);
-
+        mDialog = (ProgressBar) findViewById(R.id.add_subdistrict_progress);
         mLayoutName = (TextInputLayout) findViewById(R.id.add_address_name_layout);
         mLayoutAlamat = (TextInputLayout) findViewById(R.id.add_address_alamat_layout);
         mLayoutKodePos = (TextInputLayout) findViewById(R.id.add_address_kodepos_layout);
@@ -102,37 +112,53 @@ public class AddAddressActivity extends AppCompatActivity {
                 progressDialog.setCancelable(true);
                 if(validasiInput()) {
                     progressDialog.show();
-                    if(FirebaseAuth.getInstance().getCurrentUser()!= null) {
+                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                    if(user != null) {
 
-                        String name = mName.getText().toString();
-                        String address = mAlamat.getText().toString();
-                        String province = mProvince.getSelectedItem().toString();
-                        String province_id = proviences.get(mProvince.getSelectedItemPosition()).getId();
-                        String city = mCity.getSelectedItem().toString();
-                        String city_id = cities.get(mCity.getSelectedItemPosition()).getId();
-                        String email = FirebaseAuth.getInstance().getCurrentUser().getEmail();
-                        String postal = mKodePos.getText().toString();
-                        String phone = mNoTelp.getText().toString();
-                        ShippingAddress shippingAddress = new ShippingAddress(name,address,province,province_id,city,city_id,postal,phone,"0",email);
-                        service.createAddress(shippingAddress)
+                        service.getAddress(user.getEmail())
                                 .subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(new Consumer<ShippingAddress>() {
+                                .subscribe(new Consumer<List<ShippingAddress>>() {
                                     @Override
-                                    public void accept(ShippingAddress shippingAddress) throws Exception {
-                                        progressDialog.dismiss();
-                                        Toast.makeText(AddAddressActivity.this,"AddressSaved",Toast.LENGTH_SHORT).show();
-                                        finish();
-                                        overridePendingTransition(R.anim.slide_from_left, R.anim.slide_to_right);
-                                    }
-                                }, new Consumer<Throwable>() {
-                                    @Override
-                                    public void accept(Throwable throwable) throws Exception {
-                                        progressDialog.dismiss();
-                                        Log.d("Error di throwable",throwable.getLocalizedMessage());
-                                        Snackbar.make(mName,throwable.getLocalizedMessage(),Snackbar.LENGTH_LONG).show();
+                                    public void accept(List<ShippingAddress> shippingAddresses) throws Exception {
+                                        String name = mName.getText().toString();
+                                        String address = mAlamat.getText().toString();
+                                        String province = mProvince.getSelectedItem().toString();
+                                        String province_id = proviences.get(mProvince.getSelectedItemPosition()).getId();
+                                        String city = mCity.getSelectedItem().toString();
+                                        String city_id = cities.get(mCity.getSelectedItemPosition()).getId();
+                                        String email = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+                                        String postal = mKodePos.getText().toString();
+                                        String phone = mNoTelp.getText().toString();
+                                        String status = "0";
+                                        if(shippingAddresses.size()<=0){
+                                            status="1";
+                                        }
+                                        ShippingAddress shippingAddress = new ShippingAddress(name, address, province, province_id, city, city_id, postal, phone, status, email);
+                                        service.createAddress(shippingAddress)
+                                                .subscribeOn(Schedulers.io())
+                                                .observeOn(AndroidSchedulers.mainThread())
+                                                .subscribe(new Consumer<ShippingAddress>() {
+                                                    @Override
+                                                    public void accept(ShippingAddress shippingAddress) throws Exception {
+                                                        progressDialog.dismiss();
+                                                        Toast.makeText(AddAddressActivity.this, "AddressSaved", Toast.LENGTH_SHORT).show();
+                                                        finish();
+                                                        overridePendingTransition(R.anim.slide_from_left, R.anim.slide_to_right);
+                                                    }
+                                                }, new Consumer<Throwable>() {
+                                                    @Override
+                                                    public void accept(Throwable throwable) throws Exception {
+                                                        progressDialog.dismiss();
+                                                        Log.d("Error di throwable", throwable.getLocalizedMessage());
+                                                        Snackbar.make(mName, throwable.getLocalizedMessage(), Snackbar.LENGTH_LONG).show();
+                                                    }
+                                                });
                                     }
                                 });
+
+
+
 
                     }
                 }
@@ -174,6 +200,20 @@ public class AddAddressActivity extends AppCompatActivity {
             valid=false;
         }
         return valid;
+    }
+
+    private void getProvinsi(){
+        try {
+            OkHttpClient client = new OkHttpClient();
+
+            okhttp3.Request request = new okhttp3.Request.Builder()
+                    .url("https://pro.rajaongkir.com/api/province?id=12")
+                    .get()
+                    .addHeader("key", "your-api-key")
+                    .build();
+
+            okhttp3.Response response = client.newCall(request).execute();
+        }catch (IOException ex){}
     }
 
     private void getProvince(){

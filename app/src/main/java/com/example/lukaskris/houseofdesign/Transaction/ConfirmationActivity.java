@@ -1,5 +1,6 @@
 package com.example.lukaskris.houseofdesign.Transaction;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.design.widget.Snackbar;
@@ -10,6 +11,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -22,10 +25,16 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.lukaskris.houseofdesign.Account.AddAddressActivity;
 import com.example.lukaskris.houseofdesign.Account.AddressActivity;
 import com.example.lukaskris.houseofdesign.Model.Courier;
+import com.example.lukaskris.houseofdesign.Model.ShippingAddress;
 import com.example.lukaskris.houseofdesign.R;
 import com.example.lukaskris.houseofdesign.Util.CurrencyUtil;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.gson.JsonSyntaxException;
+import com.wang.avi.AVLoadingIndicatorView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -38,6 +47,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
+
+import static com.example.lukaskris.houseofdesign.Services.ServiceFactory.service;
+
 public class ConfirmationActivity extends AppCompatActivity {
 
     Spinner mCourier;
@@ -47,33 +62,75 @@ public class ConfirmationActivity extends AppCompatActivity {
     TextView mChange;
     TextView mTotal;
 
+    TextView mName;
+    TextView mAddress;
+    TextView mProv;
+    TextView mPhone;
+    LinearLayout mLayoutAddress;
+    AVLoadingIndicatorView mLoading;
+    LinearLayout mNoAddress;
+    Button mAddAddress;
+
+    ShippingAddress shippingAddress;
+
     int total;
+    int weight;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_confirmation);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        String destination = "444";
-        String weight = "1000";
         getSupportActionBar().setTitle("Confirmation");
         mCourier = (Spinner) findViewById(R.id.confirmation_courier_name);
         mService = (Spinner) findViewById(R.id.confirmation_courier_package);
         mPrice = (TextView) findViewById(R.id.confirmation_courier_price);
         mChange = (TextView) findViewById(R.id.confirmation_change);
         mTotal = (TextView) findViewById(R.id.confirmation_total);
+        mName = (TextView) findViewById(R.id.confirmation_name);
+        mAddress = (TextView) findViewById(R.id.confirmation_address);
+        mProv = (TextView) findViewById(R.id.confirmation_prov_city_post);
+        mPhone = (TextView) findViewById(R.id.confirmation_phone);
+        mLoading = (AVLoadingIndicatorView) findViewById(R.id.confirmation_loading);
+        mLayoutAddress = (LinearLayout) findViewById(R.id.confirmation_address_layout);
+        mNoAddress = (LinearLayout) findViewById(R.id.confirmation_no_address);
+        mAddAddress = (Button) findViewById(R.id.confirmation_add_address);
 
+        mAddAddress.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(ConfirmationActivity.this, AddAddressActivity.class));
+                overridePendingTransition(R.anim.slide_from_right, R.anim.slide_to_left);
+            }
+        });
         total = getIntent().getIntExtra("total",0);
+        weight = getIntent().getIntExtra("weight",0);
+        mTotal.setText(CurrencyUtil.rupiah(new BigDecimal(total)));
 
         mChange.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivityForResult(new Intent(ConfirmationActivity.this, AddressActivity.class),1);
+                Intent intent = new Intent(ConfirmationActivity.this, AddressActivity.class);
+                intent.putExtra("select","select");
+                startActivityForResult(intent,1);
+                overridePendingTransition(R.anim.slide_from_right, R.anim.slide_to_left);
+            }
+        });
+
+        mCourier.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                getService();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
             }
         });
 
         mPackage = new ArrayList<>();
-        getService();
+        getDefaultAddress();
         mService.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -93,21 +150,85 @@ public class ConfirmationActivity extends AppCompatActivity {
         switch (item.getItemId()){
             case android.R.id.home:
                 finish();
+                overridePendingTransition(R.anim.slide_from_left, R.anim.slide_to_right);
         }
         return true;
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getDefaultAddress();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == 1 && resultCode == Activity.RESULT_OK){
+            ShippingAddress address = (ShippingAddress) data.getSerializableExtra("shipping");
+            mName.setText(address.getName());
+            mAddress.setText(address.getAddress());
+            mProv.setText(address.getCity()+", " +address.getProvince() + " "+address.getPostal_code());
+            mPhone.setText(address.getPhone());
+        }
+    }
+
+    private void getDefaultAddress(){
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if(user != null) {
+            mLoading.setVisibility(View.VISIBLE);
+            mLayoutAddress.setVisibility(View.GONE);
+            service.getDefaultAddress(user.getEmail())
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Consumer<List<ShippingAddress>>() {
+                        @Override
+                        public void accept(List<ShippingAddress> shippingAddresses) throws Exception {
+                            if(shippingAddresses.size() > 0) {
+                                ShippingAddress address = shippingAddresses.get(0);
+                                shippingAddress = address;
+                                mName.setText(address.getName());
+                                mAddress.setText(address.getAddress());
+                                mProv.setText(address.getCity() + ", " + address.getProvince() + " " + address.getPostal_code());
+                                mPhone.setText(address.getPhone());
+                                getService();
+                                mLoading.setVisibility(View.GONE);
+                                mLayoutAddress.setVisibility(View.VISIBLE);
+                            }else{
+                                mLoading.setVisibility(View.GONE);
+                                mNoAddress.setVisibility(View.VISIBLE);
+                            }
+                        }
+                    }, new Consumer<Throwable>() {
+                        @Override
+                        public void accept(Throwable throwable) throws Exception {
+                            if(throwable instanceof JsonSyntaxException){
+                                mLoading.setVisibility(View.GONE);
+                                mNoAddress.setVisibility(View.VISIBLE);
+                            }
+                        }
+                    });
+        }
+    }
+
     private void getService(){
-        String url = "http://api.rajaongkir.com/starter/cost";
+        String url = "https://pro.rajaongkir.com/api/cost";
         final ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Please wait");
         progressDialog.show();
         JSONObject object = new JSONObject();
+        String courier = "";
+        if(mCourier.getSelectedItem().toString().equalsIgnoreCase("jne"))
+            courier="jne";
+        else if(mCourier.getSelectedItem().toString().equalsIgnoreCase("tiki"))
+            courier="tiki";
+        else if(mCourier.getSelectedItem().toString().equalsIgnoreCase("Pos Indonesia"))
+            courier="pos";
         try {
             object.put("origin", "444");
-            object.put("destination", "444");
-            object.put("weight","1000");
-            object.put("courier","jne");
+            object.put("destination", shippingAddress.getCity_id());
+            object.put("destinationType","city");
+            object.put("weight",weight);
+            object.put("courier",courier);
             JsonObjectRequest getRequest = new JsonObjectRequest(Request.Method.POST, url, object, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {

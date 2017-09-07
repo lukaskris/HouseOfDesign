@@ -1,5 +1,6 @@
 package com.example.lukaskris.houseofdesign.Account;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
@@ -23,6 +24,7 @@ import com.wang.avi.AVLoadingIndicatorView;
 
 import org.w3c.dom.Text;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,13 +42,21 @@ public class AddressActivity extends AppCompatActivity {
     AVLoadingIndicatorView mLoading;
     LinearLayout mNoData;
     LinearLayout mError;
-
+    int type;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_address);
-        getSupportActionBar().setTitle("Address");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        setTitle("Address");
+        if(getSupportActionBar()!=null)
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        type=1;
+
+        if(getIntent().hasExtra("select")){
+            setTitle("Select Address");
+            type=0;
+        }
         addresses = new ArrayList<>();
         mRecycler = (RecyclerView) findViewById(R.id.address_recycler);
         addAddress = (FloatingActionButton) findViewById(R.id.address_fab);
@@ -101,6 +111,7 @@ public class AddressActivity extends AppCompatActivity {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if(user!=null) {
             mLoading.setVisibility(View.VISIBLE);
+            mRecycler.setVisibility(View.GONE);
             service.getAddress(user.getEmail())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -112,7 +123,9 @@ public class AddressActivity extends AppCompatActivity {
                             addresses.addAll(shippingAddresses);
                             adapter.notifyDataSetChanged();
                             mLoading.setVisibility(View.GONE);
+                            mRecycler.setVisibility(View.VISIBLE);
                         }else{
+                            mRecycler.setVisibility(View.VISIBLE);
                             mNoData.setVisibility(View.VISIBLE);
                         }
                     }
@@ -149,12 +162,26 @@ public class AddressActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(AddressViewHolder holder, int position) {
-            ShippingAddress address = addresses.get(position);
+            final ShippingAddress address = addresses.get(position);
             holder.mName.setText(address.getName());
             holder.mNotelp.setText(address.getPhone());
             holder.mKota.setText(address.getCity());
             holder.mProvinsiKodepos.setText(address.getProvince() + " " + address.getPostal_code());
             holder.mAlamat.setText(address.getAddress());
+            if(type==0){
+                holder.mEdit.setVisibility(View.GONE);
+                holder.mDelete.setVisibility(View.GONE);
+                holder.mDefault.setText("Pilih");
+                holder.mDefault.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent();
+                        intent.putExtra("shipping", (Serializable) address);
+                        setResult(Activity.RESULT_OK,intent);
+                        finish();
+                    }
+                });
+            }
         }
 
         @Override
@@ -171,7 +198,7 @@ public class AddressActivity extends AppCompatActivity {
             TextView mDefault;
             TextView mEdit;
             TextView mDelete;
-
+            LinearLayout mOptions;
 
             public AddressViewHolder(View itemView) {
                 super(itemView);
@@ -180,6 +207,10 @@ public class AddressActivity extends AppCompatActivity {
                 mProvinsiKodepos = (TextView) itemView.findViewById(R.id.address_row_provinsi_kodepos);
                 mKota = (TextView) itemView.findViewById(R.id.address_row_kota);
                 mNotelp = (TextView) itemView.findViewById(R.id.address_row_notelp);
+                mOptions = (LinearLayout) itemView.findViewById(R.id.address_options);
+                mEdit = (TextView) itemView.findViewById(R.id.address_edit);
+                mDefault = (TextView) itemView.findViewById(R.id.address_edit);
+                mDelete = (TextView) itemView.findViewById(R.id.address_delete);
             }
         }
     }

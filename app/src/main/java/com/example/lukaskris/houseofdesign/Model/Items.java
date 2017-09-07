@@ -20,18 +20,20 @@ public class Items implements Serializable {
     private int category_id;
 
     private String images;
+    private int weight;
     private int id;
     private String thumbnail;
 
     public Items() {}
 
-    public Items(String name, String price, String desc, int category, String image, String thumbnail) {
+    public Items(String name, String price, String desc, int category,int weight, String image, String thumbnail) {
         this.name = name;
         this.price = price;
         this.description = desc;
         this.category_id = category;
         this.images = image;
         this.thumbnail = thumbnail;
+        this.weight = weight;
     }
 
     public Items(String name, String price, String desc, int category_id, String image, int id, String thumbnail) {
@@ -42,6 +44,10 @@ public class Items implements Serializable {
         this.images = image;
         this.id = id;
         this.thumbnail = thumbnail;
+    }
+
+    public int getWeight() {
+        return weight;
     }
 
     public String getName() {

@@ -35,49 +35,86 @@
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
                     android:background="@color/colorInactive"/>
-                <LinearLayout
+                <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.8"
-                        android:padding="15dp"
-                        android:orientation="vertical">
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="5dp"
-                            android:text="Lukas Kristianto"/>
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="5dp"
-                            android:text="Jalan Maspati 4/68"/>
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="5dp"
-                            android:text="Surabaya, Jawa Timur 60173"/>
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="08982250884"/>
-
-                    </LinearLayout>
-
-                    <TextView
-                        android:id="@+id/confirmation_change"
+                    <com.wang.avi.AVLoadingIndicatorView
+                        android:id="@+id/confirmation_loading"
                         android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:background="?attr/selectableItemBackground"
-                        android:clickable="true"
+                        android:layout_height="wrap_content"
+                        android:visibility="visible"
+                        android:layout_centerInParent="true"
+                        app:indicatorColor="@android:color/darker_gray"
+                        app:indicatorName="BallPulseIndicator"
+                        />
+                    <LinearLayout
+                        android:id="@+id/confirmation_no_address"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
                         android:gravity="center"
-                        android:padding="10dp"
-                        android:text="Change"
-                        android:textColor="@color/colorAccent" />
-                </LinearLayout>
+                        android:orientation="vertical"
+                        android:visibility="gone">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="No address found, please add first."/>
+                        <Button
+                            android:id="@+id/confirmation_add_address"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Add Address"/>
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/confirmation_address_layout"
+                        android:visibility="gone">
+
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.8"
+                            android:padding="15dp"
+                            android:orientation="vertical">
+                            <TextView
+                                android:id="@+id/confirmation_name"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="5dp"
+                                android:text="Lukas Kristianto"/>
+                            <TextView
+                                android:id="@+id/confirmation_address"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="5dp"
+                                android:text="Jalan Maspati 4/68"/>
+                            <TextView
+                                android:id="@+id/confirmation_prov_city_post"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="5dp"
+                                android:text="Surabaya, Jawa Timur 60173"/>
+                            <TextView
+                                android:id="@+id/confirmation_phone"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="08982250884"/>
+
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/confirmation_change"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:background="?attr/selectableItemBackground"
+                            android:clickable="true"
+                            android:gravity="center"
+                            android:padding="10dp"
+                            android:text="Change"
+                            android:textColor="@color/colorAccent" />
+                    </LinearLayout>
+                </RelativeLayout>
             </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"

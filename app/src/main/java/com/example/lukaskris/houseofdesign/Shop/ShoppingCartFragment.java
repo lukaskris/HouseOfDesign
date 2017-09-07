@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -92,9 +93,19 @@ public class ShoppingCartFragment extends Fragment {
         mConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent= new Intent(getActivity(), ConfirmationActivity.class);
-                intent.putExtra("total",total);
-                startActivity(intent);
+                if(mCarts.size()>0) {
+                    Intent intent = new Intent(getActivity(), ConfirmationActivity.class);
+                    intent.putExtra("total", total);
+                    int weight = 0;
+                    for (Cart c : mCarts) {
+                        weight = weight + c.getItem().getWeight() * c.getQuantity();
+                    }
+                    intent.putExtra("weight", weight);
+                    startActivity(intent);
+                    getActivity().overridePendingTransition(R.anim.slide_from_right, R.anim.slide_to_left);
+                }else {
+                    Snackbar.make(mNoData,"No item in Your cart.",Snackbar.LENGTH_SHORT).show();
+                }
             }
         });
 

@@ -107,6 +107,28 @@
                         android:text="Kabupaten/Kota"/>
                     <Spinner
                         android:id="@+id/add_address_kabupaten"
+                        android:nextFocusForward="@+id/add_address_subdistrict"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"/>
+                </LinearLayout>
+                <ProgressBar
+                    android:id="@+id/add_subdistrict_progress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"/>
+                <LinearLayout
+                    android:id="@+id/add_address_subdistrict_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Kabupaten/Kota"/>
+                    <Spinner
+                        android:id="@+id/add_address_subdistrict"
                         android:nextFocusForward="@+id/add_address_kodepos"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
