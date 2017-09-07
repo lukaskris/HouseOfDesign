@@ -23,6 +23,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.lukaskris.houseofdesign.Callback.Callback;
 import com.example.lukaskris.houseofdesign.Listener.EndlessScrollListener;
+import com.example.lukaskris.houseofdesign.Model.Items;
 import com.example.lukaskris.houseofdesign.R;
 import com.example.lukaskris.houseofdesign.Services.MyServicesAPI;
 import com.example.lukaskris.houseofdesign.Util.CurrencyUtil;
@@ -34,6 +35,11 @@ import java.util.List;
 
 import endpoint.backend.itemApi.model.Item;
 import endpoint.backend.itemApi.model.Type;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
+
+import static com.example.lukaskris.houseofdesign.Services.ServiceFactory.service;
 
 public class ShowAllActivity extends AppCompatActivity {
 
@@ -42,8 +48,8 @@ public class ShowAllActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private int PAGE=0;
     protected Handler handler;
-    private List<Item> mList;
-    private String category;
+    private List<Items> mList;
+    private int category;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,16 +60,17 @@ public class ShowAllActivity extends AppCompatActivity {
 
         mList = new ArrayList<>();
 
-        category = getIntent().getStringExtra("category");
-        getSupportActionBar().setTitle(category);
-        Item item = new Item();
-        item.setCategory("Pria");
-        item.setPrice("120000");
-        List<String> image = new ArrayList<>();
-        image.add("https://firebasestorage.googleapis.com/v0/b/onlineshop-cee9c.appspot.com/o/Item_Images%2FTooLaRoo1.jpg?alt=media&token=7986bdf4-6e87-4a35-99a3-c58fb97bbf3a");
-        item.setImage(image);
-        item.setName("TooLaRoo");
-        mList.add(item);
+        category = getIntent().getIntExtra("category",0);
+        String section = getIntent().getStringExtra("section");
+        getSupportActionBar().setTitle(section);
+//        Item item = new Item();
+//        item.setCategory("Pria");
+//        item.setPrice("120000");
+//        List<String> image = new ArrayList<>();
+//        image.add("https://firebasestorage.googleapis.com/v0/b/onlineshop-cee9c.appspot.com/o/Item_Images%2FTooLaRoo1.jpg?alt=media&token=7986bdf4-6e87-4a35-99a3-c58fb97bbf3a");
+//        item.setImage(image);
+//        item.setName("TooLaRoo");
+//        mList.add(item);
 //        MyServicesAPI.getInstance().getItems(this, category,  0, new Callback() {
 //
 //
@@ -101,6 +108,7 @@ public class ShowAllActivity extends AppCompatActivity {
             }
         });
         recyclerView.setAdapter(adapter);
+        loadProduct(category,PAGE);
 //            }
 //
 //            @Override
@@ -111,25 +119,46 @@ public class ShowAllActivity extends AppCompatActivity {
 //        });
     }
 
-    private void loadProduct(String category, int page) {
+    private void loadProduct(int category, int page) {
 
 
-        MyServicesAPI.getInstance().getItems(this, category,  page*10, new Callback() {
-            @Override
-            public void onSuccess(Object... params) {
-                int cursize = mList.size();
-                //noinspection unchecked
-                mList.addAll((List<Item>) params[0]);
+        service.getItems(category,page*10,10)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<List<Items>>() {
+                    @Override
+                    public void accept(List<Items> itemses) throws Exception {
+                        if(itemses.size()>0){
+                            int cursize = mList.size();
+                            mList.addAll(itemses);
+                            adapter.notifyDataSetChanged();
+//                            adapter.notifyItemRangeInserted(cursize, mList.size()-1);
+                            adapter.setLoaded();
+                        }
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        Snackbar.make(recyclerView,throwable.getLocalizedMessage(),Snackbar.LENGTH_SHORT).show();
+                    }
+                });
 
-                adapter.notifyItemRangeInserted(cursize, mList.size()-1);
-                adapter.setLoaded();
-            }
-
-            @Override
-            public void onError(Object... params) {
-//                Snackbar.make(,params[0].toString(), Snackbar.LENGTH_SHORT);
-            }
-        });
+//        MyServicesAPI.getInstance().getItems(this, category,  page*10, new Callback() {
+//            @Override
+//            public void onSuccess(Object... params) {
+//                int cursize = mList.size();
+//                //noinspection unchecked
+//                mList.addAll((List<Item>) params[0]);
+//
+//                adapter.notifyItemRangeInserted(cursize, mList.size()-1);
+//                adapter.setLoaded();
+//            }
+//
+//            @Override
+//            public void onError(Object... params) {
+////                Snackbar.make(,params[0].toString(), Snackbar.LENGTH_SHORT);
+//            }
+//        });
 
     }
 
@@ -152,7 +181,7 @@ public class ShowAllActivity extends AppCompatActivity {
 
     private class ItemAdapter extends RecyclerView.Adapter{
 
-        private List<Item> itemList;
+        private List<Items> itemList;
         private Context context;
         private final int VIEW_ITEM = 1;
         private final int VIEW_PROG = 0;
@@ -162,7 +191,7 @@ public class ShowAllActivity extends AppCompatActivity {
         private boolean loading;
         private OnLoadMoreListener onLoadMoreListener;
 
-        ItemAdapter(Context context, List<Item> item, RecyclerView recyclerView) {
+        ItemAdapter(Context context, List<Items> item, RecyclerView recyclerView) {
             this.context = context;
             this.itemList = item;
 
@@ -227,13 +256,13 @@ public class ShowAllActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
             if (holder instanceof ItemViewHolder) {
-                Item item = itemList.get(position);
+                Items item = itemList.get(position);
 
                 ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
                 itemViewHolder.mItem = item;
                 itemViewHolder.item_nama.setText(item.getName());
                 itemViewHolder.item_price.setText(CurrencyUtil.rupiah(new BigDecimal(item.getPrice())));
-                Glide.with(context).load(item.getImage().get(0)).diskCacheStrategy(DiskCacheStrategy.RESULT).into(itemViewHolder.item_image);
+                Glide.with(context).load("https://storage.googleapis.com/houseofdesign/"+item.getThumbnail()).diskCacheStrategy(DiskCacheStrategy.RESULT).into(itemViewHolder.item_image);
                 itemViewHolder.itemView.setTag(item);
                 itemViewHolder.itemView.setOnClickListener(detail);
             } else {
@@ -271,7 +300,7 @@ public class ShowAllActivity extends AppCompatActivity {
             TextView item_nama;
             TextView item_price;
             ImageView item_image;
-            Item mItem;
+            Items mItem;
             View mView;
             public ItemViewHolder(View itemView) {
                 super(itemView);
@@ -284,14 +313,9 @@ public class ShowAllActivity extends AppCompatActivity {
                 mView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        List<Type> types = new ArrayList<>();
-                        types.addAll(mItem.getType());
 
                         Intent intent = new Intent(ShowAllActivity.this, TypeActivity.class);
-                        intent.putExtra("type", (Serializable) types);
-                        intent.putExtra("nama", item_nama.getText());
-                        intent.putExtra("harga",item_price.getText());
-                        intent.putExtra("foto",mItem.getImage().get(0));
+
                         startActivity(intent);
                     }
                 });

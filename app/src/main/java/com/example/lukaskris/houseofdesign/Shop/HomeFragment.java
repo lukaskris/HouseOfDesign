@@ -205,6 +205,7 @@ public class HomeFragment extends Fragment {
 
         allCategory = new ArrayList<>();
         categoryItems = new ArrayList<>();
+        adapter = new CategoryListAdapter(getContext(), categoryItems);
         allItems = new ArrayList<>();
 
         if(getActivity().getIntent().hasExtra("category") && getActivity().getIntent().hasExtra("items")) {
@@ -228,7 +229,6 @@ public class HomeFragment extends Fragment {
         RecyclerView my_recycler_view = (RecyclerView) view.findViewById(R.id.home_recyclerview);
         my_recycler_view.setHasFixedSize(true);
         my_recycler_view.setNestedScrollingEnabled(false);
-        adapter = new CategoryListAdapter(getContext(), categoryItems);
         my_recycler_view.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         my_recycler_view.setAdapter(adapter);
 //        autoRefreshWhenOff();
@@ -269,6 +269,7 @@ public class HomeFragment extends Fragment {
             mLoading.setVisibility(View.GONE);
             categoryItems.add(cm);
         }
+        adapter.notifyDataSetChanged();
         PreferencesUtil.saveHome(getContext(),categoryItems);
     }
 
@@ -312,6 +313,7 @@ public class HomeFragment extends Fragment {
                         if (itemses.size() > 0) {
                             allItems.clear();
                             allItems.addAll(itemses);
+
                         }
                     }
                 }, new Consumer<Throwable>() {
@@ -401,7 +403,8 @@ public class HomeFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(getActivity(),ShowAllActivity.class);
-                    intent.putExtra("category",sectionName);
+                    intent.putExtra("category",dataList.get(position).getIdCategory());
+                    intent.putExtra("section",sectionName);
                     startActivity(intent);
                 }
             });

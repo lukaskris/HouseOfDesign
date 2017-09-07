@@ -120,7 +120,7 @@ public class ConfirmationActivity extends AppCompatActivity {
         mCourier.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                getService();
+
             }
 
             @Override
@@ -214,7 +214,7 @@ public class ConfirmationActivity extends AppCompatActivity {
         String url = "https://pro.rajaongkir.com/api/cost";
         final ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Please wait");
-        progressDialog.show();
+//        progressDialog.show();
         JSONObject object = new JSONObject();
         String courier = "";
         if(mCourier.getSelectedItem().toString().equalsIgnoreCase("jne"))
@@ -229,6 +229,7 @@ public class ConfirmationActivity extends AppCompatActivity {
             object.put("destinationType","city");
             object.put("weight",weight);
             object.put("courier",courier);
+            Log.d("DEBUG",courier + " weight " + weight);
             JsonObjectRequest getRequest = new JsonObjectRequest(Request.Method.POST, url, object, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
@@ -269,6 +270,7 @@ public class ConfirmationActivity extends AppCompatActivity {
                 @Override
                 public void onErrorResponse(VolleyError e) {
                     // do something...
+                    progressDialog.dismiss();
                     Log.d("ErrorResponse", e.toString());
                     RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.confirmation);
                     Snackbar.make(relativeLayout,e.toString(),Snackbar.LENGTH_SHORT).show();
@@ -289,7 +291,7 @@ public class ConfirmationActivity extends AppCompatActivity {
             queue.add(getRequest);
         }catch (Exception e){
             Log.d("error", e.toString());
-
+            progressDialog.dismiss();
             RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.confirmation);
             Snackbar.make(relativeLayout,e.toString(),Snackbar.LENGTH_SHORT).show();
         }
