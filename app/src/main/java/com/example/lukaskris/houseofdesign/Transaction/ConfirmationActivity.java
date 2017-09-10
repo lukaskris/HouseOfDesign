@@ -30,6 +30,7 @@ import com.example.lukaskris.houseofdesign.Account.AddressActivity;
 import com.example.lukaskris.houseofdesign.Model.Courier;
 import com.example.lukaskris.houseofdesign.Model.ShippingAddress;
 import com.example.lukaskris.houseofdesign.R;
+import com.example.lukaskris.houseofdesign.Services.RajaOngkir;
 import com.example.lukaskris.houseofdesign.Util.CurrencyUtil;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -70,6 +71,7 @@ public class ConfirmationActivity extends AppCompatActivity {
     AVLoadingIndicatorView mLoading;
     LinearLayout mNoAddress;
     Button mAddAddress;
+    Button mConfirm;
 
     ShippingAddress shippingAddress;
 
@@ -80,8 +82,10 @@ public class ConfirmationActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_confirmation);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle("Confirmation");
+        if(getSupportActionBar()!=null) {
+            getSupportActionBar().setTitle("Confirmation");
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
         mCourier = (Spinner) findViewById(R.id.confirmation_courier_name);
         mService = (Spinner) findViewById(R.id.confirmation_courier_package);
         mPrice = (TextView) findViewById(R.id.confirmation_courier_price);
@@ -95,6 +99,7 @@ public class ConfirmationActivity extends AppCompatActivity {
         mLayoutAddress = (LinearLayout) findViewById(R.id.confirmation_address_layout);
         mNoAddress = (LinearLayout) findViewById(R.id.confirmation_no_address);
         mAddAddress = (Button) findViewById(R.id.confirmation_add_address);
+        mConfirm = (Button) findViewById(R.id.confirmation_confirm);
 
         mAddAddress.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -120,7 +125,8 @@ public class ConfirmationActivity extends AppCompatActivity {
         mCourier.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-
+                if(shippingAddress != null)
+                    getService();
             }
 
             @Override
@@ -136,10 +142,22 @@ public class ConfirmationActivity extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 Courier courier = mPackage.get(position);
                 mPrice.setText(CurrencyUtil.rupiah(new BigDecimal(courier.getmCost())));
+                total = total + Integer.parseInt(courier.getmCost());
+                mTotal.setText(CurrencyUtil.rupiah(new BigDecimal(total)));
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        mConfirm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(shippingAddress!=null){
+
+                }
 
             }
         });
@@ -211,11 +229,10 @@ public class ConfirmationActivity extends AppCompatActivity {
     }
 
     private void getService(){
-        String url = "https://pro.rajaongkir.com/api/cost";
-        final ProgressDialog progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("Please wait");
-//        progressDialog.show();
-        JSONObject object = new JSONObject();
+        String origin = "444";
+        String destination = shippingAddress.getSubdistrict_id();
+        mService.setVisibility(View.GONE);
+        (findViewById(R.id.confirmation_loading_courier)).setVisibility(View.VISIBLE);
         String courier = "";
         if(mCourier.getSelectedItem().toString().equalsIgnoreCase("jne"))
             courier="jne";
@@ -223,78 +240,95 @@ public class ConfirmationActivity extends AppCompatActivity {
             courier="tiki";
         else if(mCourier.getSelectedItem().toString().equalsIgnoreCase("Pos Indonesia"))
             courier="pos";
-        try {
-            object.put("origin", "444");
-            object.put("destination", shippingAddress.getCity_id());
-            object.put("destinationType","city");
-            object.put("weight",weight);
-            object.put("courier",courier);
-            Log.d("DEBUG",courier + " weight " + weight);
-            JsonObjectRequest getRequest = new JsonObjectRequest(Request.Method.POST, url, object, new Response.Listener<JSONObject>() {
-                @Override
-                public void onResponse(JSONObject response) {
-//                    System.out.println(response.toString());
-                    try{
+
+        RajaOngkir.getCost(origin,destination,String.valueOf(weight),courier)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<JSONObject>() {
+                    @Override
+                    public void accept(JSONObject response) throws Exception {
                         List<String> data = new ArrayList<>();
                         JSONArray result = response.getJSONObject("rajaongkir").getJSONArray("results");
-                        Log.d("result 1", result.getString(0));
-                        Log.d("result 2", result.getJSONObject(0).getString("costs"));
-                        JSONArray obj1 = result.getJSONObject(0).getJSONArray("costs");
+
                         JSONArray service = result.getJSONObject(0).getJSONArray("costs");
 
                         mPackage.clear();
-                        for(int i=0;i < service.length(); i++){
+                        for (int i = 0; i < service.length(); i++) {
                             JSONObject obj = service.getJSONObject(i);
                             String code = obj.getString("service");
                             String description = obj.getString("description");
                             String price = obj.getJSONArray("cost").getJSONObject(0).getString("value");
                             String estimation = obj.getJSONArray("cost").getJSONObject(0).getString("etd");
-                            Courier courier = new Courier(code,description,price,estimation);
+                            Courier courier = new Courier(code, description, price, estimation);
                             mPackage.add(courier);
-                            data.add(description + "("+code+")");
+                            data.add(description + "(" + code + ")");
                         }
-                        ArrayAdapter adapter = new ArrayAdapter(ConfirmationActivity.this, android.R.layout.simple_spinner_dropdown_item, data);
+                        ArrayAdapter<String> adapter = new ArrayAdapter<>(ConfirmationActivity.this, android.R.layout.simple_spinner_dropdown_item, data);
                         mService.setAdapter(adapter);
-                        progressDialog.dismiss();
+                        mService.setVisibility(View.VISIBLE);
+                        (findViewById(R.id.confirmation_loading_courier)).setVisibility(View.GONE);
 
-                    }catch (JSONException e){
-                        progressDialog.dismiss();
-                        Log.d("errorjson", e.toString());
-                        RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.confirmation);
-                        Snackbar.make(relativeLayout,e.toString(),Snackbar.LENGTH_SHORT).show();
                     }
-
-                }
-            },new Response.ErrorListener() {
-
-                @Override
-                public void onErrorResponse(VolleyError e) {
-                    // do something...
-                    progressDialog.dismiss();
-                    Log.d("ErrorResponse", e.toString());
-                    RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.confirmation);
-                    Snackbar.make(relativeLayout,e.toString(),Snackbar.LENGTH_SHORT).show();
-                }
-            }){
-                @Override
-                public Map<String, String> getHeaders() throws AuthFailureError {
-                    Map<String, String>  params = new HashMap<String, String>();
-//                    params.put("content-type", "application/x-www-form-urlencoded");
-                    params.put("key", "e1b42829f5d45bf380bf7f22aa57cb06");
-
-                    return params;
-
-                }
-            };
-
-            RequestQueue queue = Volley.newRequestQueue(this);
-            queue.add(getRequest);
-        }catch (Exception e){
-            Log.d("error", e.toString());
-            progressDialog.dismiss();
-            RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.confirmation);
-            Snackbar.make(relativeLayout,e.toString(),Snackbar.LENGTH_SHORT).show();
-        }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        (findViewById(R.id.confirmation_loading_courier)).setVisibility(View.GONE);
+                        Toast.makeText(ConfirmationActivity.this, throwable.getLocalizedMessage(),Toast.LENGTH_SHORT).show();
+                    }
+                });
+//        try {
+//
+//            object.put("origin", "444");
+//            object.put("destination", shippingAddress.getCity_id());
+//            object.put("destinationType","city");
+//            object.put("weight",weight);
+//            object.put("courier",courier);
+//            Log.d("DEBUG",courier + " weight " + weight);
+//            JsonObjectRequest getRequest = new JsonObjectRequest(Request.Method.POST, url, object, new Response.Listener<JSONObject>() {
+//                @Override
+//                public void onResponse(JSONObject response) {
+////                    System.out.println(response.toString());
+//                    try{
+//
+//
+//                    }catch (JSONException e){
+//                        progressDialog.dismiss();
+//                        Log.d("errorjson", e.toString());
+//                        RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.confirmation);
+//                        Snackbar.make(relativeLayout,e.toString(),Snackbar.LENGTH_SHORT).show();
+//                    }
+//
+//                }
+//            },new Response.ErrorListener() {
+//
+//                @Override
+//                public void onErrorResponse(VolleyError e) {
+//                    // do something...
+//                    progressDialog.dismiss();
+//                    Log.d("ErrorResponse", e.toString());
+//                    RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.confirmation);
+//                    Snackbar.make(relativeLayout,e.toString(),Snackbar.LENGTH_SHORT).show();
+//                }
+//            }){
+//                @Override
+//                public Map<String, String> getHeaders() throws AuthFailureError {
+//                    Map<String, String>  params = new HashMap<String, String>();
+////                    params.put("content-type", "application/x-www-form-urlencoded");
+//                    params.put("key", "e1b42829f5d45bf380bf7f22aa57cb06");
+//
+//                    return params;
+//
+//                }
+//            };
+//
+//            RequestQueue queue = Volley.newRequestQueue(this);
+//            queue.add(getRequest);
+//        }catch (Exception e){
+//            Log.d("error", e.toString());
+//            progressDialog.dismiss();
+//            RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.confirmation);
+//            Snackbar.make(relativeLayout,e.toString(),Snackbar.LENGTH_SHORT).show();
+//        }
     }
 
 }

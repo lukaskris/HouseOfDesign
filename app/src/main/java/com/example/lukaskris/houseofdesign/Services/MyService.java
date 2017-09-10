@@ -3,6 +3,7 @@ package com.example.lukaskris.houseofdesign.Services;
 import com.example.lukaskris.houseofdesign.Model.Category;
 import com.example.lukaskris.houseofdesign.Model.Customer;
 import com.example.lukaskris.houseofdesign.Model.Items;
+import com.example.lukaskris.houseofdesign.Model.Orders;
 import com.example.lukaskris.houseofdesign.Model.ShippingAddress;
 import com.example.lukaskris.houseofdesign.Model.SubItem;
 
@@ -10,6 +11,7 @@ import java.util.List;
 
 import io.reactivex.Observable;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.HTTP;
 import retrofit2.http.POST;
@@ -51,6 +53,12 @@ public interface MyService {
     @GET("default_shipping_address/{id}")
     Observable<List<ShippingAddress>> getDefaultAddress(@Path("id") String email);
 
+    @DELETE("shipping_address/{id}")
+    Observable<ShippingAddress> deleteAddress(@Path("id") String id);
+
     @POST("shipping_address/{id}")
     Observable<List<ShippingAddress>> setDefaultAddress(@Path("id") String id, @Body ShippingAddress shippingAddress);
+
+    @POST("orders")
+    Observable<Orders> setOrders(@Body Orders orders);
 }

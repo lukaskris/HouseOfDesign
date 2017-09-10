@@ -5,24 +5,45 @@ package com.example.lukaskris.houseofdesign.Model;
  */
 
 public class ShippingAddress {
+    String id;
     String name;
     String address;
     String province;
     String province_id;
     String city;
     String city_id;
+    String subdistrict;
+    String subdistrict_id;
     String postal_code;
     String phone;
     String status;
     String email;
 
-    public ShippingAddress(String name, String address, String province, String province_id, String city, String city_id, String postal_code, String phone, String status, String email) {
+    public ShippingAddress(String name, String address, String province, String province_id, String city, String city_id, String subdistrict, String subdistrict_id, String postal_code, String phone, String status, String email) {
         this.name = name;
         this.address = address;
         this.province = province;
         this.province_id = province_id;
         this.city = city;
         this.city_id = city_id;
+        this.subdistrict = subdistrict;
+        this.subdistrict_id = subdistrict_id;
+        this.postal_code = postal_code;
+        this.phone = phone;
+        this.status = status;
+        this.email = email;
+    }
+
+    public ShippingAddress(String id, String name, String address, String province, String province_id, String city, String city_id, String subdistrict, String subdistrict_id, String postal_code, String phone, String status, String email) {
+        this.id = id;
+        this.name = name;
+        this.address = address;
+        this.province = province;
+        this.province_id = province_id;
+        this.city = city;
+        this.city_id = city_id;
+        this.subdistrict = subdistrict;
+        this.subdistrict_id = subdistrict_id;
         this.postal_code = postal_code;
         this.phone = phone;
         this.status = status;
@@ -68,4 +89,18 @@ public class ShippingAddress {
     public String getEmail() {
         return email;
     }
+
+    public String getSubdistrict() {
+        return subdistrict;
+    }
+
+    public String getSubdistrict_id() {
+        return subdistrict_id;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+
 }

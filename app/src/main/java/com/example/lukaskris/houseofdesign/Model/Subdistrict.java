@@ -1,14 +1,17 @@
 package com.example.lukaskris.houseofdesign.Model;
 
 /**
- * Created by Lukaskris on 12/08/2017.
+ * Created by Lukaskris on 08/09/2017.
  */
 
-public class Provience {
+public class Subdistrict {
     String id;
     String name;
 
-    public Provience(){}
+    public Subdistrict(String id, String name) {
+        this.id=id;
+        this.name = name;
+    }
 
     public String getId() {
         return id;
@@ -23,12 +26,6 @@ public class Provience {
     }
 
     public void setName(String name) {
-        this.name = name;
-    }
-
-    public Provience(String id, String name) {
-
-        this.id = id;
         this.name = name;
     }
 }

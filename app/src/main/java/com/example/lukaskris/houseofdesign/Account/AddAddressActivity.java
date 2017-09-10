@@ -26,12 +26,11 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.lukaskris.houseofdesign.Model.City;
-import com.example.lukaskris.houseofdesign.Model.Customer;
-import com.example.lukaskris.houseofdesign.Model.Provience;
+import com.example.lukaskris.houseofdesign.Model.Province;
 import com.example.lukaskris.houseofdesign.Model.ShippingAddress;
+import com.example.lukaskris.houseofdesign.Model.Subdistrict;
 import com.example.lukaskris.houseofdesign.R;
-import com.example.lukaskris.houseofdesign.Services.ServiceFactory;
-import com.example.lukaskris.houseofdesign.Util.PreferencesUtil;
+import com.example.lukaskris.houseofdesign.Services.RajaOngkir;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -39,16 +38,16 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
-import okhttp3.OkHttpClient;
 
 import static com.example.lukaskris.houseofdesign.Services.ServiceFactory.service;
 
@@ -56,13 +55,16 @@ public class AddAddressActivity extends AppCompatActivity {
     Spinner mProvince;
     Spinner mCity;
     Spinner mSubdistrict;
+    LinearLayout mLayoutProvince;
     LinearLayout mLayoutCity;
     LinearLayout mLayoutSubdistrict;
     RequestQueue queue;
-    List<Provience> proviences;
+    List<Province> proviences;
     List<City> cities;
-    ProgressBar dialog;
-    ProgressBar mDialog;
+    List<Subdistrict> subdistricts;
+    ProgressBar mProgressProvince;
+    ProgressBar mProgressCity;
+    ProgressBar mProgressSubdistrict;
     Button mSave;
     EditText mName;
     EditText mAlamat;
@@ -79,23 +81,27 @@ public class AddAddressActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_address);
-        getSupportActionBar().setTitle("Add Address");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
+        if(getSupportActionBar()!=null) {
+            getSupportActionBar().setTitle("Add Address");
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
         proviences = new ArrayList<>();
         cities = new ArrayList<>();
+        subdistricts = new ArrayList<>();
+        mLayoutProvince = (LinearLayout) findViewById(R.id.add_address_province_layout);
         mLayoutCity = (LinearLayout) findViewById(R.id.add_address_kabupaten_layout);
         mLayoutSubdistrict = (LinearLayout) findViewById(R.id.add_address_subdistrict_layout);
         mProvince = (Spinner) findViewById(R.id.add_address_provinsi);
         mCity = (Spinner) findViewById(R.id.add_address_kabupaten);
         mSubdistrict = (Spinner) findViewById(R.id.add_address_subdistrict);
-        dialog = (ProgressBar) findViewById(R.id.add_address_progress);
+        mProgressProvince = (ProgressBar) findViewById(R.id.add_address_province_progress);
+        mProgressCity = (ProgressBar) findViewById(R.id.add_address_city_progress);
+        mProgressSubdistrict = (ProgressBar) findViewById(R.id.add_address_subdistrict_progress);
         mSave = (Button) findViewById(R.id.add_address_save);
         mName = (EditText) findViewById(R.id.add_address_name);
         mAlamat = (EditText) findViewById(R.id.add_address_alamat);
         mKodePos = (EditText) findViewById(R.id.add_address_kodepos);
         mNoTelp = (EditText) findViewById(R.id.add_address_no_telp);
-        mDialog = (ProgressBar) findViewById(R.id.add_subdistrict_progress);
         mLayoutName = (TextInputLayout) findViewById(R.id.add_address_name_layout);
         mLayoutAlamat = (TextInputLayout) findViewById(R.id.add_address_alamat_layout);
         mLayoutKodePos = (TextInputLayout) findViewById(R.id.add_address_kodepos_layout);
@@ -112,7 +118,7 @@ public class AddAddressActivity extends AppCompatActivity {
                 progressDialog.setCancelable(true);
                 if(validasiInput()) {
                     progressDialog.show();
-                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                    final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                     if(user != null) {
 
                         service.getAddress(user.getEmail())
@@ -124,17 +130,20 @@ public class AddAddressActivity extends AppCompatActivity {
                                         String name = mName.getText().toString();
                                         String address = mAlamat.getText().toString();
                                         String province = mProvince.getSelectedItem().toString();
-                                        String province_id = proviences.get(mProvince.getSelectedItemPosition()).getId();
+                                        String province_id = proviences.get(mProvince.getSelectedItemPosition()).getProvince_id();
                                         String city = mCity.getSelectedItem().toString();
                                         String city_id = cities.get(mCity.getSelectedItemPosition()).getId();
-                                        String email = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+                                        String subdistrict = mSubdistrict.getSelectedItem().toString();
+                                        String subdistrict_id = subdistricts.get(mSubdistrict.getSelectedItemPosition()).getId();
+                                        String email = user.getEmail();
                                         String postal = mKodePos.getText().toString();
                                         String phone = mNoTelp.getText().toString();
                                         String status = "0";
                                         if(shippingAddresses.size()<=0){
                                             status="1";
                                         }
-                                        ShippingAddress shippingAddress = new ShippingAddress(name, address, province, province_id, city, city_id, postal, phone, status, email);
+                                        ShippingAddress shippingAddress = new ShippingAddress(name, address, province, province_id, city, city_id,
+                                                                                subdistrict, subdistrict_id, postal, phone, status, email);
                                         service.createAddress(shippingAddress)
                                                 .subscribeOn(Schedulers.io())
                                                 .observeOn(AndroidSchedulers.mainThread())
@@ -164,6 +173,7 @@ public class AddAddressActivity extends AppCompatActivity {
                 }
             }
         });
+        getProvince();
         getProvince();
     }
 
@@ -202,128 +212,176 @@ public class AddAddressActivity extends AppCompatActivity {
         return valid;
     }
 
-    private void getProvinsi(){
-        try {
-            OkHttpClient client = new OkHttpClient();
-
-            okhttp3.Request request = new okhttp3.Request.Builder()
-                    .url("https://pro.rajaongkir.com/api/province?id=12")
-                    .get()
-                    .addHeader("key", "your-api-key")
-                    .build();
-
-            okhttp3.Response response = client.newCall(request).execute();
-        }catch (IOException ex){}
-    }
-
     private void getProvince(){
-        String url = "http://api.rajaongkir.com/starter/province";
-        dialog.setVisibility(View.VISIBLE);
-        JSONObject object = new JSONObject();
-        JsonObjectRequest getRequest;
-        try {
-            getRequest = new JsonObjectRequest(Request.Method.GET, url, object, new Response.Listener<JSONObject>() {
+        mLayoutProvince.setVisibility(View.GONE);
+        mLayoutCity.setVisibility(View.GONE);
+        RajaOngkir.getProvince()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<JSONObject>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
 
-                @Override
-                public void onResponse(JSONObject response) {
-                    try {
-                        JSONArray result = response.getJSONObject("rajaongkir").getJSONArray("results");
-                        List<String> data = new ArrayList<>();
-                        for(int i=0;i<result.length();i++){
-                            JSONObject obj = result.getJSONObject(i);
-                            Provience provience = new Provience(obj.getString("province_id"),obj.getString("province"));
-                            proviences.add(provience);
-                            data.add(obj.getString("province"));
-                        }
-                        ArrayAdapter adapter = new ArrayAdapter(AddAddressActivity.this, android.R.layout.simple_spinner_dropdown_item, data);
-                        mProvince.setAdapter(adapter);
-                        mProvince.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                            @Override
-                            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                                String idProvience = proviences.get(position).getId();
-                                getCity(idProvience);
-                            }
-
-                            @Override
-                            public void onNothingSelected(AdapterView<?> parent) {
-
-                            }
-                        });
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                        dialog.setVisibility(View.GONE);
                     }
-                }
-            }, new Response.ErrorListener() {
 
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    dialog.setVisibility(View.GONE);
-                    Snackbar.make(mName,error.getLocalizedMessage(),Snackbar.LENGTH_SHORT);
-                }
-            }) {
-                @Override
-                public Map<String, String> getHeaders() throws AuthFailureError {
-                    Map<String, String> params = new HashMap<String, String>();
-                    params.put("key", "e1b42829f5d45bf380bf7f22aa57cb06");
+                    @Override
+                    public void onNext(JSONObject response) {
+                        try {
+                            JSONArray result = response.getJSONObject("rajaongkir").getJSONArray("results");
+                            List<String> data = new ArrayList<>();
+                            for(int i=0;i<result.length();i++){
+                                JSONObject obj = result.getJSONObject(i);
+                                Province province = new Province(obj.getString("province_id"),obj.getString("province"));
+                                proviences.add(province);
+                                data.add(obj.getString("province"));
+                            }
+                            ArrayAdapter<String> adapter = new ArrayAdapter<>(AddAddressActivity.this, android.R.layout.simple_spinner_dropdown_item, data);
 
-                    return params;
+                            mProvince.setAdapter(adapter);
+                            mProvince.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                                @Override
+                                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                                    if(proviences.size()>0) {
+                                        String idProvince = proviences.get(position).getProvince_id();
+                                        getCity(idProvince);
+                                    }
+                                }
 
-                }
-            };
+                                @Override
+                                public void onNothingSelected(AdapterView<?> parent) {
 
-            queue.add(getRequest);
-        }catch (Exception e){
-            dialog.setVisibility(View.GONE);
-            Snackbar.make(mName,e.getLocalizedMessage(),Snackbar.LENGTH_SHORT);
-        }
+                                }
+                            });
 
+
+                        }catch (Exception e){
+                            mProgressProvince.setVisibility(View.GONE);
+                            Toast.makeText(AddAddressActivity.this,e.getLocalizedMessage(),Toast.LENGTH_LONG).show();
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        mProgressProvince.setVisibility(View.GONE);
+                        Toast.makeText(AddAddressActivity.this,e.getLocalizedMessage(),Toast.LENGTH_LONG).show();
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        mProgressProvince.setVisibility(View.GONE);
+                        mLayoutProvince.setVisibility(View.VISIBLE);
+                    }
+                });
     }
 
     private void getCity(String province){
-        String url = "http://api.rajaongkir.com/starter/city?province="+province;
+        mLayoutCity.setVisibility(View.GONE);
+        mLayoutSubdistrict.setVisibility(View.GONE);
+        mProgressCity.setVisibility(View.VISIBLE);
+        cities.clear();
+        RajaOngkir.getCity(province)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<JSONObject>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
 
-        JSONObject object = new JSONObject();
-        JsonObjectRequest getRequest = new JsonObjectRequest(Request.Method.GET, url, object, new Response.Listener<JSONObject>() {
-
-            @Override
-            public void onResponse(JSONObject response) {
-                JSONArray result = null;
-                try {
-                    result = response.getJSONObject("rajaongkir").getJSONArray("results");
-                    List<String> data = new ArrayList<>();
-                    for(int i=0;i<result.length();i++){
-                        JSONObject obj = result.getJSONObject(i);
-                        City city = new City(obj.getString("city_id"),obj.getString("city_name"));
-                        cities.add(city);
-                        data.add(obj.getString("city_name"));
                     }
-                    mLayoutCity.setVisibility(View.VISIBLE);
-                    dialog.setVisibility(View.GONE);
-                    ArrayAdapter adapter = new ArrayAdapter(AddAddressActivity.this, android.R.layout.simple_spinner_dropdown_item, data);
-                    mCity.setAdapter(adapter);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        },new Response.ErrorListener() {
 
-            @Override
-            public void onErrorResponse(VolleyError error) {
+                    @Override
+                    public void onNext(JSONObject response) {
+                        try {
+                            JSONArray result = response.getJSONObject("rajaongkir").getJSONArray("results");
+                            List<String> data = new ArrayList<>();
+                            for(int i=0;i<result.length();i++){
+                                JSONObject obj = result.getJSONObject(i);
+                                City city = new City(obj.getString("city_id"),obj.getString("city_name"));
+                                cities.add(city);
+                                data.add(obj.getString("city_name"));
+                            }
+                            ArrayAdapter<String> adapter = new ArrayAdapter<>(AddAddressActivity.this, android.R.layout.simple_spinner_dropdown_item, data);
+                            mCity.setAdapter(adapter);
+                            mCity.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                                @Override
+                                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                                    if(cities.size()>0) {
+                                        String idCity = cities.get(position).getId();
+                                        getSubdistrict(idCity);
+                                    }
+                                }
 
-            }
-        }){
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String>  params = new HashMap<String, String>();
-                params.put("key", "e1b42829f5d45bf380bf7f22aa57cb06");
+                                @Override
+                                public void onNothingSelected(AdapterView<?> parent) {
 
-                return params;
+                                }
+                            });
+                        } catch (JSONException e) {
+                            mProgressCity.setVisibility(View.GONE);
+                            Toast.makeText(AddAddressActivity.this,e.getLocalizedMessage(),Toast.LENGTH_LONG).show();
+                        }
+                    }
 
-            }
-        };
-        queue.add(getRequest);
+                    @Override
+                    public void onError(Throwable e) {
+                        mProgressCity.setVisibility(View.GONE);
+                        Toast.makeText(AddAddressActivity.this,e.getLocalizedMessage(),Toast.LENGTH_LONG).show();
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        mProgressCity.setVisibility(View.GONE);
+                        mLayoutCity.setVisibility(View.VISIBLE);
+                    }
+                });
+
     }
 
+    private void getSubdistrict(String city){
+
+        mProgressSubdistrict.setVisibility(View.VISIBLE);
+        mLayoutSubdistrict.setVisibility(View.GONE);
+        subdistricts.clear();
+        Log.d("DEBUGID",city);
+        RajaOngkir.getSubdistrict(city)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<JSONObject>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(JSONObject response) {
+                        try {
+                            JSONArray result = response.getJSONObject("rajaongkir").getJSONArray("results");
+                            List<String> data = new ArrayList<>();
+                            for(int i=0;i<result.length();i++){
+                                JSONObject obj = result.getJSONObject(i);
+                                Subdistrict subdistrict = new Subdistrict(obj.getString("subdistrict_id"),obj.getString("subdistrict_name"));
+                                subdistricts.add(subdistrict);
+                                data.add(obj.getString("subdistrict_name"));
+                            }
+                            ArrayAdapter<String> adapter = new ArrayAdapter<>(AddAddressActivity.this, android.R.layout.simple_spinner_dropdown_item, data);
+                            mSubdistrict.setAdapter(adapter);
+                        } catch (JSONException e) {
+                            mProgressSubdistrict.setVisibility(View.GONE);
+                            Toast.makeText(AddAddressActivity.this,e.getLocalizedMessage(),Toast.LENGTH_LONG).show();
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        mProgressSubdistrict.setVisibility(View.GONE);
+                        Toast.makeText(AddAddressActivity.this,e.getLocalizedMessage(),Toast.LENGTH_LONG).show();
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        mProgressSubdistrict.setVisibility(View.GONE);
+                        mLayoutSubdistrict.setVisibility(View.VISIBLE);
+                    }
+                });
+    }
 
 }

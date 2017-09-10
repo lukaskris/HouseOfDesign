@@ -153,10 +153,16 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Service Package"/>
+                    <ProgressBar
+                        android:id="@+id/confirmation_loading_courier"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        />
                     <Spinner
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:id="@+id/confirmation_courier_package"/>
+                        android:id="@+id/confirmation_courier_package"
+                        android:visibility="gone"/>
                     <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
@@ -170,7 +176,7 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:id="@+id/confirmation_courier_price"
-                        android:text="Rp 15000"/>
+                        android:text="Rp-"/>
                     </RelativeLayout>
                 </LinearLayout>
 
@@ -207,11 +213,11 @@
                 android:layout_alignParentEnd="true"
                 android:textStyle="bold"
                 android:textSize="16sp"
-                android:text="Rp.123.000,-"/>
+                android:text="Rp.,-"/>
         </RelativeLayout>
 
         <Button
-            android:id="@+id/button2"
+            android:id="@+id/confirmation_confirm"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Confirm"

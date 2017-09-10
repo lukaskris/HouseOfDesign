@@ -14,14 +14,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 
 public class ServiceFactory {
-//    public static <T> T createRetrofitService(final Class<T> clazz, final String endPoint) {
-//        final RestAdapter restAdapter = new RestAdapter.Builder()
-//                .setEndpoint(endPoint)
-//                .build();
-//        T service = restAdapter.create(clazz);
-//
-//        return service;
-//    }
+
     public static MyService service = new Retrofit.Builder()
         .baseUrl(MyService.SERVICE_ENDPOINT)
         .client(new OkHttpClient())

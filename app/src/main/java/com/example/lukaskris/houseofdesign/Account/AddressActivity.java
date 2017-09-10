@@ -2,8 +2,10 @@ package com.example.lukaskris.houseofdesign.Account;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.lukaskris.houseofdesign.Model.ShippingAddress;
 import com.example.lukaskris.houseofdesign.R;
@@ -124,7 +127,11 @@ public class AddressActivity extends AppCompatActivity {
                             adapter.notifyDataSetChanged();
                             mLoading.setVisibility(View.GONE);
                             mRecycler.setVisibility(View.VISIBLE);
+                            mNoData.setVisibility(View.GONE);
                         }else{
+                            addresses.clear();
+                            adapter.notifyDataSetChanged();
+                            mLoading.setVisibility(View.GONE);
                             mRecycler.setVisibility(View.VISIBLE);
                             mNoData.setVisibility(View.VISIBLE);
                         }
@@ -161,13 +168,46 @@ public class AddressActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onBindViewHolder(AddressViewHolder holder, int position) {
+        public void onBindViewHolder(AddressViewHolder holder, final int position) {
             final ShippingAddress address = addresses.get(position);
             holder.mName.setText(address.getName());
             holder.mNotelp.setText(address.getPhone());
             holder.mKota.setText(address.getCity());
             holder.mProvinsiKodepos.setText(address.getProvince() + " " + address.getPostal_code());
             holder.mAlamat.setText(address.getAddress());
+            holder.mDelete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                    builder.setMessage("Do you want remove this address?")
+                            .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    service.deleteAddress(address.getId())
+                                            .subscribeOn(Schedulers.io())
+                                            .observeOn(AndroidSchedulers.mainThread())
+                                            .subscribe(new Consumer<ShippingAddress>() {
+                                                @Override
+                                                public void accept(ShippingAddress shippingAddress) throws Exception {
+                                                    Toast.makeText(AddressActivity.this, "Delete Success",Toast.LENGTH_SHORT).show();
+                                                    addresses.remove(position);
+                                                    notifyItemRemoved(position);
+                                                    if(addresses.size()==0)
+                                                        mNoData.setVisibility(View.VISIBLE);
+                                                }
+                                            }, new Consumer<Throwable>() {
+                                                @Override
+                                                public void accept(Throwable throwable) throws Exception {
+                                                    Toast.makeText(AddressActivity.this, throwable.getLocalizedMessage(),Toast.LENGTH_SHORT).show();
+                                                }
+                                            });
+                                }
+                            })
+                            .setNegativeButton("Cancel",null);
+                    builder.show();
+
+                }
+            });
             if(type==0){
                 holder.mEdit.setVisibility(View.GONE);
                 holder.mDelete.setVisibility(View.GONE);

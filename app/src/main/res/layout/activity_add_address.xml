@@ -75,10 +75,18 @@
                 android:paddingTop="10dp"
                 android:orientation="vertical"
                 android:background="@color/colorWhite">
-                <LinearLayout
+
+                <ProgressBar
+                    android:id="@+id/add_address_province_progress"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:visibility="visible"/>
+                <LinearLayout
+                    android:id="@+id/add_address_province_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -91,7 +99,7 @@
                         android:layout_marginBottom="10dp"/>
                 </LinearLayout>
                 <ProgressBar
-                    android:id="@+id/add_address_progress"
+                    android:id="@+id/add_address_city_progress"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:visibility="gone"/>
@@ -113,7 +121,7 @@
                         android:layout_marginBottom="10dp"/>
                 </LinearLayout>
                 <ProgressBar
-                    android:id="@+id/add_subdistrict_progress"
+                    android:id="@+id/add_address_subdistrict_progress"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:visibility="gone"/>
@@ -126,7 +134,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Kabupaten/Kota"/>
+                        android:text="Kecamatan"/>
                     <Spinner
                         android:id="@+id/add_address_subdistrict"
                         android:nextFocusForward="@+id/add_address_kodepos"
