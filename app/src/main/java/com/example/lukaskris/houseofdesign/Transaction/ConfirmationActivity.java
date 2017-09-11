@@ -27,11 +27,16 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.lukaskris.houseofdesign.Account.AddAddressActivity;
 import com.example.lukaskris.houseofdesign.Account.AddressActivity;
+import com.example.lukaskris.houseofdesign.Model.Cart;
 import com.example.lukaskris.houseofdesign.Model.Courier;
+import com.example.lukaskris.houseofdesign.Model.Orders;
+import com.example.lukaskris.houseofdesign.Model.OrdersDetail;
+import com.example.lukaskris.houseofdesign.Model.OrdersInfo;
 import com.example.lukaskris.houseofdesign.Model.ShippingAddress;
 import com.example.lukaskris.houseofdesign.R;
 import com.example.lukaskris.houseofdesign.Services.RajaOngkir;
 import com.example.lukaskris.houseofdesign.Util.CurrencyUtil;
+import com.example.lukaskris.houseofdesign.Util.PreferencesUtil;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.gson.JsonSyntaxException;
@@ -77,6 +82,7 @@ public class ConfirmationActivity extends AppCompatActivity {
 
     int total;
     int weight;
+    int service_price;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,6 +117,7 @@ public class ConfirmationActivity extends AppCompatActivity {
         total = getIntent().getIntExtra("total",0);
         weight = getIntent().getIntExtra("weight",0);
         mTotal.setText(CurrencyUtil.rupiah(new BigDecimal(total)));
+        service_price = 0;
 
         mChange.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -144,6 +151,7 @@ public class ConfirmationActivity extends AppCompatActivity {
                 mPrice.setText(CurrencyUtil.rupiah(new BigDecimal(courier.getmCost())));
                 total = total + Integer.parseInt(courier.getmCost());
                 mTotal.setText(CurrencyUtil.rupiah(new BigDecimal(total)));
+                service_price = Integer.parseInt(courier.getmCost());
             }
 
             @Override
@@ -156,7 +164,34 @@ public class ConfirmationActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(shippingAddress!=null){
+                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                    if(user != null) {
+                        Orders orders = new Orders(total, user.getEmail(), 0);
+                        service.setOrders(orders)
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(new Consumer<Orders>() {
+                                    @Override
+                                    public void accept(Orders orders) throws Exception {
+                                        List<Cart> carts = PreferencesUtil.getCarts(ConfirmationActivity.this);
+                                        for(Cart c : carts) {
+                                            int total = c.getQuantity() * c.getItem().getPrice();
+                                            OrdersDetail detail = new OrdersDetail(orders.getInvoice(), c.getItem().getId(),c.getSubitem_id(),total, c.getItem().getPrice(),c.getQuantity());
+                                            service.setOrdersDetail(detail).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe();
+                                        }
+                                        OrdersInfo info = new OrdersInfo(orders.getInvoice(),mCourier.getSelectedItem().toString(),mService.getSelectedItem().toString(), service_price, Integer.parseInt(shippingAddress.getId()));
+                                        service.setOrdersInfo(info).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<OrdersInfo>() {
+                                            @Override
+                                            public void accept(OrdersInfo ordersInfo) throws Exception {
+                                                Toast.makeText(ConfirmationActivity.this, "Data disimpan",Toast.LENGTH_LONG).show();
+                                            }
+                                        });
 
+                                    }
+                                });
+                    }
+                }else{
+                    Snackbar.make(mConfirm,"No internet connection",Snackbar.LENGTH_LONG).show();
                 }
 
             }

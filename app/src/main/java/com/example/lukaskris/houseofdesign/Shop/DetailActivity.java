@@ -141,10 +141,10 @@ public class DetailActivity extends AppCompatActivity {
                     String size = sizeList.get(sizeAdapter.selected_position);
 //                    List<Cart> cart = new ArrayList<Cart>();
 
-                    String id = "";
+                    int id=0;
                     for(SubItem s: subItems){
                         if(s.getColor().equals(color) && s.getSize().equals(size)){
-                            id=String.valueOf(s.getId());
+                            id=s.getId();
                         }
                     }
                     PreferencesUtil.addCart(DetailActivity.this, new Cart(item,color,size,id,mQuantityInput.getQuantity(),mQuantityInput.getMaxQuantity()));

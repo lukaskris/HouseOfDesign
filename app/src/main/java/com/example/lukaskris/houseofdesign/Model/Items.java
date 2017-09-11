@@ -15,7 +15,7 @@ import java.util.List;
 
 public class Items implements Serializable {
     private String name;
-    private String price;
+    private int price;
     private String description;
     private int category_id;
 
@@ -26,7 +26,7 @@ public class Items implements Serializable {
 
     public Items() {}
 
-    public Items(String name, String price, String desc, int category,int weight, String image, String thumbnail) {
+    public Items(String name, int price, String desc, int category,int weight, String image, String thumbnail) {
         this.name = name;
         this.price = price;
         this.description = desc;
@@ -36,7 +36,7 @@ public class Items implements Serializable {
         this.weight = weight;
     }
 
-    public Items(String name, String price, String desc, int category_id, String image, int id, String thumbnail) {
+    public Items(String name, int price, String desc, int category_id, String image, int id, String thumbnail) {
         this.name = name;
         this.price = price;
         this.description = desc;
@@ -67,11 +67,11 @@ public class Items implements Serializable {
         this.name = name;
     }
 
-    public String getPrice() {
+    public int getPrice() {
         return price;
     }
 
-    public void setPrice(String price) {
+    public void setPrice(int price) {
         this.price = price;
     }
 

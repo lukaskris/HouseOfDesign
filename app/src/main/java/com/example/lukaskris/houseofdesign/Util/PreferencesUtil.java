@@ -59,7 +59,7 @@ public class PreferencesUtil {
             carts.add(cart);
         }else if(containsCart(carts,cart)){
             for(Cart c:carts){
-                if(c.getSubitem_id().equals(cart.getSubitem_id())){
+                if(c.getSubitem_id() == cart.getSubitem_id()){
                     if(cart.getQuantity_max() >= c.getQuantity() + cart.getQuantity()){
                         c.setQuantity(c.getQuantity() + cart.getQuantity());
                     }else {
@@ -76,7 +76,7 @@ public class PreferencesUtil {
 
     private static boolean containsCart(List<Cart> carts, Cart cart){
         for(Cart c : carts){
-            if(c.getSubitem_id().equals(cart.getSubitem_id())){
+            if(c.getSubitem_id() == cart.getSubitem_id()){
                 return true;
             }
         }

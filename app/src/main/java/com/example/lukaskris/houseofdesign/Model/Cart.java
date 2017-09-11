@@ -10,11 +10,11 @@ public class Cart {
     Items item;
     String color;
     String size;
-    String subitem_id;
+    int subitem_id;
     int quantity;
     int quantity_max;
 
-    public Cart(Items item, String color, String size, String subitem_id, int quantity, int quantity_max) {
+    public Cart(Items item, String color, String size, int subitem_id, int quantity, int quantity_max) {
         this.item = item;
         this.color = color;
         this.size = size;
@@ -43,7 +43,7 @@ public class Cart {
         return size;
     }
 
-    public String getSubitem_id() {
+    public int getSubitem_id() {
         return subitem_id;
     }
 

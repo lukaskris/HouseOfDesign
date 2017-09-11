@@ -490,7 +490,7 @@ public class HomeFragment extends Fragment {
             final Items item = itemList.get(position);
             holder.setImage(context,item.getThumbnail());
             holder.setNama(item.getName());
-            holder.setHarga(item.getPrice());
+            holder.setHarga(String.valueOf(item.getPrice()));
             holder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

@@ -56,8 +56,10 @@
         <activity
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
             android:theme="@style/Base.Theme.AppCompat" />
-        <activity android:name=".Multimedia.FullScreenImageViewerActivity"
-            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity
+            android:name=".Multimedia.FullScreenImageViewerActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".Transaction.PaymentActivity"></activity>
     </application>
 
 </manifest>

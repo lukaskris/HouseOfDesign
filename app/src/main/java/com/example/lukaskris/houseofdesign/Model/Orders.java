@@ -14,8 +14,7 @@ public class Orders {
     int status;
     Date expired_at;
 
-    public Orders(String invoice, int total, String email, int status) {
-        this.invoice = invoice;
+    public Orders(int total, String email, int status) {
         this.total = total;
         this.email = email;
         this.status = status;
@@ -43,5 +42,29 @@ public class Orders {
 
     public void setExpired_at(Date expired_at) {
         this.expired_at = expired_at;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getInvoice() {
+        return invoice;
+    }
+
+    public int getTotal() {
+        return total;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public Date getExpired_at() {
+        return expired_at;
     }
 }

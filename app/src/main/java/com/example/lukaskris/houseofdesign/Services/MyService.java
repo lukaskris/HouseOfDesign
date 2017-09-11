@@ -4,6 +4,8 @@ import com.example.lukaskris.houseofdesign.Model.Category;
 import com.example.lukaskris.houseofdesign.Model.Customer;
 import com.example.lukaskris.houseofdesign.Model.Items;
 import com.example.lukaskris.houseofdesign.Model.Orders;
+import com.example.lukaskris.houseofdesign.Model.OrdersDetail;
+import com.example.lukaskris.houseofdesign.Model.OrdersInfo;
 import com.example.lukaskris.houseofdesign.Model.ShippingAddress;
 import com.example.lukaskris.houseofdesign.Model.SubItem;
 
@@ -61,4 +63,10 @@ public interface MyService {
 
     @POST("orders")
     Observable<Orders> setOrders(@Body Orders orders);
+
+    @POST("orders_detail")
+    Observable<OrdersDetail> setOrdersDetail(@Body OrdersDetail ordersDetail);
+
+    @POST("orders_info")
+    Observable<OrdersInfo> setOrdersInfo(@Body OrdersInfo ordersInfo);
 }
