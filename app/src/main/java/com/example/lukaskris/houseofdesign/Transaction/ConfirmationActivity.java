@@ -172,7 +172,7 @@ public class ConfirmationActivity extends AppCompatActivity {
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(new Consumer<Orders>() {
                                     @Override
-                                    public void accept(Orders orders) throws Exception {
+                                    public void accept(final Orders orders) throws Exception {
                                         List<Cart> carts = PreferencesUtil.getCarts(ConfirmationActivity.this);
                                         for(Cart c : carts) {
                                             int total = c.getQuantity() * c.getItem().getPrice();
@@ -183,7 +183,10 @@ public class ConfirmationActivity extends AppCompatActivity {
                                         service.setOrdersInfo(info).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<OrdersInfo>() {
                                             @Override
                                             public void accept(OrdersInfo ordersInfo) throws Exception {
-                                                Toast.makeText(ConfirmationActivity.this, "Data disimpan",Toast.LENGTH_LONG).show();
+//                                                Toast.makeText(ConfirmationActivity.this, "Data disimpan",Toast.LENGTH_LONG).show();
+                                                Intent intent = new Intent(ConfirmationActivity.this,PaymentActivity.class);
+                                                intent.putExtra("orders",orders);
+                                                startActivity(intent);
                                             }
                                         });
 

@@ -19,6 +19,7 @@
                 android:layout_height="wrap_content"
                 android:text="Nomor Tagihan"/>
             <TextView
+                android:id="@+id/payment_invoice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="16sp"
@@ -39,6 +40,7 @@
                 android:layout_height="wrap_content"
                 android:text="Batas Pembayaran"/>
             <TextView
+                android:id="@+id/payment_batas_pembayaran"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="16sp"
@@ -59,6 +61,7 @@
                 android:layout_height="wrap_content"
                 android:text="Jumlah"/>
             <TextView
+                android:id="@+id/payment_total"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="16sp"
@@ -86,13 +89,26 @@
                 android:orientation="horizontal"
                 android:background="?attr/selectableItemBackground">
                 <ImageView
+                    android:id="@+id/payment_logo_bank"
                     android:layout_width="0dp"
                     android:layout_weight="0.4"
                     android:layout_height="wrap_content" />
-                <TextView
+                <LinearLayout
                     android:layout_width="0dp"
                     android:layout_weight="0.6"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:text="Bank Mandiri, Jakarta"
+                        android:layout_height="wrap_content" />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="0700 000 899 992"
+                        android:textStyle="bold"/>
+                </LinearLayout>
+
             </LinearLayout>
         </LinearLayout>
         <View
