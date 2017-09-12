@@ -27,6 +27,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.lukaskris.houseofdesign.Model.Cart;
+import com.example.lukaskris.houseofdesign.Model.Items;
 import com.example.lukaskris.houseofdesign.Model.SubItem;
 import com.example.lukaskris.houseofdesign.R;
 import com.example.lukaskris.houseofdesign.Transaction.ConfirmationActivity;
@@ -36,6 +37,7 @@ import com.example.lukaskris.houseofdesign.Util.PreferencesUtil;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -60,6 +62,14 @@ public class ShoppingCartFragment extends Fragment {
     private ProgressDialog mLoading;
     LinearLayout mNoData;
     int total = 0;
+
+
+    public static ShoppingCartFragment newInstance() {
+        ShoppingCartFragment fragment = new ShoppingCartFragment();
+        Bundle args = new Bundle();
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -106,8 +116,9 @@ public class ShoppingCartFragment extends Fragment {
                         for (Cart c : mCarts) {
                             weight = weight + c.getItem().getWeight() * c.getQuantity();
                         }
-                        Log.d("DEBUG WEIGHT", weight + "");
+
                         intent.putExtra("weight", weight);
+                        intent.putExtra("items", (Serializable) mCarts);
                         startActivity(intent);
                         getActivity().overridePendingTransition(R.anim.slide_from_right, R.anim.slide_to_left);
                     } else {

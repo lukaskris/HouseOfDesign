@@ -33,6 +33,7 @@
                 android:ellipsize="end"
                 android:text="Samsung Galaxy A5 2017 Bonus Micro sd dan casing 3 biji"/>
             <TextView
+                android:id="@+id/orders_item_row_price"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.25"
@@ -47,6 +48,7 @@
             android:padding="5dp"
             android:background="@color/colorLightOrange">
             <TextView
+                android:id="@+id/orders_item_row_status"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="MENUNGGU PEMBAYARAN"/>
@@ -55,6 +57,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
                 <TextView
+                    android:id="@+id/orders_item_row_batas"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="batas pembayaran 08:44 WIB hari Kamis, 24 Agustus 2017"/>

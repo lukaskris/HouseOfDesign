@@ -42,6 +42,7 @@
                         android:lines="1"
                         android:ellipsize="end"
                         android:textSize="16sp"
+                        android:layout_toLeftOf="@+id/shopping_cart_row_delete"
                         android:textColor="@android:color/black"
                         android:id="@+id/shopping_cart_row_name"
                         android:text=""/>

@@ -1,12 +1,13 @@
 package com.example.lukaskris.houseofdesign.Model;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 /**
  * Created by xub on 06/09/17.
  */
 
-public class Cart {
+public class Cart implements Serializable{
     Items item;
     String color;
     String size;

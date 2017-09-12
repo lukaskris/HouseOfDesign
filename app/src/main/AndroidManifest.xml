@@ -59,7 +59,8 @@
         <activity
             android:name=".Multimedia.FullScreenImageViewerActivity"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".Transaction.PaymentActivity"></activity>
+        <activity android:name=".Transaction.PaymentActivity" />
+        <activity android:name=".Shop.ShoppingCartActivity"></activity>
     </application>
 
 </manifest>

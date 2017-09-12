@@ -194,6 +194,11 @@ public class DetailActivity extends AppCompatActivity {
         switch (item.getItemId()){
             case android.R.id.home:
                 finish();
+                overridePendingTransition(R.anim.slide_from_left, R.anim.slide_to_right);
+                break;
+            case R.id.detail_cart:
+                startActivity(new Intent(DetailActivity.this,ShoppingCartActivity.class));
+                overridePendingTransition(R.anim.slide_from_right, R.anim.slide_to_left);
                 break;
             default:
                 break;

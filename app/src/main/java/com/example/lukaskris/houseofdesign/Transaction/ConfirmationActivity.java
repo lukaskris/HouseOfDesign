@@ -29,6 +29,7 @@ import com.example.lukaskris.houseofdesign.Account.AddAddressActivity;
 import com.example.lukaskris.houseofdesign.Account.AddressActivity;
 import com.example.lukaskris.houseofdesign.Model.Cart;
 import com.example.lukaskris.houseofdesign.Model.Courier;
+import com.example.lukaskris.houseofdesign.Model.Items;
 import com.example.lukaskris.houseofdesign.Model.Orders;
 import com.example.lukaskris.houseofdesign.Model.OrdersDetail;
 import com.example.lukaskris.houseofdesign.Model.OrdersInfo;
@@ -46,6 +47,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -77,13 +79,14 @@ public class ConfirmationActivity extends AppCompatActivity {
     LinearLayout mNoAddress;
     Button mAddAddress;
     Button mConfirm;
-
+    List<Cart> itemses;
     ShippingAddress shippingAddress;
 
     int total;
     int weight;
     int service_price;
-
+    ProgressDialog mProgress;
+    @SuppressWarnings("unchecked")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -106,7 +109,7 @@ public class ConfirmationActivity extends AppCompatActivity {
         mNoAddress = (LinearLayout) findViewById(R.id.confirmation_no_address);
         mAddAddress = (Button) findViewById(R.id.confirmation_add_address);
         mConfirm = (Button) findViewById(R.id.confirmation_confirm);
-
+        mProgress  = new ProgressDialog(ConfirmationActivity.this);
         mAddAddress.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -114,8 +117,10 @@ public class ConfirmationActivity extends AppCompatActivity {
                 overridePendingTransition(R.anim.slide_from_right, R.anim.slide_to_left);
             }
         });
+        itemses = new ArrayList<>();
         total = getIntent().getIntExtra("total",0);
         weight = getIntent().getIntExtra("weight",0);
+        itemses = (List<Cart>) getIntent().getSerializableExtra("items");
         mTotal.setText(CurrencyUtil.rupiah(new BigDecimal(total)));
         service_price = 0;
 
@@ -149,9 +154,9 @@ public class ConfirmationActivity extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 Courier courier = mPackage.get(position);
                 mPrice.setText(CurrencyUtil.rupiah(new BigDecimal(courier.getmCost())));
-                total = total + Integer.parseInt(courier.getmCost());
-                mTotal.setText(CurrencyUtil.rupiah(new BigDecimal(total)));
                 service_price = Integer.parseInt(courier.getmCost());
+                int temp = total + service_price;
+                mTotal.setText(CurrencyUtil.rupiah(new BigDecimal(temp)));
             }
 
             @Override
@@ -165,8 +170,11 @@ public class ConfirmationActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if(shippingAddress!=null){
                     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                    if(user != null) {
-                        Orders orders = new Orders(total, user.getEmail(), 0);
+                    if(user != null && service_price != 0) {
+
+                        mProgress.setMessage("Confirmation...");
+                        mProgress.show();
+                        Orders orders = new Orders(total+service_price, user.getEmail(), 0);
                         service.setOrders(orders)
                                 .subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread())
@@ -174,22 +182,31 @@ public class ConfirmationActivity extends AppCompatActivity {
                                     @Override
                                     public void accept(final Orders orders) throws Exception {
                                         List<Cart> carts = PreferencesUtil.getCarts(ConfirmationActivity.this);
-                                        for(Cart c : carts) {
+                                        assert carts != null;
+                                        for (Cart c : carts) {
                                             int total = c.getQuantity() * c.getItem().getPrice();
-                                            OrdersDetail detail = new OrdersDetail(orders.getInvoice(), c.getItem().getId(),c.getSubitem_id(),total, c.getItem().getPrice(),c.getQuantity());
+                                            OrdersDetail detail = new OrdersDetail(orders.getInvoice(), c.getItem().getId(), c.getSubitem_id(), total, c.getItem().getPrice(), c.getQuantity());
                                             service.setOrdersDetail(detail).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe();
                                         }
-                                        OrdersInfo info = new OrdersInfo(orders.getInvoice(),mCourier.getSelectedItem().toString(),mService.getSelectedItem().toString(), service_price, Integer.parseInt(shippingAddress.getId()));
+                                        OrdersInfo info = new OrdersInfo(orders.getInvoice(), mCourier.getSelectedItem().toString(), mService.getSelectedItem().toString(), service_price, Integer.parseInt(shippingAddress.getId()));
                                         service.setOrdersInfo(info).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<OrdersInfo>() {
                                             @Override
                                             public void accept(OrdersInfo ordersInfo) throws Exception {
 //                                                Toast.makeText(ConfirmationActivity.this, "Data disimpan",Toast.LENGTH_LONG).show();
-                                                Intent intent = new Intent(ConfirmationActivity.this,PaymentActivity.class);
-                                                intent.putExtra("orders",orders);
+                                                mProgress.dismiss();
+                                                Intent intent = new Intent(ConfirmationActivity.this, PaymentActivity.class);
+                                                intent.putExtra("orders", orders);
+                                                intent.putExtra("items", (Serializable) itemses);
                                                 startActivity(intent);
+                                                finish();
                                             }
                                         });
-
+                                    }
+                                }, new Consumer<Throwable>() {
+                                    @Override
+                                    public void accept(Throwable throwable) throws Exception {
+                                        mProgress.dismiss();
+                                        Snackbar.make(mConfirm,"Please retry again",Snackbar.LENGTH_LONG).show();
                                     }
                                 });
                     }

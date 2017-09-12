@@ -49,11 +49,11 @@ public class OrdersFragment extends Fragment {
         return view;
     }
 
-    class OrdersViewPager extends FragmentStatePagerAdapter {
+    private class OrdersViewPager extends FragmentStatePagerAdapter {
 
         private Context mContext;
 
-        public OrdersViewPager(Context context, FragmentManager fm) {
+        OrdersViewPager(Context context, FragmentManager fm) {
             super(fm);
             mContext = context;
         }

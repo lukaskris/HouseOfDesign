@@ -72,10 +72,6 @@ public class OrdersTagihanFragment extends Fragment {
             values.add(position, item);
             notifyItemInserted(position);
         }
-        public void remove(int position) {
-            values.remove(position);
-            notifyItemRemoved(position);
-        }
 
         @Override
         public OrderItemAdapter.ItemHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -85,8 +81,7 @@ public class OrdersTagihanFragment extends Fragment {
             View v =
                     inflater.inflate(R.layout.orders_row_item_tagihan, parent, false);
             // set the view's size, margins, paddings and layout parameters
-            OrderItemAdapter.ItemHolder vh = new OrderItemAdapter.ItemHolder(v);
-            return vh;
+            return new ItemHolder(v);
         }
 
         @Override
@@ -104,10 +99,14 @@ public class OrdersTagihanFragment extends Fragment {
             TextView mName;
             TextView mPrice;
             TextView mDate;
+            TextView mStatus;
 
-            public ItemHolder(View itemView) {
+            ItemHolder(View itemView) {
                 super(itemView);
                 mName = (TextView) itemView.findViewById(R.id.orders_item_row_title);
+                mPrice = (TextView) itemView.findViewById(R.id.orders_item_row_price);
+                mDate = (TextView) itemView.findViewById(R.id.orders_item_row_batas);
+                mStatus = (TextView) itemView.findViewById(R.id.orders_item_row_status);
             }
         }
     }
