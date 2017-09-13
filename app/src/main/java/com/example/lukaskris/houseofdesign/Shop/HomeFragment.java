@@ -284,6 +284,7 @@ public class HomeFragment extends Fragment {
                             if (categories.size() > 0) {
                                 allCategory.clear();
                                 allCategory.addAll(categories);
+                                mNoData.setVisibility(View.GONE);
                                 getItem();
                                 migrateToCategoryItem();
                             }
@@ -313,7 +314,6 @@ public class HomeFragment extends Fragment {
                         if (itemses.size() > 0) {
                             allItems.clear();
                             allItems.addAll(itemses);
-
                         }
                     }
                 }, new Consumer<Throwable>() {

@@ -63,21 +63,6 @@ public class ShowAllActivity extends AppCompatActivity {
         category = getIntent().getIntExtra("category",0);
         String section = getIntent().getStringExtra("section");
         getSupportActionBar().setTitle(section);
-//        Item item = new Item();
-//        item.setCategory("Pria");
-//        item.setPrice("120000");
-//        List<String> image = new ArrayList<>();
-//        image.add("https://firebasestorage.googleapis.com/v0/b/onlineshop-cee9c.appspot.com/o/Item_Images%2FTooLaRoo1.jpg?alt=media&token=7986bdf4-6e87-4a35-99a3-c58fb97bbf3a");
-//        item.setImage(image);
-//        item.setName("TooLaRoo");
-//        mList.add(item);
-//        MyServicesAPI.getInstance().getItems(this, category,  0, new Callback() {
-//
-//
-//            @Override
-//            public void onSuccess(Object... params) {
-//
-//                mList.addAll((List<Item>) params[0]);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(ShowAllActivity.this, 2);
         recyclerView = (RecyclerView) findViewById(R.id.show_all_recyclerview);
         recyclerView.setLayoutManager(gridLayoutManager);
@@ -109,14 +94,6 @@ public class ShowAllActivity extends AppCompatActivity {
         });
         recyclerView.setAdapter(adapter);
         loadProduct(category,PAGE);
-//            }
-//
-//            @Override
-//            public void onError(Object... params) {
-//                Log.d("OnError", params[0].toString());
-//            }
-//
-//        });
     }
 
     private void loadProduct(int category, int page) {
@@ -142,23 +119,6 @@ public class ShowAllActivity extends AppCompatActivity {
                         Snackbar.make(recyclerView,throwable.getLocalizedMessage(),Snackbar.LENGTH_SHORT).show();
                     }
                 });
-
-//        MyServicesAPI.getInstance().getItems(this, category,  page*10, new Callback() {
-//            @Override
-//            public void onSuccess(Object... params) {
-//                int cursize = mList.size();
-//                //noinspection unchecked
-//                mList.addAll((List<Item>) params[0]);
-//
-//                adapter.notifyItemRangeInserted(cursize, mList.size()-1);
-//                adapter.setLoaded();
-//            }
-//
-//            @Override
-//            public void onError(Object... params) {
-////                Snackbar.make(,params[0].toString(), Snackbar.LENGTH_SHORT);
-//            }
-//        });
 
     }
 

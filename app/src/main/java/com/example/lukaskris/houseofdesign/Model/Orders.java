@@ -1,7 +1,10 @@
 package com.example.lukaskris.houseofdesign.Model;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by Lukaskris on 10/09/2017.
@@ -14,6 +17,11 @@ public class Orders implements Serializable{
     String email;
     int status;
     Date expired_at;
+    List<OrdersDetail> detail;
+
+    Orders(){
+        detail = new ArrayList<>();
+    }
 
     public Orders(int total, String email, int status) {
         this.total = total;
@@ -70,11 +78,40 @@ public class Orders implements Serializable{
         return email;
     }
 
-    public int getStatus() {
-        return status;
-    }
-
     public Date getExpired_at() {
         return expired_at;
+    }
+
+    public List<OrdersDetail> getDetail() {
+        return detail;
+    }
+
+    public void setDetail(List<OrdersDetail> detail) {
+        this.detail = detail;
+    }
+
+    public String getStatus(){
+        String statuscode = "";
+        if(status == 0){
+            statuscode = "MENUNGGU PEMBAYARAN";
+        }else if(status == 1){
+            statuscode = "PEMBAYARAN TERVERIFIKASI";
+        }else if(status == 2){
+            statuscode = "PROSES";
+        }else if(status == 3){
+            statuscode = "BARANG TELAH DIKIRIM";
+        }else if(status == 4){
+            statuscode = "BARANG DITERIMA";
+        }else if(status == 5){
+            statuscode = "KADALUARSA";
+        }
+        return statuscode;
+    }
+
+    public String getExpired(){
+        String expired = "batas pembayaran ";
+        expired += new SimpleDateFormat("dd MMMM yyyy HH:mm").format(expired_at);
+
+        return expired;
     }
 }
