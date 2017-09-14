@@ -15,18 +15,10 @@
         android:paddingBottom="5dp"
         android:orientation="vertical">
         <LinearLayout
-            android:id="@+id/tagihan_single_row"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <LinearLayout
-                android:id="@+id/tagihan_images"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.65"
-                android:visibility="gone"
-                android:orientation="horizontal"/>
             <ImageView
                 android:id="@+id/tagihan_image"
                 android:layout_width="0dp"
@@ -42,16 +34,29 @@
                 android:lines="2"
                 android:ellipsize="end"
                 android:text="Samsung Galaxy A5 2017 Bonus Micro sd dan casing 3 biji"/>
-            <TextView
-                android:id="@+id/orders_item_row_price"
+            <RelativeLayout
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
                 android:layout_weight="0.25"
-                android:padding="10dp"
-                android:textStyle="bold"
-                android:text="Rp4.502.337"/>
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/orders_item_row_price"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="10dp"
+                    android:textStyle="bold"
+                    android:text="Rp4.502.337"/>
+                <TextView
+                    android:id="@+id/orders_item_row_status_info"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    android:layout_below="@id/orders_item_row_price"
+                    android:text=""/>
+            </RelativeLayout>
         </LinearLayout>
         <LinearLayout
+            android:id="@+id/orders_item_row_info"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"

@@ -17,6 +17,8 @@ public class Orders implements Serializable{
     String email;
     int status;
     Date expired_at;
+    String name;
+    String thumbnail;
     List<OrdersDetail> detail;
 
     Orders(){
@@ -90,6 +92,14 @@ public class Orders implements Serializable{
         this.detail = detail;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public String getThumbnail() {
+        return thumbnail;
+    }
+
     public String getStatus(){
         String statuscode = "";
         if(status == 0){
@@ -106,6 +116,10 @@ public class Orders implements Serializable{
             statuscode = "KADALUARSA";
         }
         return statuscode;
+    }
+
+    public int getStatusCode(){
+        return status;
     }
 
     public String getExpired(){

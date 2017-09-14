@@ -3,9 +3,11 @@ package com.example.lukaskris.houseofdesign.Orders;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,19 +17,25 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.lukaskris.houseofdesign.Model.Orders;
 import com.example.lukaskris.houseofdesign.Model.OrdersDetail;
 import com.example.lukaskris.houseofdesign.R;
+import com.example.lukaskris.houseofdesign.Util.CurrencyUtil;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
 import static com.example.lukaskris.houseofdesign.Services.ServiceFactory.service;
@@ -64,11 +72,11 @@ public class OrdersTagihanFragment extends Fragment {
         recyclerView = (RecyclerView) view.findViewById(R.id.orders_item_recyclerview);
         recyclerView.setHasFixedSize(true);
 
-        LinearLayoutManager llm = new LinearLayoutManager(getContext());
-        llm.setOrientation(LinearLayoutManager.VERTICAL);
-        recyclerView.setLayoutManager(llm);
+//        LinearLayoutManager llm = new LinearLayoutManager(getContext());
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         mOrders = new ArrayList<>();
+        handler = new Handler();
         adapter = new OrderItemAdapter(getContext(),mOrders);
         adapter.setOnLoadMoreListener(new OnLoadMoreListener() {
             @Override
@@ -87,7 +95,7 @@ public class OrdersTagihanFragment extends Fragment {
                             mOrders.remove(mOrders.size() - 1);
                             adapter.notifyItemRemoved(mOrders.size());
                             //add items one by one
-                            PAGE++;
+
                             getOrders();
 
                         }
@@ -104,9 +112,53 @@ public class OrdersTagihanFragment extends Fragment {
         void onLoadMore();
     }
 
+    @SuppressWarnings("unchecked")
     private void getOrders(){
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if(user!=null){
+//            service.getOrders(user.getEmail(), PAGE*10, 10)
+//                    .flatMap(new Function<List<Orders>, ObservableSource<Orders>>() {
+//                        @Override
+//                        public ObservableSource<Orders> apply(List<Orders> orderses) throws Exception {
+//                            return Observable.fromIterable(orderses);
+//                        }
+//                    })
+//                    .flatMap(new Function<Orders, ObservableSource<?>>() {
+//                        @Override
+//                        public ObservableSource<List<OrdersDetail>> apply(Orders orders) throws Exception {
+//                            mOrders.add(orders);
+//                            return service.getOrdersDetail(orders.getInvoice());
+//                        }
+//                    })
+//                    .subscribeOn(Schedulers.io())
+//                    .observeOn(AndroidSchedulers.mainThread())
+//                    .subscribe(new Observer<Object>() {
+//                        @Override
+//                        public void onSubscribe(Disposable d) {
+//
+//                        }
+//
+//                        @Override
+//                        public void onNext(Object o) {
+//                            List<OrdersDetail> mDetail = (List<OrdersDetail>) o;
+//                            for(Orders orders : mOrders){
+//                                if(orders.getInvoice().equalsIgnoreCase(mDetail.get(0).getInvoice())){
+//                                    orders.setDetail(mDetail);
+//                                }
+//                            }
+//                        }
+//
+//                        @Override
+//                        public void onError(Throwable e) {
+//
+//                        }
+//
+//                        @Override
+//                        public void onComplete() {
+//                            adapter.notifyDataSetChanged();
+//                            adapter.setLoaded();
+//                        }
+//                    });
             service.getOrders(user.getEmail(),PAGE*10,10)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -117,32 +169,38 @@ public class OrdersTagihanFragment extends Fragment {
                         }
 
                         @Override
-                        public void onNext(List<Orders> orderses) {
-
-                            for(final Orders o: orderses){
-                                service.getOrdersDetail(o.getInvoice())
-                                        .subscribeOn(Schedulers.io())
-                                        .observeOn(AndroidSchedulers.mainThread())
-                                        .subscribe(new Consumer<List<OrdersDetail>>() {
-                                            @Override
-                                            public void accept(List<OrdersDetail> ordersDetail) throws Exception {
-                                                o.setDetail(ordersDetail);
-                                                mOrders.add(o);
-                                            }
-                                        });
+                        public void onNext(final List<Orders> orderses) {
+                            if(orderses.size()>0) {
+                                for (final Orders o : orderses) {
+                                    String[] name = o.getName().split(", ");
+                                    String[] thumbnail = o.getThumbnail().split(", ");
+                                    List<OrdersDetail> temp = new ArrayList<OrdersDetail>();
+                                    for (int i = 0; i < name.length; i++) {
+                                        OrdersDetail d = new OrdersDetail(o.getInvoice(), name[i], thumbnail[i]);
+                                        temp.add(d);
+                                    }
+                                    o.setDetail(temp);
+                                    mOrders.add(o);
+                                }
+                            }else {
+                                adapter.setLoaded();
                             }
                         }
 
                         @Override
                         public void onError(Throwable e) {
-
+                            Snackbar.make(recyclerView,e.getLocalizedMessage(),Snackbar.LENGTH_LONG).show();
                         }
 
                         @Override
                         public void onComplete() {
+                            handler.post(new Runnable() {
+                                @Override
+                                public void run() {
 
-                            adapter.notifyDataSetChanged();
-                            adapter.setLoaded();
+                                    adapter.notifyDataSetChanged();
+                                }
+                            });
                         }
                     });
         }
@@ -159,7 +217,7 @@ public class OrdersTagihanFragment extends Fragment {
         private boolean loading;
         private OnLoadMoreListener onLoadMoreListener;
 
-        OrderItemAdapter(Context context,List<Orders> orders){
+        OrderItemAdapter(Context context, List<Orders> orders){
             this.context = context;
             ordersList = orders;
             if (recyclerView.getLayoutManager() instanceof LinearLayoutManager) {
@@ -174,13 +232,11 @@ public class OrdersTagihanFragment extends Fragment {
                                 super.onScrolled(recyclerView, dx, dy);
 
                                 totalItemCount = linearLayoutManager.getItemCount();
-                                lastVisibleItem = linearLayoutManager
-                                        .findLastVisibleItemPosition();
+                                lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
 
                                 if (!loading && (lastVisibleItem + visibleThreshold) > totalItemCount) {
-                                    // End has been reached
-                                    // Do something
                                     if (onLoadMoreListener != null) {
+                                        PAGE++;
                                         onLoadMoreListener.onLoadMore();
                                     }
                                     loading = true;
@@ -219,26 +275,25 @@ public class OrdersTagihanFragment extends Fragment {
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
             if (holder instanceof ItemHolder) {
-                Orders orders = ordersList.get(position);
-                List<OrdersDetail> detail = orders.getDetail();
                 ItemHolder itemHolder = (ItemHolder) holder;
-                itemHolder.mPrice.setText(detail.get(0).getPrice());
-                itemHolder.mStatus.setText(orders.getStatus());
-                itemHolder.mDate.setText(orders.getExpired());
-                if(detail.size()==1){
-                    itemHolder.mName.setText(detail.get(0).getName());
-                    Glide.with(getContext()).load("https://storage.googleapis.com/houseofdesign/"+detail.get(0).getThumbnail()).override(150,150).into(itemHolder.mImage);
-                }else if(detail.size()>1){
-                    itemHolder.mName.setVisibility(View.GONE);
-                    itemHolder.mImage.setVisibility(View.GONE);
-                    itemHolder.mImagesLayout.setVisibility(View.VISIBLE);
-                    for(OrdersDetail d:detail) {
-                        ImageView image = new ImageView(getContext());
-                        Glide.with(getContext()).load("https://storage.googleapis.com/houseofdesign/"+d.getThumbnail())
-                                .override(150,150).into(image);
-                        itemHolder.mImagesLayout.addView(image);
-                    }
+                Orders tempOrder = ordersList.get(position);
+
+                List<OrdersDetail> tempDetail = tempOrder.getDetail();
+                if(tempOrder.getStatusCode() == 0) {
+                    itemHolder.mStatus.setText(tempOrder.getStatus());
+                    itemHolder.mDate.setText(tempOrder.getExpired());
+                }else {
+                    itemHolder.mLayoutInfo.setVisibility(View.GONE);
+                    itemHolder.mStatusInfo.setText(tempOrder.getStatus());
                 }
+                itemHolder.mPrice.setText(CurrencyUtil.rupiah(new BigDecimal(tempOrder.getTotal())));
+
+                itemHolder.mName.setText(tempOrder.getName());
+                Glide.with(getContext()).load("https://storage.googleapis.com/houseofdesign/"+tempDetail.get(0)
+                        .getThumbnail()).override(150,150)
+                        .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                        .into(itemHolder.mImage);
+
             }
         }
 
@@ -254,7 +309,6 @@ public class OrdersTagihanFragment extends Fragment {
         void setOnLoadMoreListener(OnLoadMoreListener onLoadMoreListener) {
             this.onLoadMoreListener = onLoadMoreListener;
         }
-
         class ProgressViewHolder extends RecyclerView.ViewHolder {
             ProgressBar progressBar;
 
@@ -269,9 +323,9 @@ public class OrdersTagihanFragment extends Fragment {
             TextView mPrice;
             TextView mDate;
             TextView mStatus;
+            TextView mStatusInfo;
             ImageView mImage;
-            LinearLayout mSingleRow;
-            LinearLayout mImagesLayout;
+            LinearLayout mLayoutInfo;
             ItemHolder(View itemView) {
                 super(itemView);
                 mName = (TextView) itemView.findViewById(R.id.orders_item_row_title);
@@ -279,8 +333,8 @@ public class OrdersTagihanFragment extends Fragment {
                 mDate = (TextView) itemView.findViewById(R.id.orders_item_row_batas);
                 mImage = (ImageView) itemView.findViewById(R.id.tagihan_image);
                 mStatus = (TextView) itemView.findViewById(R.id.orders_item_row_status);
-                mSingleRow = (LinearLayout) itemView.findViewById(R.id.tagihan_single_row);
-                mImagesLayout = (LinearLayout) itemView.findViewById(R.id.tagihan_images);
+                mStatusInfo = (TextView) itemView.findViewById(R.id.orders_item_row_status_info);
+                mLayoutInfo = (LinearLayout) itemView.findViewById(R.id.orders_item_row_info);
             }
         }
     }

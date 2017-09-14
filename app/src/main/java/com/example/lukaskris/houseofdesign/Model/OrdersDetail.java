@@ -35,6 +35,12 @@ public class OrdersDetail {
         this.thumbnail = thumbnail;
     }
 
+    public OrdersDetail(String invoice, String name, String thumbnail) {
+        this.invoice = invoice;
+        this.name = name;
+        this.thumbnail = thumbnail;
+    }
+
     public String getName() {
         return name;
     }
