@@ -178,6 +178,13 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == 1 && resultCode == RESULT_OK){
+            selectedFragment(R.id.nav_orders);
+        }
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
     }

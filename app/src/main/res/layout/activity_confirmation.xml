@@ -45,8 +45,7 @@
                         android:visibility="visible"
                         android:layout_centerInParent="true"
                         app:indicatorColor="@android:color/darker_gray"
-                        app:indicatorName="BallPulseIndicator"
-                        />
+                        app:indicatorName="BallPulseIndicator"/>
                     <LinearLayout
                         android:id="@+id/confirmation_no_address"
                         android:layout_width="match_parent"

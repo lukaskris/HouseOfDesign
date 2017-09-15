@@ -35,14 +35,14 @@ public class RajaOngkir {
                 .getJSONObjectObservable();
     }
 
-    public static Observable<JSONObject> getCost(String origin, String destination, String weight, String courier){
+    public static Observable<JSONObject> getCost(String origin, String destination, int weight, String courier){
         return Rx2AndroidNetworking.post("https://pro.rajaongkir.com/api/cost")
                 .addHeaders("key",key)
                 .addBodyParameter("origin",origin)
                 .addBodyParameter("originType","city")
                 .addBodyParameter("destination",destination)
                 .addBodyParameter("destinationType","subdistrict")
-                .addBodyParameter("weight",weight)
+                .addBodyParameter("weight", String.valueOf(weight))
                 .addBodyParameter("courier",courier)
                 .build()
                 .getJSONObjectObservable();

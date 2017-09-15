@@ -197,8 +197,8 @@ public class ConfirmationActivity extends AppCompatActivity {
                                                 Intent intent = new Intent(ConfirmationActivity.this, PaymentActivity.class);
                                                 intent.putExtra("orders", orders);
                                                 intent.putExtra("items", (Serializable) itemses);
-                                                startActivity(intent);
-                                                finish();
+                                                startActivityForResult(intent,2);
+
                                             }
                                         });
                                     }
@@ -242,6 +242,10 @@ public class ConfirmationActivity extends AppCompatActivity {
             mAddress.setText(address.getAddress());
             mProv.setText(address.getCity()+", " +address.getProvince() + " "+address.getPostal_code());
             mPhone.setText(address.getPhone());
+        }else if(requestCode == 2 && resultCode == Activity.RESULT_OK){
+            setResult(RESULT_OK,null);
+            this.finish();
+            overridePendingTransition(R.anim.slide_from_left, R.anim.slide_to_right);
         }
     }
 
@@ -296,7 +300,7 @@ public class ConfirmationActivity extends AppCompatActivity {
         else if(mCourier.getSelectedItem().toString().equalsIgnoreCase("Pos Indonesia"))
             courier="pos";
 
-        RajaOngkir.getCost(origin,destination,String.valueOf(weight),courier)
+        RajaOngkir.getCost(origin,destination,weight,courier)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<JSONObject>() {

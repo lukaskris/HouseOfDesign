@@ -49,6 +49,7 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import me.himanshusoni.quantityview.QuantityView;
 
+import static android.app.Activity.RESULT_OK;
 import static com.example.lukaskris.houseofdesign.Services.ServiceFactory.service;
 
 public class ShoppingCartFragment extends Fragment {
@@ -119,7 +120,7 @@ public class ShoppingCartFragment extends Fragment {
 
                         intent.putExtra("weight", weight);
                         intent.putExtra("items", (Serializable) mCarts);
-                        startActivity(intent);
+                        getActivity().startActivityForResult(intent,1);
                         getActivity().overridePendingTransition(R.anim.slide_from_right, R.anim.slide_to_left);
                     } else {
                         Snackbar.make(mNoData, "No item in Your cart.", Snackbar.LENGTH_SHORT).show();
@@ -132,6 +133,8 @@ public class ShoppingCartFragment extends Fragment {
 
         return view;
     }
+
+
 
     private class ShoppingCartAdapter extends RecyclerView.Adapter<ShoppingCartAdapter.ShoppingCartViewHolder>{
         Context context;
@@ -213,11 +216,12 @@ public class ShoppingCartFragment extends Fragment {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             itemList.remove(position);
-                            if(itemList.size()==0)
+                            notifyItemRemoved(position);
+                            if(itemList.size()==0) {
                                 mNoData.setVisibility(View.VISIBLE);
+                            }
                             PreferencesUtil.saveCart(getContext(),itemList);
-                            notifyDataSetChanged();
-                            total = total - item.getItem().getPrice() * item.getQuantity();
+                            total = total - (item.getItem().getPrice() * item.getQuantity());
                             mTotal.setText(CurrencyUtil.rupiah(new BigDecimal(total)));
                         }
                     });

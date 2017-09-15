@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,6 +17,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.example.lukaskris.houseofdesign.HomeActivity;
 import com.example.lukaskris.houseofdesign.Model.Cart;
 import com.example.lukaskris.houseofdesign.Model.Items;
 import com.example.lukaskris.houseofdesign.Model.Orders;
@@ -40,7 +42,7 @@ public class PaymentActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_payment);
-        setTitle("Detail Pembayran");
+        setTitle("Detail Pembayaran");
         if(getSupportActionBar()!=null){
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
@@ -71,7 +73,10 @@ public class PaymentActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case android.R.id.home:
+                Log.d("Debug", "finish dari payment");
+                setResult(RESULT_OK,null);
                 finish();
+                break;
         }
         return true;
     }

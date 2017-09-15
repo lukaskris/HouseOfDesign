@@ -67,6 +67,9 @@ public interface MyService {
     @GET("orders/{email}/{offset}/{limit}")
     Observable<List<Orders>> getOrders(@Path("email")String email, @Path("offset") int offset, @Path("limit") int limit);
 
+    @GET("orders/{email}/{offset}/{limit}/{filter}")
+    Observable<List<Orders>> getOrders(@Path("email")String email, @Path("filter")String filter, @Path("offset") int offset, @Path("limit") int limit);
+
     @POST("orders_detail")
     Observable<OrdersDetail> setOrdersDetail(@Body OrdersDetail ordersDetail);
 

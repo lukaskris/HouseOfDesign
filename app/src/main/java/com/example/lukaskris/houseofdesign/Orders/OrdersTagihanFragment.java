@@ -7,10 +7,13 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -18,34 +21,49 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.model.StringLoader;
 import com.example.lukaskris.houseofdesign.Model.Orders;
 import com.example.lukaskris.houseofdesign.Model.OrdersDetail;
 import com.example.lukaskris.houseofdesign.R;
 import com.example.lukaskris.houseofdesign.Util.CurrencyUtil;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.wang.avi.AVLoadingIndicatorView;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Cancellable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
+import io.reactivex.functions.Predicate;
 import io.reactivex.schedulers.Schedulers;
 
 import static com.example.lukaskris.houseofdesign.Services.ServiceFactory.service;
 
 public class OrdersTagihanFragment extends Fragment {
     private RecyclerView recyclerView;
+    private AVLoadingIndicatorView mLoading;
+    private TextView mNoData;
+    private EditText mSearch;
+
     int PAGE=0;
     Handler handler;
     List<Orders> mOrders;
     OrderItemAdapter adapter;
+    int cursize=0;
+
+    private Disposable mDisposable;
+
 
     public OrdersTagihanFragment() {
         // Required empty public constructor
@@ -70,9 +88,80 @@ public class OrdersTagihanFragment extends Fragment {
 
 
         recyclerView = (RecyclerView) view.findViewById(R.id.orders_item_recyclerview);
-        recyclerView.setHasFixedSize(true);
+        mLoading = (AVLoadingIndicatorView) view.findViewById(R.id.tagihan_loading);
+        mNoData = (TextView) view.findViewById(R.id.orders_item_no_data);
+        mSearch = (EditText) view.findViewById(R.id.orders_item_search);
 
-//        LinearLayoutManager llm = new LinearLayoutManager(getContext());
+        Observable<String> textChange = createTextChangeObservable();
+        mDisposable = textChange
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(new Consumer<String>() {
+                    @Override
+                    public void accept(String s) throws Exception {
+                        mLoading.setVisibility(View.VISIBLE);
+                        mNoData.setVisibility(View.GONE);
+                    }
+                })
+                .observeOn(Schedulers.io())
+                .map(new Function<String, Observable<List<Orders>> >() {
+
+                    @Override
+                    public Observable<List<Orders>> apply(String query) throws Exception {
+                        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                        if(user!=null){
+                            PAGE=0;
+                            return service.getOrders(user.getEmail(),query,PAGE*10,10);
+                        }
+                        return null;
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<Observable<List<Orders>>>() {
+                    @Override
+                    public void accept(Observable<List<Orders>> listObservable) throws Exception {
+                        resetState();
+                        listObservable
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(new Consumer<List<Orders>>() {
+                            @Override
+                            public void accept(List<Orders> orderses) throws Exception {
+                                cursize = adapter.getItemCount();
+                                mLoading.setVisibility(View.GONE);
+                                if(orderses.size()>0) {
+                                    mNoData.setVisibility(View.GONE);
+                                    cursize = adapter.getItemCount();
+                                    for (final Orders o : orderses) {
+                                        String[] name = o.getName().split(", ");
+                                        String[] thumbnail = o.getThumbnail().split(", ");
+                                        List<OrdersDetail> temp = new ArrayList<OrdersDetail>();
+                                        for (int i = 0; i < name.length; i++) {
+                                            OrdersDetail d = new OrdersDetail(o.getInvoice(), name[i], thumbnail[i]);
+                                            temp.add(d);
+                                        }
+                                        o.setDetail(temp);
+                                        mOrders.add(o);
+                                    }
+                                    handler.post(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            adapter.notifyItemRangeInserted(cursize+1, adapter.getItemCount());
+                                        }
+                                    });
+                                }else {
+                                    mNoData.setVisibility(View.VISIBLE);
+                                    adapter.setLoaded();
+                                }
+
+                            }
+                        });
+                    }
+                });
+
+
+        recyclerView.setHasFixedSize(false);
+
+
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         mOrders = new ArrayList<>();
@@ -106,6 +195,51 @@ public class OrdersTagihanFragment extends Fragment {
         recyclerView.setAdapter(adapter);
         getOrders();
         return view;
+    }
+
+    private Observable<String> createTextChangeObservable(){
+        Observable<String> textChangeObservable = Observable.create(new ObservableOnSubscribe<String>() {
+            @Override
+            public void subscribe(final ObservableEmitter<String> emitter) throws Exception {
+                final TextWatcher watcher = new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+                    @Override
+                    public void afterTextChanged(Editable s) {}
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+                        emitter.onNext(s.toString());
+                    }
+
+                };
+
+                mSearch.addTextChangedListener(watcher);
+                emitter.setCancellable(new Cancellable() {
+                    @Override
+                    public void cancel() throws Exception {
+                        mSearch.removeTextChangedListener(watcher);
+                    }
+                });
+            }
+        });
+        return textChangeObservable
+                .filter(new Predicate<String>() {
+                    @Override
+                    public boolean test(String s) throws Exception {
+                        return s.length() >= 2 || s.length() == 0;
+                    }
+                })
+                .debounce(1000, TimeUnit.MILLISECONDS);
+    }
+
+    private void resetState(){
+        mOrders.clear();
+        PAGE=0;
+        recyclerView.getRecycledViewPool().clear();
+        adapter.resetLoaded();
+        adapter.notifyDataSetChanged();
     }
 
     private interface OnLoadMoreListener {
@@ -159,18 +293,19 @@ public class OrdersTagihanFragment extends Fragment {
 //                            adapter.setLoaded();
 //                        }
 //                    });
-            service.getOrders(user.getEmail(),PAGE*10,10)
+            String filter = mSearch.getText().toString();
+            service.getOrders(user.getEmail(),filter,PAGE*10,10)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new Observer<List<Orders>>() {
-                        @Override
-                        public void onSubscribe(Disposable d) {
 
-                        }
+                        @Override
+                        public void onSubscribe(Disposable d) {}
 
                         @Override
                         public void onNext(final List<Orders> orderses) {
                             if(orderses.size()>0) {
+                                cursize = adapter.getItemCount();
                                 for (final Orders o : orderses) {
                                     String[] name = o.getName().split(", ");
                                     String[] thumbnail = o.getThumbnail().split(", ");
@@ -194,11 +329,16 @@ public class OrdersTagihanFragment extends Fragment {
 
                         @Override
                         public void onComplete() {
+                            mLoading.setVisibility(View.GONE);
+                            if(adapter.getItemCount() == 0){
+                                mNoData.setVisibility(View.VISIBLE);
+                            }else {
+                                mNoData.setVisibility(View.GONE);
+                            }
                             handler.post(new Runnable() {
                                 @Override
                                 public void run() {
-
-                                    adapter.notifyDataSetChanged();
+                                    adapter.notifyItemRangeInserted(cursize+1, adapter.getItemCount());
                                 }
                             });
                         }
@@ -221,16 +361,14 @@ public class OrdersTagihanFragment extends Fragment {
             this.context = context;
             ordersList = orders;
             if (recyclerView.getLayoutManager() instanceof LinearLayoutManager) {
-                final LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView
-                        .getLayoutManager();
-
                 recyclerView
                         .addOnScrollListener(new RecyclerView.OnScrollListener() {
                             @Override
                             public void onScrolled(RecyclerView recyclerView,
                                                    int dx, int dy) {
                                 super.onScrolled(recyclerView, dx, dy);
-
+                                LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView
+                                        .getLayoutManager();
                                 totalItemCount = linearLayoutManager.getItemCount();
                                 lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
 
@@ -244,11 +382,6 @@ public class OrdersTagihanFragment extends Fragment {
                             }
                         });
             }
-        }
-
-        public void add(int position, Orders item) {
-            ordersList.add(position, item);
-            notifyItemInserted(position);
         }
 
         @Override
@@ -279,9 +412,13 @@ public class OrdersTagihanFragment extends Fragment {
                 Orders tempOrder = ordersList.get(position);
 
                 List<OrdersDetail> tempDetail = tempOrder.getDetail();
+                itemHolder.mLayoutInfo.setVisibility(View.VISIBLE);
+
+                Log.d("Debug status ",tempOrder.getInvoice()+ " "+ tempOrder.getStatusCode() + " " + tempOrder.getStatus());
                 if(tempOrder.getStatusCode() == 0) {
                     itemHolder.mStatus.setText(tempOrder.getStatus());
                     itemHolder.mDate.setText(tempOrder.getExpired());
+                    itemHolder.mStatusInfo.setText("");
                 }else {
                     itemHolder.mLayoutInfo.setVisibility(View.GONE);
                     itemHolder.mStatusInfo.setText(tempOrder.getStatus());
@@ -299,6 +436,10 @@ public class OrdersTagihanFragment extends Fragment {
 
         void setLoaded() {
             loading = false;
+        }
+
+        void resetLoaded(){
+            loading = true;
         }
 
         @Override
