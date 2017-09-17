@@ -1,5 +1,6 @@
 package com.example.lukaskris.houseofdesign.Shop;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.app.Service;
 import android.content.Context;
@@ -142,10 +143,11 @@ public class HomeFragment extends Fragment {
 
 
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.home_swipe);
-//        swipeRefreshLayout.setColorScheme(getResources().getColor(android.R.color.holo_blue_bright),
-//                getResources().getColor(android.R.color.holo_green_light),
-//                getResources().getColor(android.R.color.holo_orange_light),
-//                getResources().getColor(android.R.color.holo_red_light));
+//
+        swipeRefreshLayout.setColorSchemeColors(getResources().getColor(android.R.color.holo_blue_bright),
+                getResources().getColor(android.R.color.holo_green_light),
+                getResources().getColor(android.R.color.holo_orange_light),
+                getResources().getColor(android.R.color.holo_green_light));
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -154,8 +156,9 @@ public class HomeFragment extends Fragment {
                     public void run() {
                         if(NetworkUtil.isOnline(getContext())) {
                             fetchData();
+                        }else{
+                            noInternetConnection();
                         }
-                        swipeRefreshLayout.setRefreshing(false);
                     }
                 },3000);
             }
@@ -288,6 +291,8 @@ public class HomeFragment extends Fragment {
                                 getItem();
                                 migrateToCategoryItem();
                             }
+                            if(swipeRefreshLayout.isRefreshing())
+                                swipeRefreshLayout.setRefreshing(false);
                         }
                     }, new Consumer<Throwable>() {
                         @Override
@@ -354,7 +359,7 @@ public class HomeFragment extends Fragment {
         }
 
         @Override
-        public void onBindViewHolder(final CategoryViewHolder holder, final int position) {
+        public void onBindViewHolder(final CategoryViewHolder holder, @SuppressLint("RecyclerView") final int position) {
             final String sectionName = dataList.get(position).getHeaderTitle();
 
             holder.itemTitle.setText(sectionName);
@@ -521,13 +526,6 @@ public class HomeFragment extends Fragment {
             item_nama = (TextView)mView.findViewById(R.id.item_nama);
             item_price = (TextView)mView.findViewById(R.id.item_price);
             item_image =(ImageView) mView.findViewById(R.id.item_image);
-            //add event click to item
-            //TODO: going to detail item
-            mView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                }
-            });
         }
 
         void setNama(String nama){

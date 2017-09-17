@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 
 import com.example.lukaskris.houseofdesign.Model.Cart;
 import com.example.lukaskris.houseofdesign.Model.CategoryItem;
+import com.example.lukaskris.houseofdesign.Model.Customer;
 import com.example.lukaskris.houseofdesign.Model.Items;
 import com.google.gson.Gson;
 
@@ -26,6 +27,8 @@ public class PreferencesUtil {
     static final String FAVORITES_KEY = "favorites";
     private static final String HOME = "LOCAL_HOME";
     private static final String HOME_KEY = "home";
+    static final String USER = "LOCAL_USER";
+    static final String USER_KEY = "user";
 
     private PreferencesUtil(){}
 
@@ -37,6 +40,17 @@ public class PreferencesUtil {
         Gson gson = new Gson();
         String jsonCart = gson.toJson(carts);
         editor.putString(CART_KEY,jsonCart);
+        editor.apply();
+    }
+
+    public static void saveUser(Context context, Customer customer){
+        SharedPreferences sharedPreferences;
+        SharedPreferences.Editor editor;
+        sharedPreferences = context.getSharedPreferences(USER,Context.MODE_PRIVATE);
+        editor = sharedPreferences.edit();
+        Gson gson = new Gson();
+        String jsonCart = gson.toJson(customer);
+        editor.putString(USER_KEY,jsonCart);
         editor.apply();
     }
 
@@ -107,6 +121,17 @@ public class PreferencesUtil {
             return null;
 
         return (ArrayList<Cart>)carts;
+    }
+
+    public static Customer getUser(Context context){
+        SharedPreferences sharedPreferences;
+        sharedPreferences = context.getSharedPreferences(USER, Context.MODE_PRIVATE);
+        if(sharedPreferences.contains(USER_KEY)){
+            String json = sharedPreferences.getString(USER_KEY,null);
+            Gson gson = new Gson();
+            return gson.fromJson(json, Customer.class);
+        }
+        return null;
     }
 
     public static ArrayList<CategoryItem> getHome(Context context){

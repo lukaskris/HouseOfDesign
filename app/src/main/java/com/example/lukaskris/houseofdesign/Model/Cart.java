@@ -24,6 +24,11 @@ public class Cart implements Serializable{
         this.quantity_max = quantity_max;
     }
 
+    public Cart(Items item, int quantity) {
+        this.item = item;
+        this.quantity = quantity;
+    }
+
     public void setQuantity(int quantity) {
         this.quantity = quantity;
     }

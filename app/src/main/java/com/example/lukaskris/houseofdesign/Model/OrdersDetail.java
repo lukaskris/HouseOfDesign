@@ -1,10 +1,12 @@
 package com.example.lukaskris.houseofdesign.Model;
 
+import java.io.Serializable;
+
 /**
  * Created by lukaskris on 9/11/2017.
  */
 
-public class OrdersDetail {
+public class OrdersDetail implements Serializable {
     String invoice;
     int id;
     int item_id;

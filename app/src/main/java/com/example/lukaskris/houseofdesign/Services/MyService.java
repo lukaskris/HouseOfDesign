@@ -15,7 +15,6 @@ import io.reactivex.Observable;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
-import retrofit2.http.HTTP;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 
@@ -26,7 +25,7 @@ import retrofit2.http.Path;
 public interface MyService {
     String SERVICE_ENDPOINT = "http://house-of-design.herokuapp.com/api/";
     String LOCAL_ENDPOINT = "http://10.120.120.25:3000/api/";
-
+    String HOTSPOT_ENDPOINT = "http://192.168.43.249:3000/api/";
 
     @GET("category")
     Observable<List<Category>> getCategory();
@@ -44,7 +43,7 @@ public interface MyService {
     Observable<Customer> createCustomer(@Body Customer customer);
 
     @GET("customer/{id}")
-    Observable<List<Customer>> getCustomer(@Path("id") String email);
+    Observable<Customer> getCustomer(@Path("id") String email);
 
     @POST("shipping_address")
     Observable<ShippingAddress> createAddress(@Body ShippingAddress shippingAddress);
@@ -64,11 +63,11 @@ public interface MyService {
     @POST("orders")
     Observable<Orders> setOrders(@Body Orders orders);
 
-    @GET("orders/{email}/{offset}/{limit}")
-    Observable<List<Orders>> getOrders(@Path("email")String email, @Path("offset") int offset, @Path("limit") int limit);
+    @GET("orders/{email}/{offset}/{limit}/{filter}/{search}")
+    Observable<List<Orders>> getOrders(@Path("email")String email, @Path("search")String search, @Path("filter")String filter, @Path("offset") int offset, @Path("limit") int limit);
 
-    @GET("orders/{email}/{offset}/{limit}/{filter}")
-    Observable<List<Orders>> getOrders(@Path("email")String email, @Path("filter")String filter, @Path("offset") int offset, @Path("limit") int limit);
+    @GET("orders_pembelian/{email}/{offset}/{limit}/{filter}/{search}")
+    Observable<List<Orders>> getOrdersPembelian(@Path("email")String email, @Path("search")String search, @Path("filter")String filter, @Path("offset") int offset, @Path("limit") int limit);
 
     @POST("orders_detail")
     Observable<OrdersDetail> setOrdersDetail(@Body OrdersDetail ordersDetail);

@@ -118,6 +118,18 @@ public class Orders implements Serializable{
         return statuscode;
     }
 
+    public String getStatusDetail(){
+        String statuscode = "";
+        if(status == 1){
+            statuscode = "Menunggu barang untuk diproses";
+        }else if(status == 2){
+            statuscode = "Barang telah diproses dan siap dikirimkan";
+        }else if(status == 3){
+            statuscode = "Barang sedang berada dalam pengiriman";
+        }
+        return statuscode;
+    }
+
     public int getStatusCode(){
         return status;
     }

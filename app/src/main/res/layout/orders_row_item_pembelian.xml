@@ -18,7 +18,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
+
             <ImageView
+                android:id="@+id/tagihan_image"
                 android:layout_width="0dp"
                 android:layout_height="70dp"
                 android:layout_weight="0.15"
@@ -27,37 +29,53 @@
                 android:id="@+id/orders_item_row_title"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.5"
+                android:layout_weight="0.45"
                 android:padding="10dp"
                 android:lines="2"
                 android:ellipsize="end"
                 android:text="Samsung Galaxy A5 2017 Bonus Micro sd dan casing 3 biji"/>
-            <TextView
+            <RelativeLayout
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.25"
-                android:padding="10dp"
-                android:textStyle="bold"
-                android:text="Rp4.502.337"/>
+                android:layout_weight="0.3"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/orders_item_row_price"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="10dp"
+                    android:textStyle="bold"
+                    android:text="Rp4.502.337"/>
+                <TextView
+                    android:id="@+id/orders_item_row_status_info"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    android:layout_below="@id/orders_item_row_price"
+                    android:text=""/>
+            </RelativeLayout>
         </LinearLayout>
         <LinearLayout
+            android:id="@+id/orders_item_row_info"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="5dp"
             android:background="@color/onProses">
             <TextView
+                android:id="@+id/orders_item_row_status"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="ON PROSES"/>
+                android:text="MENUNGGU PEMBAYARAN"/>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
                 <TextView
+                    android:id="@+id/orders_item_row_info_detail"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Barang sedang diproses."/>
+                    android:text="Barang sedang di proses"/>
 
             </LinearLayout>
         </LinearLayout>

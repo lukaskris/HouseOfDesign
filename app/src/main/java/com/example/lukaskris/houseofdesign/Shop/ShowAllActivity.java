@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,20 +20,15 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.example.lukaskris.houseofdesign.Callback.Callback;
-import com.example.lukaskris.houseofdesign.Listener.EndlessScrollListener;
 import com.example.lukaskris.houseofdesign.Model.Items;
 import com.example.lukaskris.houseofdesign.R;
-import com.example.lukaskris.houseofdesign.Services.MyServicesAPI;
 import com.example.lukaskris.houseofdesign.Util.CurrencyUtil;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 import endpoint.backend.itemApi.model.Item;
-import endpoint.backend.itemApi.model.Type;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;

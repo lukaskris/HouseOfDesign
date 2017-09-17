@@ -63,6 +63,11 @@
             android:textColor="@color/colorWhite"
             android:theme="@style/ConfirmButton" />
 
+        <com.google.android.gms.common.SignInButton
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/google"/>
+
         <TextView
             android:id="@+id/login_register"
             android:layout_width="wrap_content"

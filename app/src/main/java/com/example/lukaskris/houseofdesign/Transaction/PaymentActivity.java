@@ -21,6 +21,7 @@ import com.example.lukaskris.houseofdesign.HomeActivity;
 import com.example.lukaskris.houseofdesign.Model.Cart;
 import com.example.lukaskris.houseofdesign.Model.Items;
 import com.example.lukaskris.houseofdesign.Model.Orders;
+import com.example.lukaskris.houseofdesign.Model.OrdersDetail;
 import com.example.lukaskris.houseofdesign.R;
 import com.example.lukaskris.houseofdesign.Util.CurrencyUtil;
 
@@ -29,13 +30,19 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
+
+import static com.example.lukaskris.houseofdesign.Services.ServiceFactory.service;
+
 public class PaymentActivity extends AppCompatActivity {
     ImageView mLogoBank;
     TextView mInvoice;
     TextView mBatas;
     TextView mTotal;
     RecyclerView mRecycler;
-
+    Orders orders;
     @SuppressLint("SimpleDateFormat")
     @SuppressWarnings("unchecked")
     @Override
@@ -47,7 +54,7 @@ public class PaymentActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        Orders orders = (Orders) getIntent().getSerializableExtra("orders");
+        orders = (Orders) getIntent().getSerializableExtra("orders");
 
         mLogoBank = (ImageView) findViewById(R.id.payment_logo_bank);
         mInvoice = (TextView) findViewById(R.id.payment_invoice);
@@ -60,11 +67,13 @@ public class PaymentActivity extends AppCompatActivity {
         Glide.with(this).load(R.drawable.bank_mandiri).override(500,200).into(mLogoBank);
         mInvoice.setText(orders.getInvoice());
         mTotal.setText(CurrencyUtil.rupiah(new BigDecimal(orders.getTotal())));
-
-        mBatas.setText(new SimpleDateFormat("dd MMM yyyy HH:mm").format(orders.getExpired_at()));
+        if(orders.getExpired_at() != null)
+            mBatas.setText(new SimpleDateFormat("dd MMM yyyy HH:mm").format(orders.getExpired_at()));
         List<Cart> list = (List<Cart>) getIntent().getSerializableExtra("items");
         ItemAdapter adapter = new ItemAdapter(PaymentActivity.this,list);
         mRecycler.setHasFixedSize(true);
+        mRecycler.setNestedScrollingEnabled(false);
+        mRecycler.setFocusable(false);
         mRecycler.setLayoutManager(new LinearLayoutManager(this));
         mRecycler.setAdapter(adapter);
     }
@@ -73,12 +82,23 @@ public class PaymentActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case android.R.id.home:
-                Log.d("Debug", "finish dari payment");
                 setResult(RESULT_OK,null);
                 finish();
                 break;
         }
         return true;
+    }
+
+    private void getDetail(){
+        service.getOrdersDetail(orders.getInvoice())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<List<OrdersDetail>>() {
+                    @Override
+                    public void accept(List<OrdersDetail> ordersDetails) throws Exception {
+
+                    }
+                });
     }
 
     class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder>{

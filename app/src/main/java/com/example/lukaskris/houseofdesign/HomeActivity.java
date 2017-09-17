@@ -27,9 +27,11 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.lukaskris.houseofdesign.Account.ContainerLoginRegisterActivity;
 import com.example.lukaskris.houseofdesign.Account.ProfileFragment;
+import com.example.lukaskris.houseofdesign.Model.Customer;
 import com.example.lukaskris.houseofdesign.Orders.OrdersFragment;
 import com.example.lukaskris.houseofdesign.Shop.HomeFragment;
 import com.example.lukaskris.houseofdesign.Shop.ShoppingCartFragment;
+import com.example.lukaskris.houseofdesign.Util.PreferencesUtil;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -84,8 +86,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         nav_Menu.findItem(R.id.nav_profile).setVisible(false);
         nav_Menu.findItem(R.id.nav_orders).setVisible(false);
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if(user != null){
-
+        Customer customer = PreferencesUtil.getUser(this);
+        if(customer != null && user!= null){
             TextView mEmail = (TextView) header.findViewById(R.id.nav_header_email);
             CircleImageView mPicture = (CircleImageView) header.findViewById(R.id.nav_header_picture);
             TextView mName = (TextView) header.findViewById(R.id.nav_header_name);
@@ -95,13 +97,14 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             mPicture.setVisibility(View.VISIBLE);
             mName.setVisibility(View.VISIBLE);
 
-            String email = user.getEmail();
-            String name = user.getDisplayName();
+            String email = customer.getEmail();
+            String name = customer.getName();
             if(!user.isEmailVerified()){
                 name += " (Unverified)";
                 Snackbar.make(navigationView,R.string.error_invalid_verification,Snackbar.LENGTH_SHORT);
             }
-            Uri photo = user.getPhotoUrl();
+
+            String photo = customer.getPicture();
             mEmail.setText(email);
             mName.setText(name);
 
@@ -111,7 +114,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             Glide.with(this)
                     .load(photo)
                     .override(100, 100)
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .diskCacheStrategy(DiskCacheStrategy.RESULT)
                     .into(mPicture);
         }
     }

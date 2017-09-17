@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:paddingTop="20dp"
+    android:paddingLeft="20dp"
+    android:paddingRight="20dp"
+    android:paddingBottom="20dp"
+    android:layout_height="match_parent">
+    <RadioGroup
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:orientation="vertical">
+        <RadioButton
+            android:id="@+id/filter_semua"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Semua"
+            android:checked="true"/>
+        <RadioButton
+            android:id="@+id/filter_menunggu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Menunggu Pembayaran"/>
+        <RadioButton
+            android:id="@+id/filter_dibayar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Dibayar"/>
+        <RadioButton
+            android:id="@+id/filter_diproses"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Diproses"
+            android:visibility="gone"/>
+        <RadioButton
+            android:id="@+id/filter_dikirim"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Dikirim"
+            android:visibility="gone"/>
+        <RadioButton
+            android:id="@+id/filter_diterima"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Diterima"
+            android:visibility="gone"/>
+    </RadioGroup>
+
+</LinearLayout>

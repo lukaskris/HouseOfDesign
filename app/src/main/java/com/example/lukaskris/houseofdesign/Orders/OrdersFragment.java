@@ -62,7 +62,7 @@ public class OrdersFragment extends Fragment {
         @Override
         public Fragment getItem(int position) {
             if (position == 0) {
-                return new OrdersTagihanFragment();
+                return OrdersTagihanFragment.newInstance();
             } else {
                 return new OrdersPembelianFragment();
             }

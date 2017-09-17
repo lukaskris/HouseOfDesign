@@ -46,6 +46,12 @@ public class Items implements Serializable {
         this.thumbnail = thumbnail;
     }
 
+    public Items(String name, int price, String thumbnail) {
+        this.name = name;
+        this.price = price;
+        this.thumbnail = thumbnail;
+    }
+
     public int getWeight() {
         return weight;
     }
