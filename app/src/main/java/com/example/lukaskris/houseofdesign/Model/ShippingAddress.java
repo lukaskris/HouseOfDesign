@@ -103,4 +103,8 @@ public class ShippingAddress {
     }
 
 
+    @Override
+    public String toString() {
+        return address + " " + " Kec. "+ subdistrict + ", " + city + ", "+province + " "+postal_code;
+    }
 }

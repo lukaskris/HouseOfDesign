@@ -4,19 +4,15 @@ import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.lukaskris.houseofdesign.Orders.OrdersPembelianFragment;
-import com.example.lukaskris.houseofdesign.Orders.OrdersTagihanFragment;
 import com.example.lukaskris.houseofdesign.R;
 
 public class OrdersFragment extends Fragment {
-    private ViewPager viewPager;
 
     public OrdersFragment() {
         // Required empty public constructor
@@ -41,7 +37,7 @@ public class OrdersFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_orders, container, false);
 
-        viewPager = (ViewPager) view.findViewById(R.id.orders_viewpager);
+        ViewPager viewPager = (ViewPager) view.findViewById(R.id.orders_viewpager);
         OrdersViewPager adapter = new OrdersViewPager(getContext(), getActivity().getSupportFragmentManager());
         viewPager.setAdapter(adapter);
         TabLayout tabLayout = (TabLayout) view.findViewById(R.id.orders_tablayout);
@@ -64,7 +60,7 @@ public class OrdersFragment extends Fragment {
             if (position == 0) {
                 return OrdersTagihanFragment.newInstance();
             } else {
-                return new OrdersPembelianFragment();
+                return OrdersPembelianFragment.newInstance();
             }
         }
 

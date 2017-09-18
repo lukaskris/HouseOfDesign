@@ -1,13 +1,11 @@
 package com.example.lukaskris.houseofdesign.Transaction;
 
-import android.animation.Animator;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,24 +15,15 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.example.lukaskris.houseofdesign.HomeActivity;
 import com.example.lukaskris.houseofdesign.Model.Cart;
-import com.example.lukaskris.houseofdesign.Model.Items;
 import com.example.lukaskris.houseofdesign.Model.Orders;
-import com.example.lukaskris.houseofdesign.Model.OrdersDetail;
 import com.example.lukaskris.houseofdesign.R;
 import com.example.lukaskris.houseofdesign.Util.CurrencyUtil;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.List;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.Consumer;
-import io.reactivex.schedulers.Schedulers;
-
-import static com.example.lukaskris.houseofdesign.Services.ServiceFactory.service;
 
 public class PaymentActivity extends AppCompatActivity {
     ImageView mLogoBank;
@@ -67,8 +56,8 @@ public class PaymentActivity extends AppCompatActivity {
         Glide.with(this).load(R.drawable.bank_mandiri).override(500,200).into(mLogoBank);
         mInvoice.setText(orders.getInvoice());
         mTotal.setText(CurrencyUtil.rupiah(new BigDecimal(orders.getTotal())));
-        if(orders.getExpired_at() != null)
-            mBatas.setText(new SimpleDateFormat("dd MMM yyyy HH:mm").format(orders.getExpired_at()));
+
+        mBatas.setText(new SimpleDateFormat("dd MMM yyyy HH:mm").format(orders.getExpired_at()));
         List<Cart> list = (List<Cart>) getIntent().getSerializableExtra("items");
         ItemAdapter adapter = new ItemAdapter(PaymentActivity.this,list);
         mRecycler.setHasFixedSize(true);
@@ -87,18 +76,6 @@ public class PaymentActivity extends AppCompatActivity {
                 break;
         }
         return true;
-    }
-
-    private void getDetail(){
-        service.getOrdersDetail(orders.getInvoice())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<List<OrdersDetail>>() {
-                    @Override
-                    public void accept(List<OrdersDetail> ordersDetails) throws Exception {
-
-                    }
-                });
     }
 
     class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder>{

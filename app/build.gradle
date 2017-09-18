@@ -89,6 +89,7 @@ dependencies {
     compile 'com.firebaseui:firebase-ui-database:1.2.0'
     compile 'com.github.bumptech.glide:glide:3.7.0'
     compile 'com.github.bumptech.glide:volley-integration:1.4.0@aar'
+    compile 'at.blogc:expandabletextview:1.0.3'
     compile 'com.mcxiaoke.volley:library:1.0.8'
     compile 'com.theartofdev.edmodo:android-image-cropper:2.4.+'
     compile 'com.wang.avi:library:2.1.3'

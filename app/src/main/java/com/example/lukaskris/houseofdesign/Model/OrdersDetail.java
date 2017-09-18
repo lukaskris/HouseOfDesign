@@ -37,10 +37,12 @@ public class OrdersDetail implements Serializable {
         this.thumbnail = thumbnail;
     }
 
-    public OrdersDetail(String invoice, String name, String thumbnail) {
+    public OrdersDetail(String invoice, String name, String thumbnail, int price, int quantity) {
         this.invoice = invoice;
         this.name = name;
         this.thumbnail = thumbnail;
+        this.price = price;
+        this.quantity = quantity;
     }
 
     public String getName() {

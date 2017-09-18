@@ -3,6 +3,7 @@ package com.example.lukaskris.houseofdesign.Orders;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -29,6 +30,8 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.example.lukaskris.houseofdesign.Model.Cart;
+import com.example.lukaskris.houseofdesign.Model.Items;
 import com.example.lukaskris.houseofdesign.Model.Orders;
 import com.example.lukaskris.houseofdesign.Model.OrdersDetail;
 import com.example.lukaskris.houseofdesign.R;
@@ -37,6 +40,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.wang.avi.AVLoadingIndicatorView;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -76,7 +80,8 @@ public class OrdersPembelianFragment extends Fragment {
 
 
     public OrdersPembelianFragment() {}
-    public static OrdersPembelianFragment newInstance(String param1) {
+
+    public static OrdersPembelianFragment newInstance() {
         OrdersPembelianFragment fragment = new OrdersPembelianFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
@@ -133,18 +138,26 @@ public class OrdersPembelianFragment extends Fragment {
                 diproses.setVisibility(View.VISIBLE);
                 dikirim.setVisibility(View.VISIBLE);
                 diterima.setVisibility(View.VISIBLE);
-                if(filter.equals(""))
-                    semua.setChecked(true);
-                else if(filter.equals("0"))
-                    menunggu.setChecked(true);
-                else if(filter.equals("1"))
-                    dibayar.setChecked(true);
-                else if(filter.equals("2"))
-                    diproses.setChecked(true);
-                else if(filter.equals("3"))
-                    dikirim.setChecked(true);
-                else if(filter.equals("4"))
-                    diterima.setChecked(true);
+                switch (filter) {
+                    case "":
+                        semua.setChecked(true);
+                        break;
+                    case "0":
+                        menunggu.setChecked(true);
+                        break;
+                    case "1":
+                        dibayar.setChecked(true);
+                        break;
+                    case "2":
+                        diproses.setChecked(true);
+                        break;
+                    case "3":
+                        dikirim.setChecked(true);
+                        break;
+                    case "4":
+                        diterima.setChecked(true);
+                        break;
+                }
                 builder.setView(view)
                         .setPositiveButton("Filter", new DialogInterface.OnClickListener() {
                             @Override
@@ -232,9 +245,11 @@ public class OrdersPembelianFragment extends Fragment {
                                             for (final Orders o : orderses) {
                                                 String[] name = o.getName().split(", ");
                                                 String[] thumbnail = o.getThumbnail().split(", ");
+                                                String[] price = o.getThumbnail().split(", ");
+                                                String[] quantity = o.getThumbnail().split(", ");
                                                 List<OrdersDetail> temp = new ArrayList<>();
                                                 for (int i = 0; i < name.length; i++) {
-                                                    OrdersDetail d = new OrdersDetail(o.getInvoice(), name[i], thumbnail[i]);
+                                                    OrdersDetail d = new OrdersDetail(o.getInvoice(), name[i], thumbnail[i], Integer.parseInt(price[i]), Integer.parseInt(quantity[i]));
                                                     temp.add(d);
                                                 }
                                                 o.setDetail(temp);
@@ -399,9 +414,11 @@ public class OrdersPembelianFragment extends Fragment {
                                 for (final Orders o : orderses) {
                                     String[] name = o.getName().split(", ");
                                     String[] thumbnail = o.getThumbnail().split(", ");
+                                    String[] price = o.getPrice().split(", ");
+                                    String[] quantity = o.getQuantity().split(", ");
                                     List<OrdersDetail> temp = new ArrayList<>();
                                     for (int i = 0; i < name.length; i++) {
-                                        OrdersDetail d = new OrdersDetail(o.getInvoice(), name[i], thumbnail[i]);
+                                        OrdersDetail d = new OrdersDetail(o.getInvoice(), name[i], thumbnail[i], Integer.parseInt(price[i]), Integer.parseInt(quantity[i]));
                                         temp.add(d);
                                     }
                                     o.setDetail(temp);
@@ -503,9 +520,27 @@ public class OrdersPembelianFragment extends Fragment {
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
             if (holder instanceof ItemHolder) {
                 ItemHolder itemHolder = (ItemHolder) holder;
-                Orders tempOrder = ordersList.get(position);
+                final Orders tempOrder = ordersList.get(position);
 
-                List<OrdersDetail> tempDetail = tempOrder.getDetail();
+                final List<OrdersDetail> tempDetail = tempOrder.getDetail();
+                itemHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(getActivity(),DetailPembelianActivity.class);
+                        List<Cart> tempCart = new ArrayList<>();
+                        for(OrdersDetail d: tempDetail){
+                            Items item = new Items(d.getName(),d.getPrice(),d.getThumbnail());
+                            Cart c = new Cart(item,d.getQuantity());
+                            tempCart.add(c);
+                        }
+                        intent.putExtra("orders", tempOrder);
+                        intent.putExtra("items", (Serializable) tempCart);
+
+                        startActivity(intent);
+                        getActivity().overridePendingTransition(R.anim.slide_from_right,R.anim.slide_to_left);
+                    }
+                });
+
                 itemHolder.mLayoutInfo.setVisibility(View.VISIBLE);
 
                 if(tempOrder.getStatusCode() < 4) {

@@ -136,12 +136,17 @@ public class OrdersTagihanFragment extends Fragment {
                 final RadioButton semua = (RadioButton) view.findViewById(R.id.filter_semua);
                 final RadioButton menunggu = (RadioButton) view.findViewById(R.id.filter_menunggu);
                 final RadioButton dibayar = (RadioButton) view.findViewById(R.id.filter_dibayar);
-                if(filter.equals(""))
-                    semua.setChecked(true);
-                else if(filter.equals("0"))
-                    menunggu.setChecked(true);
-                else
-                    dibayar.setChecked(true);
+                switch (filter) {
+                    case "":
+                        semua.setChecked(true);
+                        break;
+                    case "0":
+                        menunggu.setChecked(true);
+                        break;
+                    default:
+                        dibayar.setChecked(true);
+                        break;
+                }
                 builder.setView(view)
                         .setPositiveButton("Filter", new DialogInterface.OnClickListener() {
                             @Override
@@ -223,9 +228,10 @@ public class OrdersTagihanFragment extends Fragment {
                                     for (final Orders o : orderses) {
                                         String[] name = o.getName().split(", ");
                                         String[] thumbnail = o.getThumbnail().split(", ");
+                                        String[] price = o.getPrice().split(", ");
+                                        String[] quantity = o.getQuantity().split(", ");
                                         List<OrdersDetail> temp = new ArrayList<>();
-                                        for (int i = 0; i < name.length; i++) {
-                                            OrdersDetail d = new OrdersDetail(o.getInvoice(), name[i], thumbnail[i]);
+                                        for (int i = 0; i < name.length; i++) {OrdersDetail d = new OrdersDetail(o.getInvoice(), name[i], thumbnail[i], Integer.parseInt(price[i]),Integer.parseInt(quantity[i]));
                                             temp.add(d);
                                         }
                                         o.setDetail(temp);
@@ -387,9 +393,11 @@ public class OrdersTagihanFragment extends Fragment {
                                 for (final Orders o : orderses) {
                                     String[] name = o.getName().split(", ");
                                     String[] thumbnail = o.getThumbnail().split(", ");
+                                    String[] price = o.getPrice().split(", ");
+                                    String[] quantity = o.getQuantity().split(", ");
                                     List<OrdersDetail> temp = new ArrayList<>();
                                     for (int i = 0; i < name.length; i++) {
-                                        OrdersDetail d = new OrdersDetail(o.getInvoice(), name[i], thumbnail[i]);
+                                        OrdersDetail d = new OrdersDetail(o.getInvoice(), name[i], thumbnail[i], Integer.parseInt(price[i]),Integer.parseInt(quantity[i]));
                                         temp.add(d);
                                     }
                                     o.setDetail(temp);
@@ -496,9 +504,8 @@ public class OrdersTagihanFragment extends Fragment {
                 itemHolder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Log.d("OrdersTagihanFragment", "CLICK");
-                        Intent intent = new Intent(getActivity(),PaymentActivity.class);
-                        List<Cart> tempCart = new ArrayList<Cart>();
+                        Intent intent = new Intent(getActivity(),DetailTagihanActivity.class);
+                        List<Cart> tempCart = new ArrayList<>();
                         for(OrdersDetail d: tempDetail){
                             Items item = new Items(d.getName(),d.getPrice(),d.getThumbnail());
                             Cart c = new Cart(item,d.getQuantity());

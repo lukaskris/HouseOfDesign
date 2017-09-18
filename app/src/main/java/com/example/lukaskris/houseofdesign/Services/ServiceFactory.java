@@ -16,7 +16,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class ServiceFactory {
 
     public static MyService service = new Retrofit.Builder()
-        .baseUrl(MyService.HOTSPOT_ENDPOINT)
+        .baseUrl(MyService.SERVICE_ENDPOINT)
         .client(new OkHttpClient())
         .addConverterFactory(GsonConverterFactory.create())
         .addCallAdapterFactory(RxJava2CallAdapterFactory.create())

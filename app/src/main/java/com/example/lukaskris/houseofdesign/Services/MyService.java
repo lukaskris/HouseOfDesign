@@ -51,6 +51,9 @@ public interface MyService {
     @GET("shipping_address/{id}")
     Observable<List<ShippingAddress>> getAddress(@Path("id") String email);
 
+    @GET("shipping_address/{email}/{id}")
+    Observable<ShippingAddress> getAddress(@Path("email") String email, @Path("id") String id);
+
     @GET("default_shipping_address/{id}")
     Observable<List<ShippingAddress>> getDefaultAddress(@Path("id") String email);
 
@@ -74,6 +77,9 @@ public interface MyService {
 
     @GET("orders_detail/{invoice}")
     Observable<List<OrdersDetail>> getOrdersDetail(@Path("invoice") String invoice);
+
+    @GET("orders_info/{invoice}")
+    Observable<List<OrdersInfo>> getOrdersInfo(@Path("invoice") String invoice);
 
     @POST("orders_info")
     Observable<OrdersInfo> setOrdersInfo(@Body OrdersInfo ordersInfo);

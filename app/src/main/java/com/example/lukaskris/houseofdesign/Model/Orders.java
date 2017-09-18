@@ -19,6 +19,8 @@ public class Orders implements Serializable{
     Date expired_at;
     String name;
     String thumbnail;
+    String price;
+    String quantity;
     List<OrdersDetail> detail;
 
     Orders(){
@@ -98,6 +100,14 @@ public class Orders implements Serializable{
 
     public String getThumbnail() {
         return thumbnail;
+    }
+
+    public String getPrice() {
+        return price;
+    }
+
+    public String getQuantity() {
+        return quantity;
     }
 
     public String getStatus(){
