@@ -47,4 +47,13 @@ public class RajaOngkir {
                 .build()
                 .getJSONObjectObservable();
     }
+
+    public static Observable<JSONObject> getWaybill(String resi, String courier){
+        return Rx2AndroidNetworking.post("https://pro.rajaongkir.com/api/waybill")
+                .addHeaders("key",key)
+                .addBodyParameter("waybill",resi)
+                .addBodyParameter("courier",courier)
+                .build()
+                .getJSONObjectObservable();
+    }
 }

@@ -11,14 +11,25 @@ public class OrdersInfo {
     String type;
     int price;
     int shipping_id;
+    String no_resi;
+    String kurir_id;
 
-    public OrdersInfo(String invoice, String kurir, String type, int price, int shipping_id) {
+    public OrdersInfo(String invoice, String kurir_id, String kurir, String type, int price, int shipping_id) {
         this.id = id;
         this.invoice = invoice;
+        this.kurir_id=kurir_id;
         this.kurir = kurir;
         this.type = type;
         this.price = price;
         this.shipping_id = shipping_id;
+    }
+
+    public String getNo_resi() {
+        return no_resi;
+    }
+
+    public String getKurir_id() {
+        return kurir_id;
     }
 
     public int getId() {

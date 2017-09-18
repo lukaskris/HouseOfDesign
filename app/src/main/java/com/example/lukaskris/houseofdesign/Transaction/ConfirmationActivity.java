@@ -188,11 +188,17 @@ public class ConfirmationActivity extends AppCompatActivity {
                                             OrdersDetail detail = new OrdersDetail(orders.getInvoice(), c.getItem().getId(), c.getSubitem_id(), total, c.getItem().getPrice(), c.getQuantity());
                                             service.setOrdersDetail(detail).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe();
                                         }
-                                        OrdersInfo info = new OrdersInfo(orders.getInvoice(), mCourier.getSelectedItem().toString(), mService.getSelectedItem().toString(), service_price, Integer.parseInt(shippingAddress.getId()));
+                                        String courier = "";
+                                        if(mCourier.getSelectedItem().toString().equalsIgnoreCase("jne"))
+                                            courier="jne";
+                                        else if(mCourier.getSelectedItem().toString().equalsIgnoreCase("tiki"))
+                                            courier="tiki";
+                                        else if(mCourier.getSelectedItem().toString().equalsIgnoreCase("Pos Indonesia"))
+                                            courier="pos";
+                                        OrdersInfo info = new OrdersInfo(orders.getInvoice(), courier, mCourier.getSelectedItem().toString(), mService.getSelectedItem().toString(), service_price, Integer.parseInt(shippingAddress.getId()));
                                         service.setOrdersInfo(info).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<OrdersInfo>() {
                                             @Override
                                             public void accept(OrdersInfo ordersInfo) throws Exception {
-//                                                Toast.makeText(ConfirmationActivity.this, "Data disimpan",Toast.LENGTH_LONG).show();
                                                 mProgress.dismiss();
                                                 Intent intent = new Intent(ConfirmationActivity.this, PaymentActivity.class);
                                                 intent.putExtra("orders", orders);

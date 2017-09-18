@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,8 +24,12 @@ import com.example.lukaskris.houseofdesign.Model.Orders;
 import com.example.lukaskris.houseofdesign.Model.OrdersInfo;
 import com.example.lukaskris.houseofdesign.Model.ShippingAddress;
 import com.example.lukaskris.houseofdesign.R;
+import com.example.lukaskris.houseofdesign.Services.RajaOngkir;
 import com.example.lukaskris.houseofdesign.Util.CurrencyUtil;
 import com.example.lukaskris.houseofdesign.Util.NetworkUtil;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -33,7 +38,9 @@ import java.util.List;
 import at.blogc.android.views.ExpandableTextView;
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
+import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
@@ -98,6 +105,40 @@ public class DetailPembelianActivity extends AppCompatActivity {
         getInfo();
     }
 
+    private void getWaybill(final String resi, String courier){
+        RajaOngkir.getWaybill(resi, courier)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<JSONObject>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(JSONObject response) {
+                        try{
+                            JSONArray result = response.getJSONObject("rajaongkir").getJSONObject("result").getJSONArray("manifest");
+                            Log.d("DetailPembelianActivity", result.toString());
+                            JSONArray manifest = result.getJSONArray(4);
+                            Log.d("DetailPembelianActivity", manifest.toString());
+                        }catch (Exception e){
+                            Log.d("DetailPembelianActivity", e.getLocalizedMessage());
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+    }
+
     private void getInfo(){
         if(!NetworkUtil.isOnline(this)){
             Snackbar.make(mInvoice,"Tidak ada koneksi internet",Snackbar.LENGTH_LONG).show();
@@ -120,6 +161,7 @@ public class DetailPembelianActivity extends AppCompatActivity {
                 .flatMap(new Function<OrdersInfo, ObservableSource<ShippingAddress>>() {
                     @Override
                     public ObservableSource<ShippingAddress> apply(OrdersInfo ordersInfo) throws Exception {
+                        getWaybill(ordersInfo.getNo_resi(),ordersInfo.getKurir_id());
                         mKurir.setText(ordersInfo.getKurir() + " ("+ ordersInfo.getType() + ")");
                         return service.getAddress(orders.getEmail(), String.valueOf(ordersInfo.getShipping_id()));
                     }
