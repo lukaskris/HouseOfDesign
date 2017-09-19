@@ -59,6 +59,7 @@ public class DetailPembelianActivity extends AppCompatActivity {
     Orders orders;
     LinearLayout mNoInternet;
     ExpandableTextView mTrackingResult;
+    TextView mHistory;
     List<Cart> mList;
 
     @SuppressWarnings("unchecked")
@@ -80,6 +81,7 @@ public class DetailPembelianActivity extends AppCompatActivity {
         mRecycler = (RecyclerView) findViewById(R.id.detail_pembelian_item);
         mLayout = (ScrollView) findViewById(R.id.detail_pembelian_scrollbar);
         mLoading = (ProgressBar) findViewById(R.id.detail_pembelian_loading);
+        mHistory = (TextView) findViewById(R.id.detail_pembelian_history);
         mNoInternet = (LinearLayout) findViewById(R.id.detail_pembelian_no_internet);
         mTrackingResult = (ExpandableTextView) findViewById(R.id.detail_pembelian_expandable);
 
@@ -87,6 +89,16 @@ public class DetailPembelianActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 getInfo();
+            }
+        });
+
+        mHistory.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mTrackingResult.isExpanded())
+                    mTrackingResult.collapse();
+                else
+                    mTrackingResult.expand();
             }
         });
 
@@ -118,10 +130,15 @@ public class DetailPembelianActivity extends AppCompatActivity {
                     @Override
                     public void onNext(JSONObject response) {
                         try{
+                            String text="\n";
                             JSONArray result = response.getJSONObject("rajaongkir").getJSONObject("result").getJSONArray("manifest");
-                            Log.d("DetailPembelianActivity", result.toString());
-                            JSONArray manifest = result.getJSONArray(4);
-                            Log.d("DetailPembelianActivity", manifest.toString());
+                            for(int i=0;i<result.length();i++){
+                                JSONObject obj = result.getJSONObject(i);
+                                Manifest manifest = new Manifest(obj.getString("manifest_code"),obj.getString("manifest_description"),obj.getString("manifest_date"),obj.getString("manifest_time"),obj.getString("city_name"));
+                                text= text + "\n"+ manifest.getManifest_description() + " " + manifest.getManifest_date() + " " + manifest.getManifest_time() + " " +manifest.getCity_name();
+                            }
+                            mTrackingResult.setText(text);
+
                         }catch (Exception e){
                             Log.d("DetailPembelianActivity", e.getLocalizedMessage());
                         }
@@ -199,6 +216,42 @@ public class DetailPembelianActivity extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         overridePendingTransition(R.anim.slide_from_left,R.anim.slide_to_right);
+    }
+
+    class Manifest{
+        String manifest_code;
+        String manifest_description;
+        String manifest_date;
+        String manifest_time;
+        String city_name;
+
+        public Manifest(String manifest_code, String manifest_description, String manifest_date, String manifest_time, String city_name) {
+            this.manifest_code = manifest_code;
+            this.manifest_description = manifest_description;
+            this.manifest_date = manifest_date;
+            this.manifest_time = manifest_time;
+            this.city_name = city_name;
+        }
+
+        public String getManifest_code() {
+            return manifest_code;
+        }
+
+        public String getManifest_description() {
+            return manifest_description;
+        }
+
+        public String getManifest_date() {
+            return manifest_date;
+        }
+
+        public String getManifest_time() {
+            return manifest_time;
+        }
+
+        public String getCity_name() {
+            return city_name;
+        }
     }
 
     class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder>{
