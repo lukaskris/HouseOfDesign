@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorInactive"
-    tools:context="com.example.lukaskris.houseofdesign.Account.AddAddressActivity">
+    tools:context="com.leaksoft.app.houseofdesign.account.AddAddressActivity">
 
     <Button
         android:id="@+id/add_address_save"

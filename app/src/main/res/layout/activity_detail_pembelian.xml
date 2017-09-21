@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.lukaskris.houseofdesign.Transaction.PaymentActivity">
+    tools:context="com.leaksoft.app.houseofdesign.transaction.PaymentActivity">
     <ProgressBar
         android:id="@+id/detail_pembelian_loading"
         android:layout_width="wrap_content"
@@ -29,10 +29,20 @@
             android:layout_height="match_parent"
             android:text="Tidak ada koneksi Internet"/>
     </LinearLayout>
+    <Button
+        android:id="@+id/detail_pembelian_konfirmasi"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/MyButton"
+        android:textColor="@color/colorWhite"
+        android:layout_alignParentBottom="true"
+        android:visibility="gone"
+        android:text="Konfirmasi Barang"/>
     <ScrollView
         android:id="@+id/detail_pembelian_scrollbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_above="@+id/detail_pembelian_konfirmasi"
         android:visibility="visible"
         android:scrollbars="none">
         <LinearLayout

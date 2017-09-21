@@ -37,6 +37,10 @@
         <item>TIKI</item>
         <item>Pos Indonesia</item>
     </array>
+    <array name="array_gender">
+        <item>Laki-laki</item>
+        <item>Perempuan</item>
+    </array>
     <string name="title_activity_xx">xx</string>
     <string name="title_no_data">No data available.</string>
     <string name="orders_tagihan">Tagihan</string>

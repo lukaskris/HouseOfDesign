@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:padding="@dimen/activity_horizontal_margin"
-    tools:context="com.example.lukaskris.houseofdesign.Account.LoginFragment">
+    tools:context="com.leaksoft.app.houseofdesign.account.LoginFragment">
 
     <LinearLayout
         android:layout_width="match_parent"

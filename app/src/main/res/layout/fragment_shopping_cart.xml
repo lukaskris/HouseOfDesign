@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="10dp"
-    tools:context="com.example.lukaskris.houseofdesign.Shop.ShoppingCartFragment">
+    tools:context="com.leaksoft.app.houseofdesign.shop.ShoppingCartFragment">
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"

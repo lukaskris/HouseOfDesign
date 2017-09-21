@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.lukaskris.houseofdesign.Transaction.PaymentActivity">
+    tools:context="com.leaksoft.app.houseofdesign.transaction.PaymentActivity">
     <ProgressBar
         android:id="@+id/detail_tagihan_loading"
         android:layout_width="wrap_content"
@@ -33,7 +33,7 @@
         android:id="@+id/detail_tagihan_upload"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorBlue"
+        android:theme="@style/MyButton"
         android:layout_alignParentBottom="true"
         android:foreground="?android:attr/selectableItemBackground"
         android:text="Upload Bukti Transaksi"

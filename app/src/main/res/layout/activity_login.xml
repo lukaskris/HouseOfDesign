@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.lukaskris.houseofdesign.Account.ContainerLoginRegisterActivity">
+    tools:context="com.leaksoft.app.houseofdesign.account.ContainerLoginRegisterActivity">
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

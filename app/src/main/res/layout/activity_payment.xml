@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    tools:context="com.example.lukaskris.houseofdesign.Transaction.PaymentActivity">
+    tools:context="com.leaksoft.app.houseofdesign.transaction.PaymentActivity">
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

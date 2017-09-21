@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.lukaskris.houseofdesign.Shop.ShoppingCartActivity">
+    tools:context="com.leaksoft.app.houseofdesign.shop.ShoppingCartActivity">
     <FrameLayout
         android:id="@+id/shopping_cart_frame_layout"
         android:layout_width="match_parent"
