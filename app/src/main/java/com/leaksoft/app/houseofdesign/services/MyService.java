@@ -47,6 +47,9 @@ public interface MyService {
     @GET("customer/{id}")
     Observable<Customer> getCustomer(@Path("id") String email);
 
+    @PUT("profile")
+    Observable<Customer> updateProfile(@Body Customer customer);
+
     @POST("shipping_address")
     Observable<ShippingAddress> createAddress(@Body ShippingAddress shippingAddress);
 

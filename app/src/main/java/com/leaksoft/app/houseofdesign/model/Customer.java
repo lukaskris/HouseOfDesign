@@ -1,5 +1,7 @@
 package com.leaksoft.app.houseofdesign.model;
 
+import java.util.Date;
+
 /**
  * Created by xub on 29/08/17.
  */
@@ -11,6 +13,8 @@ public class Customer {
     String phone;
     String password;
     String picture;
+    Date datebirth;
+    String gender;
 
     public Customer(String name, String email, String phone, String password, String picture) {
         this.id = id;
@@ -43,5 +47,29 @@ public class Customer {
 
     public String getPicture() {
         return picture;
+    }
+
+    public Date getDatebirth() {
+        return datebirth;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setDatebirth(Date datebirth) {
+        this.datebirth = datebirth;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 }

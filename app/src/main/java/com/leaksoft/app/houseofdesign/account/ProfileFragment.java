@@ -31,6 +31,8 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.leaksoft.app.houseofdesign.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.leaksoft.app.houseofdesign.model.Customer;
+import com.leaksoft.app.houseofdesign.util.PreferencesUtil;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
@@ -60,6 +62,7 @@ public class ProfileFragment extends Fragment {
     private ArrayList<String> permissions;
     Uri picUri;
     Bitmap myBitmap;
+    Customer customer;
 
     public ProfileFragment() {}
 
@@ -85,10 +88,11 @@ public class ProfileFragment extends Fragment {
         mUpload = (CircleImageView) view.findViewById(R.id.profile_camera_gallery);
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if(user != null){
-            mName.setText(user.getDisplayName());
-            mEmail.setText(user.getEmail());
-            Uri uri = user.getPhotoUrl();
+        customer = PreferencesUtil.getUser(getContext());
+        if(user != null && customer!=null){
+            mName.setText(customer.getName());
+            mEmail.setText(customer.getEmail());
+            String uri = customer.getPicture();
             Glide.with(getContext()).load(uri).diskCacheStrategy(DiskCacheStrategy.RESULT).override(400, 400).into(mPicture);
         }
 
@@ -162,6 +166,18 @@ public class ProfileFragment extends Fragment {
                 Exception error = result.getError();
                 Toast.makeText(getContext(),error.getMessage(),Toast.LENGTH_SHORT).show();
             }
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        customer = PreferencesUtil.getUser(getContext());
+        if(customer!=null){
+            mName.setText(customer.getName());
+            mEmail.setText(customer.getEmail());
+            String uri = customer.getPicture();
+            Glide.with(getContext()).load(uri).diskCacheStrategy(DiskCacheStrategy.RESULT).override(400, 400).into(mPicture);
         }
     }
 
