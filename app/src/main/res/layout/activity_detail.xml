@@ -51,7 +51,6 @@
                         app:pageColor="#223760"
                         app:snap="false" />
                 </RelativeLayout>
-
                 <android.support.v7.widget.Toolbar
                     android:id="@+id/toolbar"
                     android:layout_height="?attr/actionBarSize"
@@ -60,7 +59,6 @@
                     android:layout_width="match_parent"/>
             </android.support.design.widget.CollapsingToolbarLayout>
         </android.support.design.widget.AppBarLayout>
-
 
 
         <android.support.v4.widget.NestedScrollView
@@ -89,6 +87,7 @@
                         android:layout_height="match_parent"
                         android:orientation="vertical"
                         android:padding="10dp">
+
 
                         <TextView
                             android:layout_width="match_parent"
@@ -272,5 +271,33 @@
                 </android.support.v7.widget.CardView>
             </LinearLayout>
         </android.support.v4.widget.NestedScrollView>
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab_favorite"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:backgroundTint="#fff"
+            android:tint="@color/colorRed"
+            app:layout_anchor="@id/appbar"
+            android:layout_margin="10dp"
+            app:layout_anchorGravity="right|bottom|end"
+            android:clickable="true"/>
+        <RelativeLayout
+            android:id="@+id/detail_layout_favorite"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="12dp"
+            app:layout_anchor="@id/appbar"
+            app:layout_anchorGravity="right|bottom|end">
+
+            <com.like.LikeButton
+                app:icon_type="heart"
+                app:icon_size="25dp"
+                android:id="@+id/detail_favorite"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </RelativeLayout>
+
     </android.support.design.widget.CoordinatorLayout>
 </RelativeLayout>

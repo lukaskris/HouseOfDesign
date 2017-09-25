@@ -4,14 +4,19 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -21,6 +26,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,6 +41,8 @@ import com.leaksoft.app.houseofdesign.util.AndroidUtil;
 import com.leaksoft.app.houseofdesign.util.CurrencyUtil;
 import com.leaksoft.app.houseofdesign.util.PreferencesUtil;
 import com.google.firebase.database.DatabaseReference;
+import com.like.LikeButton;
+import com.like.OnLikeListener;
 import com.viewpagerindicator.CirclePageIndicator;
 
 import java.math.BigDecimal;
@@ -71,6 +79,11 @@ public class DetailActivity extends AppCompatActivity {
     private TypeAdapter colorAdapter;
 
     private QuantityView mQuantityInput;
+
+    private LikeButton mFavorite;
+    private RelativeLayout mLayoutFavorite;
+    private FloatingActionButton mFab;
+
     Items item;
 
     private ProgressDialog mProgressDialog;
@@ -94,10 +107,52 @@ public class DetailActivity extends AppCompatActivity {
         mQuantity = (TextView)findViewById(R.id.detail_quantity);
         mAddToCart = (Button) findViewById(R.id.detail_add_to_cart);
         mQuantityInput = (QuantityView) findViewById(R.id.detail_quantity_input);
-
+        mFab = (FloatingActionButton) findViewById(R.id.fab_favorite);
 
         mRecyclerColor = (RecyclerView) findViewById(R.id.detail_recycler_color);
         mRecyclerSize = (RecyclerView) findViewById(R.id.detail_recycler_size);
+
+        AppBarLayout appbar = (AppBarLayout) findViewById(R.id.appbar);
+
+        mLayoutFavorite = (RelativeLayout) findViewById(R.id.detail_layout_favorite);
+        mFavorite = (LikeButton) findViewById(R.id.detail_favorite);
+
+        appbar.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+            @Override
+            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+                if (mFab.getTop() <= 198)
+                {
+                    mLayoutFavorite.setVisibility(View.GONE);
+                }
+                else
+                {
+                    mLayoutFavorite.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
+        List<Cart> carts = PreferencesUtil.getCarts(this);
+
+        for(Cart c : carts){
+            if(c.getItem().getName().equals(item.getName())){
+                mFavorite.setLiked(true);
+            }
+        }
+
+        mFavorite.setOnLikeListener(new OnLikeListener() {
+            @Override
+            public void liked(LikeButton likeButton) {
+                PreferencesUtil.addFavorites(DetailActivity.this,item);
+                Snackbar.make(mAddToCart, "Item ditambahkan ke dalam daftar suka", Snackbar.LENGTH_SHORT).show();
+
+            }
+
+            @Override
+            public void unLiked(LikeButton likeButton) {
+                PreferencesUtil.removeFavorites(DetailActivity.this,item);
+                Snackbar.make(mAddToCart, "Item dihapus dari daftar suka", Snackbar.LENGTH_SHORT).show();
+            }
+        });
 
         mName.setText(item.getName());
         mPrice.setText(CurrencyUtil.rupiah(new BigDecimal(item.getPrice())));

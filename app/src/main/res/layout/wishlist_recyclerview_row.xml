@@ -1,80 +1,88 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="horizontal"
+    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:paddingLeft="10dp"
     android:paddingTop="10dp"
     android:paddingRight="10dp"
     android:paddingBottom="10dp">
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-
-        <ImageView
-            android:id="@+id/wishlist_row_image"
-            android:layout_width="75dp"
-            android:layout_height="100dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/empty_image" />
-    </LinearLayout>
-
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingLeft="10dp"
-        android:paddingTop="10dp"
-        android:orientation="horizontal">
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:layout_width="75dp"
+                android:layout_height="100dp"
+                android:src="@drawable/empty_image"
+                android:id="@+id/wishlist_row_image"
+                android:scaleType="centerCrop"/>
+        </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="right"
-            android:orientation="vertical">
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:lines="1"
-                    android:ellipsize="end"
-                    android:textSize="16sp"
-                    android:textColor="@android:color/black"
-                    android:id="@+id/wishlist_row_name"
-                    android:text=""/>
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:id="@+id/wishlist_row_delete"
-                    android:src="@drawable/ic_delete_black_24dp"/>
-            </RelativeLayout>
-            <RelativeLayout
+            android:paddingLeft="10dp"
+            android:paddingTop="10dp"
+            android:orientation="horizontal">
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    android:orientation="vertical">
+                android:gravity="right"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
                     <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:lines="1"
+                        android:ellipsize="end"
+                        android:textSize="16sp"
+                        android:layout_toLeftOf="@+id/wishlist_row_delete"
+                        android:textColor="@android:color/black"
+                        android:id="@+id/wishlist_row_name"
+                        android:text=""/>
+
+                    <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="15sp"
-                        android:textStyle="bold"
-                        android:textColor="@android:color/black"
-                        android:padding="5dp"
-                        android:maxLines="1"
-                        android:id="@+id/wishlist_row_price"
-                        android:text="Rp 150000"/>
-                </LinearLayout>
-            </RelativeLayout>
-        </LinearLayout>
+                        android:layout_alignParentRight="true"
+                        android:id="@+id/wishlist_row_delete"
+                        android:src="@drawable/ic_delete_black_24dp"/>
+                </RelativeLayout>
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="15sp"
+                            android:textStyle="bold"
+                            android:textColor="@android:color/black"
+                            android:padding="5dp"
+                            android:maxLines="1"
+                            android:id="@+id/wishlist_row_price"
+                            android:text="Rp 150000"/>
+                    </LinearLayout>
+                </RelativeLayout>
+            </LinearLayout>
 
+        </LinearLayout>
     </LinearLayout>
+
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="10dp"
+        android:background="@color/colorLightGrey"/>
 </LinearLayout>

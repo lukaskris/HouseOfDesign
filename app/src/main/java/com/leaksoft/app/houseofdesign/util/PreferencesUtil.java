@@ -7,6 +7,7 @@ import com.leaksoft.app.houseofdesign.model.Cart;
 import com.leaksoft.app.houseofdesign.model.CategoryItem;
 import com.leaksoft.app.houseofdesign.model.Customer;
 import com.google.gson.Gson;
+import com.leaksoft.app.houseofdesign.model.Items;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,6 +35,18 @@ public class PreferencesUtil {
         editor.putString(CART_KEY,jsonCart);
         editor.apply();
     }
+
+    public static void saveFavorites(Context context, List<Items> favorites){
+        SharedPreferences sharedPreferences;
+        SharedPreferences.Editor editor;
+        sharedPreferences = context.getSharedPreferences(FAVORITES,Context.MODE_PRIVATE);
+        editor = sharedPreferences.edit();
+        Gson gson = new Gson();
+        String jsonCart = gson.toJson(favorites);
+        editor.putString(FAVORITES_KEY,jsonCart);
+        editor.apply();
+    }
+
 
     public static void saveUser(Context context, Customer customer){
         SharedPreferences sharedPreferences;
@@ -80,9 +93,31 @@ public class PreferencesUtil {
         saveCart(context,carts);
     }
 
+    public static void addFavorites(Context context, Items item){
+        List<Items> favorites = getFavorites(context);
+
+        if (favorites == null) {
+            favorites = new ArrayList<>();
+            favorites.add(item);
+        }else if(!containsFavorites(favorites,item)){
+            favorites.add(item);
+        }
+        saveFavorites(context,favorites);
+    }
+
+
     private static boolean containsCart(List<Cart> carts, Cart cart){
         for(Cart c : carts){
             if(c.getSubitem_id() == cart.getSubitem_id()){
+                return true;
+            }
+        }
+
+        return false;
+    }
+    private static boolean containsFavorites(List<Items> items, Items item){
+        for(Items c : items){
+            if(c.getId() == item.getId()){
                 return true;
             }
         }
@@ -95,6 +130,14 @@ public class PreferencesUtil {
         if (carts != null) {
             carts.remove(cart);
             saveCart(context,carts);
+        }
+    }
+
+    public static void removeFavorites(Context context, Items item){
+        List<Items> favorites = getFavorites(context);
+        if (favorites != null) {
+            favorites.remove(item);
+            saveFavorites(context,favorites);
         }
     }
 
@@ -114,6 +157,24 @@ public class PreferencesUtil {
 
         return (ArrayList<Cart>)carts;
     }
+
+    public static ArrayList<Items> getFavorites(Context context){
+        SharedPreferences sharedPreferences;
+        List<Items> favorites;
+        sharedPreferences = context.getSharedPreferences(FAVORITES, Context.MODE_PRIVATE);
+        if(sharedPreferences.contains(FAVORITES_KEY)){
+            String json = sharedPreferences.getString(FAVORITES_KEY,null);
+            Gson gson = new Gson();
+            Items[] favorite = gson.fromJson(json, Items[].class);
+            favorites = Arrays.asList(favorite);
+            favorites = new ArrayList<>(favorites);
+        }
+        else
+            return null;
+
+        return (ArrayList<Items>)favorites;
+    }
+
 
     public static Customer getUser(Context context){
         SharedPreferences sharedPreferences;

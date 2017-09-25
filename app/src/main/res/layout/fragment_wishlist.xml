@@ -2,6 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:padding="10dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.leaksoft.app.houseofdesign.shop.WishlistFragment">
 
@@ -12,4 +13,22 @@
         android:layout_height="wrap_content"
         app:layoutManager="LinearLayoutManager"/>
 
+    <LinearLayout
+        android:id="@+id/wishlist_no_data"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:gravity="center">
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:tint="@android:color/darker_gray"
+            android:src="@drawable/ic_favorite_white_24dp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Tidak ada item didalam daftar favorite."/>
+    </LinearLayout>
 </FrameLayout>
