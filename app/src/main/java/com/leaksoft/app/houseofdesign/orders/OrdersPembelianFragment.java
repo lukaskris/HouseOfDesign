@@ -330,6 +330,11 @@ public class OrdersPembelianFragment extends Fragment {
     }
 
     @Override
+    public void onDetach() {
+        super.onDetach();
+    }
+
+    @Override
     public void onStop() {
         super.onStop();
         if (!mDisposable.isDisposed()) {

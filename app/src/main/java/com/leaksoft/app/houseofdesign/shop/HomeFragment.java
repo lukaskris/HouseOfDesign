@@ -16,6 +16,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,6 +36,7 @@ import com.leaksoft.app.houseofdesign.util.CurrencyUtil;
 import com.leaksoft.app.houseofdesign.util.NetworkUtil;
 import com.leaksoft.app.houseofdesign.util.PreferencesUtil;
 import com.google.firebase.database.FirebaseDatabase;
+import com.miguelcatalan.materialsearchview.MaterialSearchView;
 import com.viewpagerindicator.CirclePageIndicator;
 import com.wang.avi.AVLoadingIndicatorView;
 
@@ -62,6 +64,7 @@ public class HomeFragment extends Fragment {
     AVLoadingIndicatorView mLoading;
     LinearLayout mNoData;
 
+    MaterialSearchView mSearchView;
     SwipeRefreshLayout swipeRefreshLayout;
 
     int [] mResources = {
@@ -106,7 +109,7 @@ public class HomeFragment extends Fragment {
         }
 
         getActivity().setTitle("Home");
-
+        setHasOptionsMenu(true);
         /* Setting Banner */
         mViewPager = (ViewPager) view.findViewById(R.id.home_viewpager);
         mViewPagerAdapter = new ViewPagerAdapter(getContext());
@@ -126,6 +129,7 @@ public class HomeFragment extends Fragment {
         mNoData.setVisibility(View.GONE);
 
 
+        mSearchView = (MaterialSearchView) view.findViewById(R.id.search_view);
 
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.home_swipe);
 //
@@ -215,7 +219,7 @@ public class HomeFragment extends Fragment {
             }
         }
         RecyclerView my_recycler_view = (RecyclerView) view.findViewById(R.id.home_recyclerview);
-        my_recycler_view.setHasFixedSize(true);
+        my_recycler_view.setHasFixedSize(false);
         my_recycler_view.setNestedScrollingEnabled(false);
         my_recycler_view.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         my_recycler_view.setAdapter(adapter);
@@ -245,7 +249,11 @@ public class HomeFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-
+        inflater.inflate(R.menu.home, menu);
+        if(mSearchView!=null) {
+            MenuItem item = menu.findItem(R.id.search);
+            mSearchView.setMenuItem(item);
+        }
     }
 
     void migrateToCategoryItem(){

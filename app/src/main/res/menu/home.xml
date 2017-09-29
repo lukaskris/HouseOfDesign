@@ -6,12 +6,6 @@
         android:id="@+id/search"
         android:icon="@drawable/ic_search_white_24dp"
         android:title="@string/title_search"
-        app:showAsAction="ifRoom"
+        app:showAsAction="always"
         />
-    <item
-        android:id="@+id/home_action_cart"
-        android:orderInCategory="100"
-        android:icon="@drawable/ic_shopping_cart_white_24dp"
-        android:title="@string/home_shopping_cart"
-        app:showAsAction="always" />
 </menu>

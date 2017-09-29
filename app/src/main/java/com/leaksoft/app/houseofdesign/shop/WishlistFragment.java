@@ -55,7 +55,7 @@ public class WishlistFragment extends Fragment {
         mRecyclerView.setHasFixedSize(true);
         items = new ArrayList<>();
         items = PreferencesUtil.getFavorites(getContext());
-        if(items.size()==0){
+        if(items!=null && items.size()==0){
             mNodata.setVisibility(View.VISIBLE);
         }
         WishlistAdapter adapter = new WishlistAdapter(getContext(),items);

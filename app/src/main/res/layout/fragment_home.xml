@@ -1,20 +1,15 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.SwipeRefreshLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context="com.leaksoft.app.houseofdesign.shop.HomeFragment">
-    <android.support.v4.widget.SwipeRefreshLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/home_swipe"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <android.support.v4.widget.NestedScrollView
+    tools:context="com.leaksoft.app.houseofdesign.shop.HomeFragment"
+    android:id="@+id/home_swipe"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true"
-        android:scrollbars="vertical">
+        android:fillViewport="true">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -25,8 +20,8 @@
                 <android.support.v4.view.ViewPager
                     android:id="@+id/home_viewpager"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"/>
-
+                    android:layout_height="match_parent"
+                    app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
                 <com.viewpagerindicator.CirclePageIndicator
                     android:id="@+id/home_circlePageIndicator"
                     android:layout_width="match_parent"
@@ -42,15 +37,15 @@
             </RelativeLayout>
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
-            <com.wang.avi.AVLoadingIndicatorView
-                android:id="@+id/home_loading"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:indicatorName="BallSpinFadeLoaderIndicator"
-                app:indicatorColor="@android:color/darker_gray"
-                android:layout_centerInParent="true"/>
-
+                android:layout_height="match_parent"
+                android:visibility="visible">
+                <com.wang.avi.AVLoadingIndicatorView
+                    android:id="@+id/home_loading"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:indicatorName="BallSpinFadeLoaderIndicator"
+                    app:indicatorColor="@android:color/darker_gray"
+                    android:layout_centerInParent="true"/>
                 <LinearLayout
                     android:id="@+id/home_no_data"
                     android:layout_width="match_parent"
@@ -70,14 +65,12 @@
                         android:gravity="center"
                         android:text="@string/title_no_data"/>
                 </LinearLayout>
-            <android.support.v7.widget.RecyclerView
-                android:padding="10dp"
-                android:id="@+id/home_recyclerview"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                />
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/home_recyclerview"
+                    android:padding="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
             </RelativeLayout>
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
-    </android.support.v4.widget.SwipeRefreshLayout>
-</FrameLayout>
+</android.support.v4.widget.SwipeRefreshLayout>
