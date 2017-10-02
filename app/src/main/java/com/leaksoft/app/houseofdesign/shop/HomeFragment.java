@@ -16,7 +16,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,7 +35,6 @@ import com.leaksoft.app.houseofdesign.util.CurrencyUtil;
 import com.leaksoft.app.houseofdesign.util.NetworkUtil;
 import com.leaksoft.app.houseofdesign.util.PreferencesUtil;
 import com.google.firebase.database.FirebaseDatabase;
-import com.miguelcatalan.materialsearchview.MaterialSearchView;
 import com.viewpagerindicator.CirclePageIndicator;
 import com.wang.avi.AVLoadingIndicatorView;
 
@@ -63,8 +61,8 @@ public class HomeFragment extends Fragment {
     ProgressDialog mProgress;
     AVLoadingIndicatorView mLoading;
     LinearLayout mNoData;
+    RecyclerView mRecycler;
 
-    MaterialSearchView mSearchView;
     SwipeRefreshLayout swipeRefreshLayout;
 
     int [] mResources = {
@@ -101,6 +99,8 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
+        getActivity().setTitle("Home");
+        setHasOptionsMenu(true);
 
         /* Setting Firebase */
         if(!calledActivity){
@@ -108,10 +108,38 @@ public class HomeFragment extends Fragment {
             calledActivity=true;
         }
 
-        getActivity().setTitle("Home");
-        setHasOptionsMenu(true);
-        /* Setting Banner */
+
+        mNoData = (LinearLayout) view.findViewById(R.id.home_no_data);
         mViewPager = (ViewPager) view.findViewById(R.id.home_viewpager);
+        swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.home_swipe);
+        mIndicator = (CirclePageIndicator) view.findViewById(R.id.home_circlePageIndicator);
+        mLoading = (AVLoadingIndicatorView) view.findViewById(R.id.home_loading);
+        mRecycler = (RecyclerView) view.findViewById(R.id.home_recyclerview);
+
+
+        allCategory = new ArrayList<>();
+        allItems = new ArrayList<>();
+        categoryItems = new ArrayList<>();
+
+        adapter = new CategoryListAdapter(getContext(), categoryItems);
+        if(getActivity().getIntent().hasExtra("category") && getActivity().getIntent().hasExtra("items")) {
+            allCategory = (ArrayList<Category>) getActivity().getIntent().getSerializableExtra("category");
+            allItems = (ArrayList<Items>) getActivity().getIntent().getSerializableExtra("items");
+            migrateToCategoryItem();
+        }else{
+
+            ArrayList<CategoryItem> temp =PreferencesUtil.getHome(getContext());
+            mLoading.setVisibility(View.GONE);
+            if(temp!=null && temp.size()>0){
+                categoryItems.addAll(temp);
+                adapter.notifyDataSetChanged();
+            }
+            else {
+                mNoData.setVisibility(View.VISIBLE);
+            }
+        }
+
+        /* Setting Banner */
         mViewPagerAdapter = new ViewPagerAdapter(getContext());
         mViewPager.setAdapter(mViewPagerAdapter);
         mViewPager.setOnTouchListener(new View.OnTouchListener() {
@@ -122,16 +150,10 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        mIndicator = (CirclePageIndicator) view.findViewById(R.id.home_circlePageIndicator);
         mIndicator.setViewPager(mViewPager);
 
-        mNoData = (LinearLayout) view.findViewById(R.id.home_no_data);
         mNoData.setVisibility(View.GONE);
 
-
-        mSearchView = (MaterialSearchView) view.findViewById(R.id.search_view);
-
-        swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.home_swipe);
 //
         swipeRefreshLayout.setColorSchemeColors(getResources().getColor(android.R.color.holo_blue_bright),
                 getResources().getColor(android.R.color.holo_green_light),
@@ -147,13 +169,13 @@ public class HomeFragment extends Fragment {
                             fetchData();
                         }else{
                             noInternetConnection();
+                            swipeRefreshLayout.setRefreshing(false);
                         }
                     }
                 },3000);
             }
         });
 
-        mLoading = (AVLoadingIndicatorView) view.findViewById(R.id.home_loading);
 
         NUM_PAGES = mResources.length;
         // Auto start of viewpager
@@ -195,35 +217,17 @@ public class HomeFragment extends Fragment {
         mProgress.setMessage("Loading...");
         /* End Setting ProgressBar*/
 
-        allCategory = new ArrayList<>();
-        categoryItems = new ArrayList<>();
-        adapter = new CategoryListAdapter(getContext(), categoryItems);
-        allItems = new ArrayList<>();
 
-        if(getActivity().getIntent().hasExtra("category") && getActivity().getIntent().hasExtra("items")) {
-            allCategory = (ArrayList<Category>) getActivity().getIntent().getSerializableExtra("category");
-            allItems = (ArrayList<Items>) getActivity().getIntent().getSerializableExtra("items");
-            migrateToCategoryItem();
-        }else{
-            if(getActivity().getIntent().hasExtra("error")){
-                noInternetConnection();
-//                Toast.makeText(getContext(), getActivity().getIntent().getStringExtra("error"),Toast.LENGTH_LONG).show();
-            }
-            ArrayList<CategoryItem> temp =PreferencesUtil.getHome(getContext());
-            mLoading.setVisibility(View.GONE);
-            if(temp!=null && temp.size()>0){
-                categoryItems.addAll(temp);
-            }
-            else {
-                mNoData.setVisibility(View.VISIBLE);
-            }
-        }
-        RecyclerView my_recycler_view = (RecyclerView) view.findViewById(R.id.home_recyclerview);
-        my_recycler_view.setHasFixedSize(false);
-        my_recycler_view.setNestedScrollingEnabled(false);
-        my_recycler_view.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-        my_recycler_view.setAdapter(adapter);
+        mRecycler.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+        mRecycler.setHasFixedSize(false);
+        mRecycler.setNestedScrollingEnabled(false);
+        mRecycler.setAdapter(adapter);
 //        autoRefreshWhenOff();
+
+
+        if(!NetworkUtil.isOnline(getContext())){
+            noInternetConnection();
+        }
         return view;
     }
 
@@ -250,10 +254,6 @@ public class HomeFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.home, menu);
-        if(mSearchView!=null) {
-            MenuItem item = menu.findItem(R.id.search);
-            mSearchView.setMenuItem(item);
-        }
     }
 
     void migrateToCategoryItem(){
@@ -331,7 +331,7 @@ public class HomeFragment extends Fragment {
 
     void noInternetConnection(){
         Snackbar
-            .make(mNoData, "No Internet Connection", Snackbar.LENGTH_LONG)
+            .make(mViewPager, "No Internet Connection", Snackbar.LENGTH_LONG)
             .setAction("RETRY", new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

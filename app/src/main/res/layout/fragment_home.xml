@@ -1,76 +1,77 @@
-<android.support.v4.widget.SwipeRefreshLayout
+<android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.leaksoft.app.houseofdesign.shop.HomeFragment"
-    android:id="@+id/home_swipe"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <android.support.v4.widget.NestedScrollView
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/home_swipe"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fillViewport="true">
-        <LinearLayout
+        android:layout_height="match_parent">
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="150dp">
-                <android.support.v4.view.ViewPager
-                    android:id="@+id/home_viewpager"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
-                <com.viewpagerindicator.CirclePageIndicator
-                    android:id="@+id/home_circlePageIndicator"
+                    android:layout_height="150dp">
+                    <android.support.v4.view.ViewPager
+                        android:id="@+id/home_viewpager"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"/>
+                    <com.viewpagerindicator.CirclePageIndicator
+                        android:id="@+id/home_circlePageIndicator"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:layout_centerHorizontal="true"
+                        android:gravity="bottom"
+                        android:padding="10dip"
+                        app:centered="true"
+                        app:fillColor="#ffffff"
+                        app:pageColor="#223760"
+                        app:snap="false" />
+                </RelativeLayout>
+                <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentBottom="true"
-                    android:layout_centerHorizontal="true"
-                    android:gravity="bottom"
-                    android:padding="10dip"
-                    app:centered="true"
-                    app:fillColor="#ffffff"
-                    app:pageColor="#223760"
-                    app:snap="false" />
-            </RelativeLayout>
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:visibility="visible">
-                <com.wang.avi.AVLoadingIndicatorView
-                    android:id="@+id/home_loading"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:indicatorName="BallSpinFadeLoaderIndicator"
-                    app:indicatorColor="@android:color/darker_gray"
-                    android:layout_centerInParent="true"/>
-                <LinearLayout
-                    android:id="@+id/home_no_data"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:visibility="gone"
-                    android:gravity="center">
-                    <ImageView
-                        android:id="@+id/address_home_icon"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:tint="@android:color/darker_gray"
-                        android:src="@drawable/ic_refresh_black_24dp"/>
-                    <TextView
+                    android:layout_height="match_parent">
+                    <com.wang.avi.AVLoadingIndicatorView
+                        android:id="@+id/home_loading"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:text="@string/title_no_data"/>
-                </LinearLayout>
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/home_recyclerview"
-                    android:padding="10dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
-            </RelativeLayout>
-        </LinearLayout>
-    </android.support.v4.widget.NestedScrollView>
-</android.support.v4.widget.SwipeRefreshLayout>
+                        app:indicatorName="BallSpinFadeLoaderIndicator"
+                        app:indicatorColor="@android:color/darker_gray"
+                        android:layout_centerInParent="true"/>
+                    <LinearLayout
+                        android:id="@+id/home_no_data"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:visibility="gone"
+                        android:gravity="center">
+                        <ImageView
+                            android:id="@+id/address_home_icon"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:tint="@android:color/darker_gray"
+                            android:src="@drawable/ic_refresh_black_24dp"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:text="@string/title_no_data"/>
+                    </LinearLayout>
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/home_recyclerview"
+                        android:padding="10dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+                </RelativeLayout>
+            </LinearLayout>
+        </ScrollView>
+    </android.support.v4.widget.SwipeRefreshLayout>
+</android.support.design.widget.CoordinatorLayout>

@@ -10,9 +10,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.SearchView;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -39,8 +37,6 @@ import com.leaksoft.app.houseofdesign.shop.WishlistFragment;
 import com.leaksoft.app.houseofdesign.util.PreferencesUtil;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.miguelcatalan.materialsearchview.MaterialSearchView;
-
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -50,7 +46,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     private NavigationView navigationView;
     private Fragment selectedFragment;
 
-    MaterialSearchView mSearchView;
     @Override
     protected void onStart() {
         super.onStart();
@@ -89,18 +84,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         selectedFragment(R.id.nav_home);
         navigationView.getMenu().getItem(0).setChecked(true);
 
-        mSearchView = (MaterialSearchView) findViewById(R.id.search_view);
-        mSearchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                return false;
-            }
-        });
         Menu nav_Menu = navigationView.getMenu();
         nav_Menu.findItem(R.id.nav_logout).setVisible(false);
         nav_Menu.findItem(R.id.nav_profile).setVisible(false);

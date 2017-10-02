@@ -22,6 +22,8 @@ public class PreferencesUtil {
     private static final String HOME_KEY = "home";
     private static final String USER = "LOCAL_USER";
     private static final String USER_KEY = "user";
+    private static final String SEARCH ="LOCAL_SEARCH";
+    private static final String SEARCH_KEY ="search";
 
     private PreferencesUtil(){}
 
@@ -33,6 +35,17 @@ public class PreferencesUtil {
         Gson gson = new Gson();
         String jsonCart = gson.toJson(carts);
         editor.putString(CART_KEY,jsonCart);
+        editor.apply();
+    }
+
+    public static void saveSearch(Context context, List<String> search){
+        SharedPreferences sharedPreferences;
+        SharedPreferences.Editor editor;
+        sharedPreferences = context.getSharedPreferences(SEARCH,Context.MODE_PRIVATE);
+        editor = sharedPreferences.edit();
+        Gson gson = new Gson();
+        String jsonCart = gson.toJson(search);
+        editor.putString(SEARCH_KEY,jsonCart);
         editor.apply();
     }
 
@@ -93,6 +106,28 @@ public class PreferencesUtil {
         saveCart(context,carts);
     }
 
+    public static void addSearch(Context context, String item){
+        List<String> search = getSearch(context);
+        if(search == null){
+            search = new ArrayList<>();
+            search.add(item);
+        }else if(containsSearch(search, item)){
+            for(String s : search){
+                if(s.equalsIgnoreCase(item)){
+                    List<String> temp = new ArrayList<>();
+                    temp.addAll(search);
+                    temp.remove(s);
+                    temp.add(s);
+                    search = temp;
+                    break;
+                }
+            }
+        }else {
+            search.add(item);
+        }
+        saveSearch(context, search);
+    }
+
     public static void addFavorites(Context context, Items item){
         List<Items> favorites = getFavorites(context);
 
@@ -115,6 +150,17 @@ public class PreferencesUtil {
 
         return false;
     }
+
+    private static boolean containsSearch(List<String> search, String item){
+        for(String s : search){
+            if(s.equalsIgnoreCase(item)){
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private static boolean containsFavorites(List<Items> items, Items item){
         for(Items c : items){
             if(c.getId() == item.getId()){
@@ -153,9 +199,25 @@ public class PreferencesUtil {
             carts = new ArrayList<>(carts);
         }
         else
-            return null;
+            return new ArrayList<>();
 
         return (ArrayList<Cart>)carts;
+    }
+
+    public static ArrayList<String> getSearch(Context context){
+        SharedPreferences sharedPreferences;
+        List<String> search;
+        sharedPreferences = context.getSharedPreferences(SEARCH, Context.MODE_PRIVATE);
+        if(sharedPreferences.contains(SEARCH_KEY)){
+            String json = sharedPreferences.getString(SEARCH_KEY, null);
+            Gson gson = new Gson();
+            String[] item = gson.fromJson(json, String[].class);
+            search = Arrays.asList(item);
+            search = new ArrayList<>(search);
+        }else {
+            return new ArrayList<>();
+        }
+        return (ArrayList<String>)search;
     }
 
     public static ArrayList<Items> getFavorites(Context context){
@@ -170,7 +232,7 @@ public class PreferencesUtil {
             favorites = new ArrayList<>(favorites);
         }
         else
-            return null;
+            return new ArrayList<>();
 
         return (ArrayList<Items>)favorites;
     }
@@ -199,7 +261,7 @@ public class PreferencesUtil {
             home = new ArrayList<>(home);
         }
         else
-            return null;
+            return new ArrayList<>();
 
         return (ArrayList<CategoryItem>)home;
     }

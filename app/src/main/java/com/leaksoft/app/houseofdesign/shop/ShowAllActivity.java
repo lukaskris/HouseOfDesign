@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -51,24 +52,39 @@ public class ShowAllActivity extends AppCompatActivity {
     private int PAGE=0;
     protected Handler handler;
     private List<Items> mList;
-    private int category;
+    private int category=-1;
     int cursize=0;
+    String mKey="";
+    Boolean isKey=false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_all);
 
-        if(getSupportActionBar() != null)
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        if(getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setElevation(0);
+        }
+
+        if(getIntent().hasExtra("name")){
+            isKey=true;
+            mKey=getIntent().getStringExtra("name");
+            setTitle(mKey);
+        }else if(getIntent().hasExtra("category")){
+            category = getIntent().getIntExtra("category",0);
+        }
 
         mList = new ArrayList<>();
 
 
-        category = getIntent().getIntExtra("category",0);
-        String section = getIntent().getStringExtra("section");
-        getSupportActionBar().setTitle(section);
-
+        if(getIntent().hasExtra("section")) {
+            String section = getIntent().getStringExtra("section");
+            getSupportActionBar().setTitle(section);
+        }
         handler = new Handler();
 
         mLoading = (AVLoadingIndicatorView) findViewById(R.id.show_all_loading);
@@ -86,7 +102,11 @@ public class ShowAllActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         resetState();
-                        loadProduct(category, PAGE);
+                        if(isKey){
+                            loadProduct(PAGE);
+                        }else {
+                            loadProduct(category, PAGE);
+                        }
                     }
                 },2000);
             }
@@ -113,7 +133,11 @@ public class ShowAllActivity extends AppCompatActivity {
                             adapter.notifyItemRemoved(mList.size());
                             //add items one by one
                             PAGE++;
-                            loadProduct(category, PAGE);
+                            if(isKey){
+                                loadProduct(PAGE);
+                            }else {
+                                loadProduct(category, PAGE);
+                            }
 
                         }
                     }, 2000);
@@ -122,15 +146,66 @@ public class ShowAllActivity extends AppCompatActivity {
             }
         });
         recyclerView.setAdapter(adapter);
-        loadProduct(category,PAGE);
+        if(isKey){
+            loadProduct(PAGE);
+        }else {
+            loadProduct(category, PAGE);
+        }
     }
     private void resetState(){
         mList.clear();
         adapter.resetLoaded();
         adapter.notifyDataSetChanged();
     }
-    private void loadProduct(int category, int page) {
 
+    private void loadProduct(int page){
+        service.getItems(mKey,page*10,10)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<List<Items>>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(List<Items> itemses) {
+                        mLoading.setVisibility(View.GONE);
+                        if(itemses.size()>0){
+                            cursize = adapter.getItemCount();
+                            mList.addAll(itemses);
+                            handler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    adapter.notifyItemRangeInserted(cursize+1, adapter.getItemCount());
+                                }
+                            });
+                        }else {
+                            adapter.setIsEnd(true);
+                        }
+                        adapter.setLoaded();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Snackbar.make(recyclerView, e.getLocalizedMessage(), Snackbar.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        if(mSwipe.isRefreshing())
+                            mSwipe.setRefreshing(false);
+                        mLoading.setVisibility(View.GONE);
+                        if(mList.size() == 0){
+                            mNoData.setVisibility(View.VISIBLE);
+                        }else {
+                            mNoData.setVisibility(View.GONE);
+                        }
+                    }
+                });
+    }
+
+    private void loadProduct(int category, int page) {
         service.getItems(category,page*10,10)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -273,7 +348,7 @@ public class ShowAllActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
             if (holder instanceof ItemViewHolder) {
-                Items item = itemList.get(position);
+                final Items item = itemList.get(position);
 
                 ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
                 itemViewHolder.mItem = item;
@@ -281,19 +356,18 @@ public class ShowAllActivity extends AppCompatActivity {
                 itemViewHolder.item_price.setText(CurrencyUtil.rupiah(new BigDecimal(item.getPrice())));
                 Glide.with(context).load("https://storage.googleapis.com/houseofdesign/"+item.getThumbnail()).diskCacheStrategy(DiskCacheStrategy.RESULT).into(itemViewHolder.item_image);
                 itemViewHolder.itemView.setTag(item);
-                itemViewHolder.itemView.setOnClickListener(detail);
+                itemViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(ShowAllActivity.this, DetailActivity.class);
+                        intent.putExtra("item",item);
+                        startActivity(intent);
+                    }
+                });
             } else {
                 ((ProgressViewHolder) holder).progressBar.setIndeterminate(true);
             }
         }
-
-        private View.OnClickListener detail = new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-
-            }
-        };
 
         void setIsEnd(Boolean is){
             isEnd=is;

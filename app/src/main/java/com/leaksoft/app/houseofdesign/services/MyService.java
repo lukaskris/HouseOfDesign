@@ -35,6 +35,9 @@ public interface MyService {
     @GET("item/{category}/{offset}/{limit}")
     Observable<List<Items>> getItems(@Path("category") int category, @Path("offset") int offset, @Path("limit") int limit);
 
+    @GET("search_item/{key}/{offset}/{limit}")
+    Observable<List<Items>> getItems(@Path("key") String key, @Path("offset") int offset, @Path("limit") int limit);
+
     @GET("items")
     Observable<List<Items>> getItems();
 
@@ -94,4 +97,7 @@ public interface MyService {
 
     @POST("orders_bukti")
     Observable<OrdersBukti> setOrdersBukti(@Body OrdersBukti ordersBukti);
+
+    @GET("search/{key}")
+    Observable<List<Items>> getSearch(@Path("key") String key);
 }

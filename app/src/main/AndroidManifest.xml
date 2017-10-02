@@ -48,7 +48,8 @@
             android:name=".shop.DetailActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".shop.TypeActivity" />
-        <activity android:name=".shop.ShowAllActivity" />
+        <activity android:name=".shop.ShowAllActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
         <!-- <activity android:name=".Shop.ShoppingCartFragment" /> -->
         <activity android:name=".transaction.ConfirmationActivity" />
         <activity android:name=".account.AddressActivity" />
@@ -66,10 +67,10 @@
         <activity
             android:name=".shop.SearchingActivity"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".Wallet.TopUpWalletActivity" />
-        <activity android:name=".Wallet.HistoryWalletActivity" />
-        <activity android:name=".Wallet.RedeemWalletActivity" />
-        <activity android:name=".account.EditProfileActivity"></activity>
+        <activity android:name=".wallet.TopUpWalletActivity" />
+        <activity android:name=".wallet.HistoryWalletActivity" />
+        <activity android:name=".wallet.RedeemWalletActivity" />
+        <activity android:name=".account.EditProfileActivity"/>
     </application>
 
 </manifest>

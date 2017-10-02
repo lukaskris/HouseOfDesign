@@ -11,14 +11,18 @@
         android:visibility="gone"
         android:padding="10dp">
         <TextView
+            android:id="@+id/search_row_header_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Pencarian terakhir"/>
     </LinearLayout>
     <LinearLayout
+        android:id="@+id/search_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="10dp"
+        android:clickable="true"
+        android:background="?attr/selectableItemBackground"
         android:orientation="horizontal">
         <ImageView
             android:id="@+id/search_row_image"
