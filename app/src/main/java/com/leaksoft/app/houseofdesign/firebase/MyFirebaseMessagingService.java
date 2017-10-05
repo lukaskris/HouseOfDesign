@@ -1,5 +1,6 @@
 package com.leaksoft.app.houseofdesign.firebase;
 
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -74,6 +75,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         .setSmallIcon(R.drawable.icon)
                         .setContentTitle("FCM Message")
                         .setContentText(messageBody)
+                        .setPriority(Notification.PRIORITY_HIGH)
                         .setAutoCancel(true)
                         .setSound(defaultSoundUri)
                         .setVibrate(new long[]{1000,1000})
