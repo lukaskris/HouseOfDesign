@@ -24,6 +24,9 @@ public class PreferencesUtil {
     private static final String USER_KEY = "user";
     private static final String SEARCH ="LOCAL_SEARCH";
     private static final String SEARCH_KEY ="search";
+    private static final String TOKEN ="LOCAL_TOKEN";
+    private static final String TOKEN_KEY ="token";
+
 
     private PreferencesUtil(){}
 
@@ -69,6 +72,17 @@ public class PreferencesUtil {
         Gson gson = new Gson();
         String jsonCart = gson.toJson(customer);
         editor.putString(USER_KEY,jsonCart);
+        editor.apply();
+    }
+
+    public static void saveToken(Context context, String token){
+        SharedPreferences sharedPreferences;
+        SharedPreferences.Editor editor;
+        sharedPreferences = context.getSharedPreferences(TOKEN,Context.MODE_PRIVATE);
+        editor = sharedPreferences.edit();
+        Gson gson = new Gson();
+        String jsonCart = gson.toJson(token);
+        editor.putString(TOKEN_KEY,jsonCart);
         editor.apply();
     }
 
@@ -245,6 +259,17 @@ public class PreferencesUtil {
             String json = sharedPreferences.getString(USER_KEY,null);
             Gson gson = new Gson();
             return gson.fromJson(json, Customer.class);
+        }
+        return null;
+    }
+
+    public static String getToken(Context context){
+        SharedPreferences sharedPreferences;
+        sharedPreferences = context.getSharedPreferences(TOKEN, Context.MODE_PRIVATE);
+        if(sharedPreferences.contains(TOKEN_KEY)){
+            String json = sharedPreferences.getString(TOKEN_KEY,null);
+            Gson gson = new Gson();
+            return gson.fromJson(json, String.class);
         }
         return null;
     }

@@ -59,6 +59,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "603220519271-g7vegm7h85aq8d2tgecd3ingpee8del3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.lukaskris.houseofdesign",
+            "certificate_hash": "78b1aa00847dd11ab723f092598d15013bfd5681"
+          }
+        },
+        {
           "client_id": "603220519271-7f4it82d181no91ksnpicl3jfm1ve7c8.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

@@ -15,6 +15,7 @@ public class Customer {
     String picture;
     Date datebirth;
     String gender;
+    String firebasetoken;
 
     public Customer(String name, String email, String phone, String password, String picture) {
         this.id = id;
@@ -23,6 +24,17 @@ public class Customer {
         this.phone = phone;
         this.password = password;
         this.picture = picture;
+    }
+
+    public Customer(String name, String email, String phone, String password, String picture, Date datebirth, String gender, String firebasetoken) {
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
+        this.password = password;
+        this.picture = picture;
+        this.datebirth = datebirth;
+        this.gender = gender;
+        this.firebasetoken = firebasetoken;
     }
 
     public int getId() {
@@ -71,5 +83,13 @@ public class Customer {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public String getFirebasetoken() {
+        return firebasetoken;
+    }
+
+    public void setFirebasetoken(String firebasetoken) {
+        this.firebasetoken = firebasetoken;
     }
 }

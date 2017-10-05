@@ -48,4 +48,8 @@
     <string name="error_minimum_required_address">Too short. Minimum 10 characters.</string>
     <string name="title_error">Please refresh, some trouble in connection.</string>
 
+
+
+    <string name="default_notification_channel_promo" translatable="true">Promo</string>
+    <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>
 </resources>

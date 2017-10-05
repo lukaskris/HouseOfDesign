@@ -17,11 +17,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.leaksoft.app.houseofdesign.HomeActivity;
-import com.leaksoft.app.houseofdesign.model.Customer;
-import com.leaksoft.app.houseofdesign.R;
-import com.leaksoft.app.houseofdesign.util.NetworkUtil;
-import com.leaksoft.app.houseofdesign.util.PreferencesUtil;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -35,11 +30,17 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.FirebaseDatabase;
+import com.leaksoft.app.houseofdesign.HomeActivity;
+import com.leaksoft.app.houseofdesign.R;
+import com.leaksoft.app.houseofdesign.model.Customer;
+import com.leaksoft.app.houseofdesign.util.NetworkUtil;
+import com.leaksoft.app.houseofdesign.util.PreferencesUtil;
 
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
+import io.reactivex.observers.DefaultObserver;
 import io.reactivex.schedulers.Schedulers;
 
 import static com.leaksoft.app.houseofdesign.services.ServiceFactory.service;
@@ -156,9 +157,32 @@ public class LoginFragment extends Fragment {
                                                     if (mAuth.getCurrentUser() != null && !mAuth.getCurrentUser().isEmailVerified() ) {
                                                         Toast.makeText(getContext(),getString(R.string.error_invalid_verification), Toast.LENGTH_LONG).show();
                                                     }
-                                                    mProgress.dismiss();
-                                                    getActivity().finish();
-                                                    startActivity(new Intent(getActivity(), HomeActivity.class));
+                                                    Customer cus = PreferencesUtil.getUser(getContext());
+                                                    String token = PreferencesUtil.getToken(getContext());
+                                                    if(cus!=null) {
+                                                        cus.setFirebasetoken(token);
+                                                        PreferencesUtil.saveUser(getContext(),cus);
+                                                        service.updateProfile(cus).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+                                                            .subscribe(new DefaultObserver<Customer>() {
+                                                                @Override
+                                                                public void onNext(Customer customer) {
+                                                                    mProgress.dismiss();
+                                                                    getActivity().finish();
+                                                                    startActivity(new Intent(getActivity(), HomeActivity.class));
+                                                                }
+
+                                                                @Override
+                                                                public void onError(Throwable e) {
+                                                                    if(getView()!=null)
+                                                                        Snackbar.make(getView(),e.getLocalizedMessage(),Snackbar.LENGTH_SHORT).show();
+                                                                }
+
+                                                                @Override
+                                                                public void onComplete() {
+
+                                                                }
+                                                            });
+                                                    }
                                                 }
                                             });
                                 }
@@ -302,10 +326,33 @@ public class LoginFragment extends Fragment {
                 .subscribe(new Consumer<Customer>() {
                     @Override
                     public void accept(Customer customer) throws Exception {
-                        PreferencesUtil.saveUser(getContext(), customer);
-                        mProgress.dismiss();
-                        getActivity().finish();
-                        startActivity(new Intent(getActivity(), HomeActivity.class));
+                        Customer cus = PreferencesUtil.getUser(getContext());
+                        String token = PreferencesUtil.getToken(getContext());
+                        if(cus!=null) {
+                            cus.setFirebasetoken(token);
+                            service.updateProfile(cus).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+                                    .subscribe(new DefaultObserver<Customer>() {
+                                        @Override
+                                        public void onNext(Customer customer) {
+
+                                            PreferencesUtil.saveUser(getContext(), customer);
+                                            mProgress.dismiss();
+                                            getActivity().finish();
+                                            startActivity(new Intent(getActivity(), HomeActivity.class));
+                                        }
+
+                                        @Override
+                                        public void onError(Throwable e) {
+                                            if(getView()!=null)
+                                                Snackbar.make(getView(),e.getLocalizedMessage(),Snackbar.LENGTH_SHORT).show();
+                                        }
+
+                                        @Override
+                                        public void onComplete() {
+
+                                        }
+                                    });
+                        }
 
                     }
                 }, new Consumer<Throwable>() {

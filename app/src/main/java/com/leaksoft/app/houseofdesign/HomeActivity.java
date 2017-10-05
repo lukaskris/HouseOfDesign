@@ -25,6 +25,9 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.leaksoft.app.houseofdesign.account.ContainerLoginRegisterActivity;
 import com.leaksoft.app.houseofdesign.account.EditProfileActivity;
 import com.leaksoft.app.houseofdesign.account.ProfileFragment;
@@ -57,6 +60,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+        GoogleApiAvailability.getInstance().makeGooglePlayServicesAvailable(this);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
