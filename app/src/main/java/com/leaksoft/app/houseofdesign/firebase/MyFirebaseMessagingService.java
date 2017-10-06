@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
@@ -17,6 +18,8 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.leaksoft.app.houseofdesign.HomeActivity;
 import com.leaksoft.app.houseofdesign.R;
+import com.leaksoft.app.houseofdesign.orders.DetailPembelianActivity;
+import com.leaksoft.app.houseofdesign.orders.DetailTagihanActivity;
 
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
@@ -33,7 +36,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         // Check if message contains a notification payload.
         if (remoteMessage.getNotification() != null) {
             Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
-            sendNotification(remoteMessage.getNotification().getBody());
+            String intent = remoteMessage.getData().get("intent");
+            String invoice = remoteMessage.getData().get("invoice");
+            sendNotification(remoteMessage.getNotification().getTitle(),remoteMessage.getNotification().getBody(), intent, invoice);
         }
     }
 
@@ -62,20 +67,29 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
      *
      * @param messageBody FCM message body received.
      */
-    private void sendNotification(String messageBody) {
+    private void sendNotification(String title, String messageBody, @Nullable String intentNext, @Nullable String invoice) {
+
         Intent intent = new Intent(this, HomeActivity.class);
+        if(intentNext.equalsIgnoreCase("detailtransaksipembelian")){
+            intent = new Intent(this, DetailPembelianActivity.class);
+        }else if(intentNext.equalsIgnoreCase("detailtransaksitagihan")){
+            intent = new Intent(this, DetailTagihanActivity.class);
+        }
+
+
+            intent.putExtra("invoice", invoice);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
-                PendingIntent.FLAG_ONE_SHOT);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
 
         String channelId = getString(R.string.default_notification_channel_id);
         Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(this)
                         .setSmallIcon(R.drawable.icon)
-                        .setContentTitle("FCM Message")
+                        .setContentTitle(title)
                         .setContentText(messageBody)
                         .setPriority(Notification.PRIORITY_HIGH)
+                        .setDefaults(Notification.DEFAULT_ALL)
                         .setAutoCancel(true)
                         .setSound(defaultSoundUri)
                         .setVibrate(new long[]{1000,1000})

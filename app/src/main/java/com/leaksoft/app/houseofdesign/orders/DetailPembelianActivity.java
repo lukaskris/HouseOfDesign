@@ -2,10 +2,10 @@ package com.leaksoft.app.houseofdesign.orders;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -16,19 +16,21 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.leaksoft.app.houseofdesign.R;
 import com.leaksoft.app.houseofdesign.model.Cart;
 import com.leaksoft.app.houseofdesign.model.Orders;
 import com.leaksoft.app.houseofdesign.model.OrdersInfo;
 import com.leaksoft.app.houseofdesign.model.ShippingAddress;
-import com.leaksoft.app.houseofdesign.R;
 import com.leaksoft.app.houseofdesign.services.RajaOngkir;
 import com.leaksoft.app.houseofdesign.util.CurrencyUtil;
+import com.leaksoft.app.houseofdesign.util.DateUtil;
 import com.leaksoft.app.houseofdesign.util.NetworkUtil;
 
 import org.json.JSONArray;
@@ -36,6 +38,8 @@ import org.json.JSONObject;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import at.blogc.android.views.ExpandableTextView;
@@ -65,6 +69,9 @@ public class DetailPembelianActivity extends AppCompatActivity {
     TextView mHistory;
     Button mConfirm;
     List<Cart> mList;
+    List<Manifest> mTrackingList;
+    RecyclerView mRecyclerView;
+    TrackingAdapter trackingAdapter;
 
     @SuppressWarnings("unchecked")
     @Override
@@ -74,7 +81,8 @@ public class DetailPembelianActivity extends AppCompatActivity {
 
         setTitle("Detail Pembelian");
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if(getSupportActionBar()!=null)
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         orders = (Orders) getIntent().getSerializableExtra("orders");
         mKurir = (TextView) findViewById(R.id.detail_pembelian_kurir);
@@ -88,7 +96,7 @@ public class DetailPembelianActivity extends AppCompatActivity {
         mHistory = (TextView) findViewById(R.id.detail_pembelian_history);
         mNoInternet = (LinearLayout) findViewById(R.id.detail_pembelian_no_internet);
         mTrackingResult = (ExpandableTextView) findViewById(R.id.detail_pembelian_expandable);
-
+        mRecyclerView = (RecyclerView) findViewById(R.id.detail_pembelian_recycler);
         mConfirm = (Button) findViewById(R.id.detail_pembelian_konfirmasi);
 
         mNoInternet.setOnClickListener(new View.OnClickListener() {
@@ -105,6 +113,14 @@ public class DetailPembelianActivity extends AppCompatActivity {
                     mTrackingResult.collapse();
                 else
                     mTrackingResult.expand();
+
+                if(trackingAdapter.maxShow > 2){
+                    trackingAdapter.maxShow = 2;
+                    trackingAdapter.notifyDataSetChanged();
+                }else {
+                    trackingAdapter.maxShow = mTrackingList.size();
+                    trackingAdapter.notifyDataSetChanged();
+                }
             }
         });
 
@@ -132,12 +148,22 @@ public class DetailPembelianActivity extends AppCompatActivity {
         mList = new ArrayList<>();
         mList = (List<Cart>) getIntent().getSerializableExtra("items");
 
+        mTrackingList = new ArrayList<>();
+
+        trackingAdapter = new TrackingAdapter(this, mTrackingList);
+
+        mRecyclerView.setNestedScrollingEnabled(false);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mRecyclerView.setAdapter(trackingAdapter);
+
+
         ItemAdapter adapter = new ItemAdapter(this,mList);
-        mRecycler.setHasFixedSize(true);
+        mRecycler.setHasFixedSize(false);
         mRecycler.setNestedScrollingEnabled(false);
         mRecycler.setFocusable(false);
         mRecycler.setLayoutManager(new LinearLayoutManager(this));
         mRecycler.setAdapter(adapter);
+
         mInvoice.setText(orders.getInvoice());
         mStatus.setText(orders.getStatus());
         mJumlah.setText(CurrencyUtil.rupiah(new BigDecimal(orders.getTotal())));
@@ -163,7 +189,10 @@ public class DetailPembelianActivity extends AppCompatActivity {
                                 JSONObject obj = result.getJSONObject(i);
                                 Manifest manifest = new Manifest(obj.getString("manifest_code"),obj.getString("manifest_description"),obj.getString("manifest_date"),obj.getString("manifest_time"),obj.getString("city_name"));
                                 text= text + "\n"+ manifest.getManifest_description() + " " + manifest.getManifest_date() + " " + manifest.getManifest_time() + " " +manifest.getCity_name();
+                                mTrackingList.add(manifest);
                             }
+                            Collections.reverse(mTrackingList);
+                            trackingAdapter.notifyDataSetChanged();
                             mTrackingResult.setText(text);
 
                         }catch (Exception e){
@@ -274,14 +303,14 @@ public class DetailPembelianActivity extends AppCompatActivity {
         overridePendingTransition(R.anim.slide_from_left,R.anim.slide_to_right);
     }
 
-    class Manifest{
+    private class Manifest{
         String manifest_code;
         String manifest_description;
         String manifest_date;
         String manifest_time;
         String city_name;
 
-        public Manifest(String manifest_code, String manifest_description, String manifest_date, String manifest_time, String city_name) {
+        Manifest(String manifest_code, String manifest_description, String manifest_date, String manifest_time, String city_name) {
             this.manifest_code = manifest_code;
             this.manifest_description = manifest_description;
             this.manifest_date = manifest_date;
@@ -289,24 +318,109 @@ public class DetailPembelianActivity extends AppCompatActivity {
             this.city_name = city_name;
         }
 
-        public String getManifest_code() {
-            return manifest_code;
-        }
-
-        public String getManifest_description() {
+        String getManifest_description() {
             return manifest_description;
         }
 
-        public String getManifest_date() {
+        String getManifest_date() {
             return manifest_date;
         }
 
-        public String getManifest_time() {
+        String getManifest_time() {
             return manifest_time;
         }
 
-        public String getCity_name() {
+        String getCity_name() {
             return city_name;
+        }
+    }
+
+    class TrackingAdapter extends RecyclerView.Adapter<TrackingAdapter.TrackingViewHolder>{
+        Context mContext;
+        List<Manifest> list;
+        int maxShow = 2;
+        TrackingAdapter(Context context, List<Manifest> trackings){
+            this.mContext = context;
+            this.list= trackings;
+        }
+
+        @Override
+        public TrackingViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View v = LayoutInflater.from(mContext).inflate(
+                    R.layout.detail_pembelian_row, parent, false);
+            return new TrackingViewHolder(v);
+        }
+
+        @Override
+        public void onBindViewHolder(TrackingViewHolder holder, int position) {
+            Manifest item = list.get(position);
+            holder.description.setText(item.getManifest_description());
+            Date date = DateUtil.stringToDate(item.getManifest_date() +  " " +item.getManifest_time(), "yyyy-MM-dd HH:mm");
+            String dateString = DateUtil.dateToString(date, "dd MMM yyyy");
+            holder.time.setText(dateString);
+            holder.city.setText(item.getCity_name());
+            if(position>=maxShow){
+                holder.itemView.setVisibility(View.GONE);
+            }else {
+                holder.itemView.setVisibility(View.VISIBLE);
+            }
+        }
+
+        public void setMaxShow(int maxShow){
+            this.maxShow = maxShow;
+        }
+
+        @Override
+        public int getItemCount() {
+            return list.size();
+        }
+
+        class TrackingViewHolder extends RecyclerView.ViewHolder{
+            TextView description;
+            TextView time;
+            TextView city;
+            TrackingViewHolder(View itemView) {
+                super(itemView);
+                description = (TextView) itemView.findViewById(R.id.detail);
+                time = (TextView) itemView.findViewById(R.id.tanggal);
+                city = (TextView) itemView.findViewById(R.id.lokasi);
+            }
+        }
+    }
+
+    private class Tracking{
+        String description;
+        String time;
+        String city;
+
+        public Tracking(String description, String time, String city) {
+            this.description = description;
+            this.time = time;
+            this.city = city;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+
+        public void setDescription(String description) {
+            this.description = description;
+        }
+
+        public String getTime() {
+            return time;
+        }
+
+        public void setTime(String time) {
+            this.time = time;
+        }
+
+        public String getCity() {
+            return city;
+        }
+
+        public void setCity(String city) {
+            this.city = city;
         }
     }
 
@@ -314,9 +428,9 @@ public class DetailPembelianActivity extends AppCompatActivity {
         List<Cart> itemsList;
         Context mContext;
 
-        ItemAdapter(Context mContext, List<Cart> itemsList) {
+        ItemAdapter(Context context, List<Cart> itemsList) {
             this.itemsList = itemsList;
-            this.mContext = mContext;
+            this.mContext = context;
         }
 
         @Override

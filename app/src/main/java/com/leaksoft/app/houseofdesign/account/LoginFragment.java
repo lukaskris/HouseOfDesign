@@ -30,6 +30,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.leaksoft.app.houseofdesign.HomeActivity;
 import com.leaksoft.app.houseofdesign.R;
 import com.leaksoft.app.houseofdesign.model.Customer;
@@ -159,6 +160,10 @@ public class LoginFragment extends Fragment {
                                                     }
                                                     Customer cus = PreferencesUtil.getUser(getContext());
                                                     String token = PreferencesUtil.getToken(getContext());
+                                                    if(token == null){
+                                                        token = FirebaseInstanceId.getInstance().getToken();
+                                                        PreferencesUtil.saveToken(getContext(), token);
+                                                    }
                                                     if(cus!=null) {
                                                         cus.setFirebasetoken(token);
                                                         PreferencesUtil.saveUser(getContext(),cus);
@@ -328,6 +333,10 @@ public class LoginFragment extends Fragment {
                     public void accept(Customer customer) throws Exception {
                         Customer cus = PreferencesUtil.getUser(getContext());
                         String token = PreferencesUtil.getToken(getContext());
+                        if(token == null){
+                            token = FirebaseInstanceId.getInstance().getToken();
+                            PreferencesUtil.saveToken(getContext(), token);
+                        }
                         if(cus!=null) {
                             cus.setFirebasetoken(token);
                             service.updateProfile(cus).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())

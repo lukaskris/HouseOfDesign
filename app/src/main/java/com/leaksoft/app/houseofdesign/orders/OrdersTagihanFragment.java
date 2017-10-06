@@ -415,7 +415,7 @@ public class OrdersTagihanFragment extends Fragment {
 
                         @Override
                         public void onError(Throwable e) {
-                            Snackbar.make(recyclerView,e.getLocalizedMessage(),Snackbar.LENGTH_LONG).show();
+                            Snackbar.make(recyclerView, e.toString(),Snackbar.LENGTH_LONG).show();
                         }
 
                         @Override

@@ -67,6 +67,11 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         if(getSupportActionBar()!=null)
             getSupportActionBar().setElevation(0);
 
+
+//        if(getIntent().getFlags() == Intent.FLAG_ACTIVITY_CLEAR_TOP){
+//
+//        }
+
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 
         ActionBarDrawerToggle toggle = new SmoothActionBarDrawerToggle(
@@ -106,6 +111,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
             String email = customer.getEmail();
             String name = customer.getName();
+            String token = PreferencesUtil.getToken(this);
+
             if(!user.isEmailVerified()){
                 name += " (Unverified)";
                 Snackbar.make(navigationView,R.string.error_invalid_verification,Snackbar.LENGTH_SHORT);
