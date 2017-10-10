@@ -23,7 +23,7 @@ public class Orders implements Serializable{
     String quantity;
     List<OrdersDetail> detail;
 
-    Orders(){
+    public Orders(){
         detail = new ArrayList<>();
     }
 

@@ -19,6 +19,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -39,14 +40,18 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.UploadTask;
 import com.leaksoft.app.houseofdesign.model.Cart;
+import com.leaksoft.app.houseofdesign.model.Customer;
+import com.leaksoft.app.houseofdesign.model.Items;
 import com.leaksoft.app.houseofdesign.model.Orders;
 import com.leaksoft.app.houseofdesign.model.OrdersBukti;
+import com.leaksoft.app.houseofdesign.model.OrdersDetail;
 import com.leaksoft.app.houseofdesign.model.OrdersInfo;
 import com.leaksoft.app.houseofdesign.model.ShippingAddress;
 import com.leaksoft.app.houseofdesign.R;
 import com.leaksoft.app.houseofdesign.services.FirebaseStorageService;
 import com.leaksoft.app.houseofdesign.util.CurrencyUtil;
 import com.leaksoft.app.houseofdesign.util.NetworkUtil;
+import com.leaksoft.app.houseofdesign.util.PreferencesUtil;
 
 import java.io.File;
 import java.math.BigDecimal;
@@ -58,6 +63,7 @@ import io.reactivex.ObservableSource;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
+import io.reactivex.observers.DefaultObserver;
 import io.reactivex.schedulers.Schedulers;
 
 import static com.leaksoft.app.houseofdesign.services.ServiceFactory.service;
@@ -93,11 +99,8 @@ public class DetailTagihanActivity extends AppCompatActivity {
         if(getSupportActionBar() != null)
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        orders = (Orders) getIntent().getSerializableExtra("orders");
-
         mDialog = new ProgressDialog(this);
-        mDialog.setTitle("Uploading");
-
+        mList = new ArrayList<>();
         mInvoice = (TextView) findViewById(R.id.detail_tagihan_invoice);
         mStatus = (TextView) findViewById(R.id.detail_tagihan_status);
         mAlamat = (TextView) findViewById(R.id.detail_tagihan_alamat);
@@ -107,6 +110,23 @@ public class DetailTagihanActivity extends AppCompatActivity {
         mLoading = (ProgressBar) findViewById(R.id.detail_tagihan_loading);
         mNoInternet = (LinearLayout) findViewById(R.id.detail_tagihan_no_internet);
         mUpload = (Button) findViewById(R.id.detail_tagihan_upload);
+
+        if(getIntent().hasExtra("invoice")){
+            orders = new Orders();
+            Log.d("INVOICE", getIntent().getStringExtra("invoice"));
+            loadOrders(getIntent().getStringExtra("invoice"));
+        }
+        else if(getIntent().hasExtra("orders")){
+            orders = (Orders) getIntent().getSerializableExtra("orders");
+            mInvoice.setText(orders.getInvoice());
+            mStatus.setText(orders.getStatus());
+            mJumlah.setText(CurrencyUtil.rupiah(new BigDecimal(orders.getTotal())));
+
+            getInfo();
+        }
+
+        mDialog.setTitle("Uploading");
+
         mNoInternet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -126,8 +146,8 @@ public class DetailTagihanActivity extends AppCompatActivity {
             }
         });
 
-        mList = new ArrayList<>();
-        mList = (List<Cart>) getIntent().getSerializableExtra("items");
+        if(getIntent().hasExtra("items"))
+            mList = (List<Cart>) getIntent().getSerializableExtra("items");
 
         ItemAdapter adapter = new ItemAdapter(this,mList);
         mRecycler.setHasFixedSize(true);
@@ -135,10 +155,75 @@ public class DetailTagihanActivity extends AppCompatActivity {
         mRecycler.setFocusable(false);
         mRecycler.setLayoutManager(new LinearLayoutManager(this));
         mRecycler.setAdapter(adapter);
-        mInvoice.setText(orders.getInvoice());
-        mStatus.setText(orders.getStatus());
-        mJumlah.setText(CurrencyUtil.rupiah(new BigDecimal(orders.getTotal())));
-        getInfo();
+
+
+    }
+
+    private void loadOrders(final String invoice) {
+        String email = "";
+        Customer user = PreferencesUtil.getUser(DetailTagihanActivity.this);
+        if(user!=null && user.getEmail() != null){
+            email = user.getEmail();
+        }
+        if(!email.equals("") && invoice != null) {
+            service.getOrders(email, invoice, "*", 0, 10)
+                    .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new DefaultObserver<List<Orders>>() {
+                @Override
+                public void onNext(List<Orders> orderses) {
+                    for (final Orders order : orderses) {
+                        if (order.getInvoice().equals(invoice)) {
+                            mInvoice.setText(order.getInvoice());
+                            mStatus.setText(order.getStatus());
+                            mJumlah.setText(CurrencyUtil.rupiah(new BigDecimal(order.getTotal())));
+                            service.getOrdersDetail(order.getInvoice()).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+                                    .subscribe(new DefaultObserver<List<OrdersDetail>>() {
+                                        @Override
+                                        public void onNext(List<OrdersDetail> ordersDetails) {
+                                            String[] name = order.getName().split(", ");
+                                            String[] thumbnail = order.getThumbnail().split(", ");
+                                            String[] price = order.getPrice().split(", ");
+                                            String[] quantity = order.getQuantity().split(", ");
+                                            List<OrdersDetail> temp = new ArrayList<>();
+                                            for (int i = 0; i < name.length; i++) {
+                                                OrdersDetail d = new OrdersDetail(order.getInvoice(), name[i], thumbnail[i], Integer.parseInt(price[i]), Integer.parseInt(quantity[i]));
+                                                temp.add(d);
+                                            }
+                                            order.setDetail(temp);
+                                            orders = order;
+                                            List<Cart> tempCart = new ArrayList<>();
+                                            for (OrdersDetail d : orders.getDetail()) {
+                                                Items item = new Items(d.getName(), d.getPrice(), d.getThumbnail());
+                                                Cart c = new Cart(item, d.getQuantity());
+                                                tempCart.add(c);
+                                            }
+                                            mList = tempCart;
+                                        }
+
+                                        @Override
+                                        public void onError(Throwable e) {
+
+                                        }
+
+                                        @Override
+                                        public void onComplete() {
+
+                                        }
+                                    });
+                        }
+                    }
+                }
+
+                @Override
+                public void onError(Throwable e) {
+
+                }
+
+                @Override
+                public void onComplete() {
+
+                }
+            });
+        }
     }
 
     public static boolean hasPermissions(Context context, String... permissions) {

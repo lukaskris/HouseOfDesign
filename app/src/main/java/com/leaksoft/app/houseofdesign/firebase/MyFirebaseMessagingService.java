@@ -18,6 +18,7 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.leaksoft.app.houseofdesign.HomeActivity;
 import com.leaksoft.app.houseofdesign.R;
+import com.leaksoft.app.houseofdesign.model.Orders;
 import com.leaksoft.app.houseofdesign.orders.DetailPembelianActivity;
 import com.leaksoft.app.houseofdesign.orders.DetailTagihanActivity;
 
@@ -36,6 +37,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         // Check if message contains a notification payload.
         if (remoteMessage.getNotification() != null) {
             Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
+            Log.d(TAG,"Message Data : " + remoteMessage.getData().toString());
             String intent = remoteMessage.getData().get("intent");
             String invoice = remoteMessage.getData().get("invoice");
             sendNotification(remoteMessage.getNotification().getTitle(),remoteMessage.getNotification().getBody(), intent, invoice);
@@ -67,7 +69,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
      *
      * @param messageBody FCM message body received.
      */
-    private void sendNotification(String title, String messageBody, @Nullable String intentNext, @Nullable String invoice) {
+    private void sendNotification(String title, String messageBody, String intentNext, String invoice) {
 
         Intent intent = new Intent(this, HomeActivity.class);
         if(intentNext.equalsIgnoreCase("detailtransaksipembelian")){
@@ -76,8 +78,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             intent = new Intent(this, DetailTagihanActivity.class);
         }
 
-
-            intent.putExtra("invoice", invoice);
+        intent.putExtra("invoice", invoice);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
 

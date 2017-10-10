@@ -20,7 +20,7 @@ public class ServiceFactory {
     static final OkHttpClient client = new OkHttpClient.Builder().connectTimeout(30, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS).build();
 
     public static final MyService service = new Retrofit.Builder()
-        .baseUrl(MyService.LOCAL_ENDPOINT)
+        .baseUrl(MyService.SERVICE_ENDPOINT)
         .client(client)
         .addConverterFactory(GsonConverterFactory.create())
         .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
