@@ -84,6 +84,8 @@ public class DetailTagihanActivity extends AppCompatActivity {
 
     ProgressDialog mDialog;
 
+    ItemAdapter adapter;
+
     Uri picUri;
     Button mUpload;
 
@@ -110,6 +112,12 @@ public class DetailTagihanActivity extends AppCompatActivity {
         mLoading = (ProgressBar) findViewById(R.id.detail_tagihan_loading);
         mNoInternet = (LinearLayout) findViewById(R.id.detail_tagihan_no_internet);
         mUpload = (Button) findViewById(R.id.detail_tagihan_upload);
+
+        if(getIntent().hasExtra("items")) {
+            mList = (List<Cart>) getIntent().getSerializableExtra("items");
+        }
+
+        adapter = new ItemAdapter(this,mList);
 
         if(getIntent().hasExtra("invoice")){
             orders = new Orders();
@@ -146,10 +154,6 @@ public class DetailTagihanActivity extends AppCompatActivity {
             }
         });
 
-        if(getIntent().hasExtra("items"))
-            mList = (List<Cart>) getIntent().getSerializableExtra("items");
-
-        ItemAdapter adapter = new ItemAdapter(this,mList);
         mRecycler.setHasFixedSize(true);
         mRecycler.setNestedScrollingEnabled(false);
         mRecycler.setFocusable(false);
@@ -171,51 +175,40 @@ public class DetailTagihanActivity extends AppCompatActivity {
                 @Override
                 public void onNext(List<Orders> orderses) {
                     for (final Orders order : orderses) {
+                        Log.d("Debug", order.getInvoice() + " | " + order.getStatus() +  " "+ order.getTotal());
                         if (order.getInvoice().equals(invoice)) {
+
                             mInvoice.setText(order.getInvoice());
                             mStatus.setText(order.getStatus());
                             mJumlah.setText(CurrencyUtil.rupiah(new BigDecimal(order.getTotal())));
-                            service.getOrdersDetail(order.getInvoice()).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
-                                    .subscribe(new DefaultObserver<List<OrdersDetail>>() {
-                                        @Override
-                                        public void onNext(List<OrdersDetail> ordersDetails) {
-                                            String[] name = order.getName().split(", ");
-                                            String[] thumbnail = order.getThumbnail().split(", ");
-                                            String[] price = order.getPrice().split(", ");
-                                            String[] quantity = order.getQuantity().split(", ");
-                                            List<OrdersDetail> temp = new ArrayList<>();
-                                            for (int i = 0; i < name.length; i++) {
-                                                OrdersDetail d = new OrdersDetail(order.getInvoice(), name[i], thumbnail[i], Integer.parseInt(price[i]), Integer.parseInt(quantity[i]));
-                                                temp.add(d);
-                                            }
-                                            order.setDetail(temp);
-                                            orders = order;
-                                            List<Cart> tempCart = new ArrayList<>();
-                                            for (OrdersDetail d : orders.getDetail()) {
-                                                Items item = new Items(d.getName(), d.getPrice(), d.getThumbnail());
-                                                Cart c = new Cart(item, d.getQuantity());
-                                                tempCart.add(c);
-                                            }
-                                            mList = tempCart;
-                                        }
 
-                                        @Override
-                                        public void onError(Throwable e) {
+                            String[] name = order.getName().split(", ");
+                            String[] thumbnail = order.getThumbnail().split(", ");
+                            String[] price = order.getPrice().split(", ");
+                            String[] quantity = order.getQuantity().split(", ");
+                            List<OrdersDetail> temp = new ArrayList<>();
+                            for (int i = 0; i < name.length; i++) {
+                                OrdersDetail d = new OrdersDetail(order.getInvoice(), name[i], thumbnail[i], Integer.parseInt(price[i]),Integer.parseInt(quantity[i]));
+                                temp.add(d);
+                            }
+                            order.setDetail(temp);
 
-                                        }
+                            for(OrdersDetail d: temp){
+                                Items item = new Items(d.getName(),d.getPrice(),d.getThumbnail());
+                                Cart c = new Cart(item,d.getQuantity());
+                                mList.add(c);
+                            }
 
-                                        @Override
-                                        public void onComplete() {
-
-                                        }
-                                    });
+                            adapter.notifyDataSetChanged();
+                            orders = order;
+                            getInfo();
                         }
                     }
                 }
 
                 @Override
                 public void onError(Throwable e) {
-
+                    Log.d("Debug", e.getLocalizedMessage());
                 }
 
                 @Override
