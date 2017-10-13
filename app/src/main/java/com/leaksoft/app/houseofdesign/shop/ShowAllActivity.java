@@ -2,13 +2,14 @@ package com.leaksoft.app.houseofdesign.shop;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,14 +18,18 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.leaksoft.app.houseofdesign.model.Items;
+import com.crystal.crystalrangeseekbar.interfaces.OnRangeSeekbarChangeListener;
+import com.crystal.crystalrangeseekbar.widgets.CrystalRangeSeekbar;
 import com.leaksoft.app.houseofdesign.R;
+import com.leaksoft.app.houseofdesign.model.Items;
 import com.leaksoft.app.houseofdesign.util.CurrencyUtil;
 import com.wang.avi.AVLoadingIndicatorView;
 
@@ -35,7 +40,6 @@ import java.util.List;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
 import static com.leaksoft.app.houseofdesign.services.ServiceFactory.service;
@@ -48,6 +52,9 @@ public class ShowAllActivity extends AppCompatActivity {
     private SwipeRefreshLayout mSwipe;
     private AVLoadingIndicatorView mLoading;
     private TextView mNoData;
+    private LinearLayout mSort;
+    private LinearLayout mFilter;
+    private int selectedSorting=0;
 
     private int PAGE=0;
     protected Handler handler;
@@ -56,6 +63,10 @@ public class ShowAllActivity extends AppCompatActivity {
     int cursize=0;
     String mKey="";
     Boolean isKey=false;
+    BigDecimal minPrice;
+    BigDecimal maxPrice;
+    BigDecimal tempMin;
+    BigDecimal tempMax;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,11 +101,105 @@ public class ShowAllActivity extends AppCompatActivity {
         mLoading = (AVLoadingIndicatorView) findViewById(R.id.show_all_loading);
         mSwipe = (SwipeRefreshLayout) findViewById(R.id.show_all_refresh);
         mNoData = (TextView) findViewById(R.id.show_all_no_data);
+        mSort = (LinearLayout) findViewById(R.id.sorting);
+        mFilter = (LinearLayout) findViewById(R.id.filtering);
+
+
+        minPrice = new BigDecimal(100);
+        maxPrice = new BigDecimal(100000000);
+
+        mSort.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LayoutInflater inflater = getLayoutInflater();
+                AlertDialog.Builder builder = new AlertDialog.Builder(ShowAllActivity.this);
+                builder.setTitle("Sorting");
+                CharSequence[] items = {"Terbaru", "Termurah", "Termahal"};
+                builder.setSingleChoiceItems(items, selectedSorting, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        selectedSorting=which;
+                        resetState();
+                        if(isKey){
+                            loadProduct(PAGE);
+                        }else {
+                            loadProduct(category, PAGE);
+                        }
+                        dialog.cancel();
+                    }
+                });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+        });
+
+        mFilter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LayoutInflater inflater = getLayoutInflater();
+                View layout = inflater.inflate(R.layout.layout_filter_dialog, null);
+                final EditText min = (EditText) layout.findViewById(R.id.min);
+                final EditText max = (EditText) layout.findViewById(R.id.max);
+                CrystalRangeSeekbar seekbar = (CrystalRangeSeekbar) layout.findViewById(R.id.seek_bar);
+
+                min.setText(CurrencyUtil.rupiah(minPrice));
+                max.setText(CurrencyUtil.rupiah(maxPrice));
+                seekbar.setMinStartValue(minPrice.floatValue());
+                seekbar.setMaxStartValue(maxPrice.floatValue());
+                seekbar.apply();
+                seekbar.setOnRangeSeekbarChangeListener(new OnRangeSeekbarChangeListener() {
+                    @Override
+                    public void valueChanged(Number minValue, Number maxValue) {
+                        tempMax = new BigDecimal(String.valueOf(maxValue));
+                        tempMin = new BigDecimal(String.valueOf(minValue));
+
+                        min.setText(CurrencyUtil.rupiah(new BigDecimal(String.valueOf(minValue))));
+                        max.setText(CurrencyUtil.rupiah(new BigDecimal(String.valueOf(maxValue))));
+
+                    }
+                });
+                AlertDialog.Builder builder = new AlertDialog.Builder(ShowAllActivity.this);
+                builder.setTitle("Filter");
+                builder.setView(layout);
+                builder.setNegativeButton("Reset", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        minPrice = new BigDecimal(100);
+                        maxPrice = new BigDecimal(100000000);
+                        min.setText(CurrencyUtil.rupiah(minPrice));
+                        max.setText(CurrencyUtil.rupiah(maxPrice));
+                        resetState();
+                        if(isKey){
+                            loadProduct(PAGE);
+                        }else {
+                            loadProduct(category, PAGE);
+                        }
+                    }
+                });
+                builder.setPositiveButton("Filter", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        minPrice = tempMin;
+                        maxPrice = tempMax;
+                        resetState();
+                        if(isKey){
+                            loadProduct(PAGE);
+                        }else {
+                            loadProduct(category, PAGE);
+                        }
+                        dialog.cancel();
+                    }
+                });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+        });
 
         mSwipe.setColorSchemeColors(getResources().getColor(android.R.color.holo_blue_bright),
                 getResources().getColor(android.R.color.holo_green_light),
                 getResources().getColor(android.R.color.holo_orange_light),
                 getResources().getColor(android.R.color.holo_green_light));
+
         mSwipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -111,6 +216,7 @@ public class ShowAllActivity extends AppCompatActivity {
                 },2000);
             }
         });
+
         GridLayoutManager gridLayoutManager = new GridLayoutManager(ShowAllActivity.this, 2);
         recyclerView = (RecyclerView) findViewById(R.id.show_all_recyclerview);
         recyclerView.setLayoutManager(gridLayoutManager);
@@ -146,12 +252,14 @@ public class ShowAllActivity extends AppCompatActivity {
             }
         });
         recyclerView.setAdapter(adapter);
+
         if(isKey){
             loadProduct(PAGE);
         }else {
             loadProduct(category, PAGE);
         }
     }
+
     private void resetState(){
         mList.clear();
         adapter.resetLoaded();
@@ -159,7 +267,14 @@ public class ShowAllActivity extends AppCompatActivity {
     }
 
     private void loadProduct(int page){
-        service.getItems(mKey,page*10,10)
+        String order = "created_at desc";
+        String filter = "price >= " + minPrice+ " and price<=" + maxPrice;
+        if(selectedSorting == 1){
+            order = "price";
+        }else if(selectedSorting == 2){
+            order = "price desc";
+        }
+        service.getItems(mKey,page*10,10, filter, order)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<List<Items>>() {
@@ -206,7 +321,14 @@ public class ShowAllActivity extends AppCompatActivity {
     }
 
     private void loadProduct(int category, int page) {
-        service.getItems(category,page*10,10)
+        String order = "created_at desc";
+        String filter = "price >= " + minPrice+ " and price<=" + maxPrice;
+        if(selectedSorting == 1){
+            order = "price";
+        }else if(selectedSorting == 2){
+            order = "price desc";
+        }
+        service.getItems(category,page*10,10, filter, order)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<List<Items>>() {

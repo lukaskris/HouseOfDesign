@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="25dp">
+   <LinearLayout
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:orientation="horizontal">
+       <android.support.design.widget.TextInputLayout
+           android:layout_width="0dp"
+           android:layout_height="match_parent"
+           android:layout_weight="0.4">
+           <EditText
+               android:id="@+id/min"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:hint="Harga Minimum"/>
+       </android.support.design.widget.TextInputLayout>
+       <TextView
+           android:layout_width="0dp"
+           android:layout_height="match_parent"
+           android:layout_weight="0.1"
+           android:text="-"
+           android:gravity="center"
+           android:textSize="20sp"/>
+       <android.support.design.widget.TextInputLayout
+           android:layout_width="0dp"
+           android:layout_height="match_parent"
+           android:layout_weight="0.4">
+           <EditText
+               android:id="@+id/max"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:hint="Harga Minimum"/>
+       </android.support.design.widget.TextInputLayout>
+
+
+   </LinearLayout>
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="15dp" />
+    <com.crystal.crystalrangeseekbar.widgets.CrystalRangeSeekbar
+        android:id="@+id/seek_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:min_value="100"
+        app:max_value="10000000"
+        app:corner_radius="10"
+        app:steps="100"
+        app:bar_color="#8990C4"
+        app:bar_highlight_color="#2434AD"
+        app:left_thumb_color="#1A246D"
+        app:right_thumb_color="#1A246D"
+        app:left_thumb_color_pressed="#030B47"
+        app:right_thumb_color_pressed="#030B47"
+        app:data_type="_integer"/>
+</LinearLayout>

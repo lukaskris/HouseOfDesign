@@ -31,12 +31,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/icon" />
-        <!-- Set color used with incoming notification messages. This is used when no color is set for the incoming
-             notification message. See README(https://goo.gl/6BKBk7) for more. -->
+        <!--
+             Set color used with incoming notification messages. This is used when no color is set for the incoming
+             notification message. See README(https://goo.gl/6BKBk7) for more.
+        -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/colorAccent" />
@@ -59,8 +60,9 @@
             android:name=".shop.DetailActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".shop.TypeActivity" />
-        <activity android:name=".shop.ShowAllActivity"
-            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity
+            android:name=".shop.ShowAllActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
         <!-- <activity android:name=".Shop.ShoppingCartFragment" /> -->
         <activity android:name=".transaction.ConfirmationActivity" />
         <activity android:name=".account.AddressActivity" />
@@ -81,27 +83,27 @@
         <activity android:name=".wallet.TopUpWalletActivity" />
         <activity android:name=".wallet.HistoryWalletActivity" />
         <activity android:name=".wallet.RedeemWalletActivity" />
-        <activity android:name=".account.EditProfileActivity"/>
+        <activity android:name=".account.EditProfileActivity" />
 
-        <service
-            android:name=".firebase.MyFirebaseMessagingService">
+        <service android:name=".firebase.MyFirebaseMessagingService">
             <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+        <service android:name=".firebase.FirebaseInstanceIDService">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
         <service
-            android:name=".firebase.FirebaseInstanceIDService">
+            android:name=".firebase.MyJobService"
+            android:exported="false">
             <intent-filter>
-                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+                <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE" />
             </intent-filter>
         </service>
-        <service
-            android:exported="false"
-            android:name=".firebase.MyJobService">
-            <intent-filter>
-                <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE"/>
-            </intent-filter>
-        </service>
+
+        <activity android:name=".payment.TopUpActivity"></activity>
     </application>
 
 </manifest>

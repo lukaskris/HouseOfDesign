@@ -32,11 +32,14 @@ public interface MyService {
     @GET("category")
     Observable<List<Category>> getCategory();
 
-    @GET("item/{category}/{offset}/{limit}")
-    Observable<List<Items>> getItems(@Path("category") int category, @Path("offset") int offset, @Path("limit") int limit);
+    @GET("item/{category}/{offset}/{limit}/{filter}/{order}")
+    Observable<List<Items>> getItems(@Path("category") int category, @Path("offset") int offset, @Path("limit") int limit,@Path("filter") String filter, @Path("order") String order);
 
     @GET("search_item/{key}/{offset}/{limit}")
     Observable<List<Items>> getItems(@Path("key") String key, @Path("offset") int offset, @Path("limit") int limit);
+
+    @GET("search_item/{key}/{offset}/{limit}/{filter}/{order}")
+    Observable<List<Items>> getItems(@Path("key") String key, @Path("offset") int offset, @Path("limit") int limit,@Path("filter") String filter, @Path("order") String order);
 
     @GET("items")
     Observable<List<Items>> getItems();

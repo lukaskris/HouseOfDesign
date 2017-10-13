@@ -38,6 +38,7 @@
             android:background="@drawable/border_edittext"
             android:layout_weight="0.5">
             <LinearLayout
+                android:id="@+id/sorting"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:clickable="true"
@@ -55,8 +56,8 @@
             android:layout_height="match_parent"
             android:background="@drawable/border_edittext"
             android:layout_weight="0.5">
-
             <LinearLayout
+                android:id="@+id/filtering"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:clickable="true"
