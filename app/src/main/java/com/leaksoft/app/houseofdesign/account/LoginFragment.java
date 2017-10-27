@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -120,6 +121,11 @@ public class LoginFragment extends Fragment {
                     return;
                 }
                 if(isEmailValid(email) && password.length()>=8) {
+                    View view = getActivity().getCurrentFocus();
+                    if (view != null) {
+                        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                    }
                     mProgress.show();
 
                     if (!email.isEmpty() && !password.isEmpty()) {
@@ -145,16 +151,8 @@ public class LoginFragment extends Fragment {
 
                                                 @Override
                                                 public void onNext(Customer customers) {
+                                                    Log.d("Customer", customers.getEmail() + " here customer");
                                                     PreferencesUtil.saveUser(getContext(),customers);
-                                                }
-
-                                                @Override
-                                                public void onError(Throwable e) {
-
-                                                }
-
-                                                @Override
-                                                public void onComplete() {
                                                     if (mAuth.getCurrentUser() != null && !mAuth.getCurrentUser().isEmailVerified() ) {
                                                         Toast.makeText(getContext(),getString(R.string.error_invalid_verification), Toast.LENGTH_LONG).show();
                                                     }
@@ -167,27 +165,39 @@ public class LoginFragment extends Fragment {
                                                     if(cus!=null) {
                                                         cus.setFirebasetoken(token);
                                                         PreferencesUtil.saveUser(getContext(),cus);
-                                                        service.updateProfile(cus).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
-                                                            .subscribe(new DefaultObserver<Customer>() {
-                                                                @Override
-                                                                public void onNext(Customer customer) {
-                                                                    mProgress.dismiss();
-                                                                    getActivity().finish();
-                                                                    startActivity(new Intent(getActivity(), HomeActivity.class));
-                                                                }
+                                                        service.updateToken(cus).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+                                                                .subscribe(new DefaultObserver<Customer>() {
+                                                                    @Override
+                                                                    public void onNext(Customer customer) {
+                                                                        mProgress.dismiss();
+                                                                        getActivity().finish();
+                                                                        startActivity(new Intent(getActivity(), HomeActivity.class));
+                                                                    }
 
-                                                                @Override
-                                                                public void onError(Throwable e) {
-                                                                    if(getView()!=null)
-                                                                        Snackbar.make(getView(),e.getLocalizedMessage(),Snackbar.LENGTH_SHORT).show();
-                                                                }
+                                                                    @Override
+                                                                    public void onError(Throwable e) {
+                                                                        mProgress.dismiss();
+                                                                        if(getView()!=null)
+                                                                            Snackbar.make(getView(),e.getLocalizedMessage(),Snackbar.LENGTH_SHORT).show();
+                                                                    }
 
-                                                                @Override
-                                                                public void onComplete() {
+                                                                    @Override
+                                                                    public void onComplete() {
 
-                                                                }
-                                                            });
+                                                                    }
+                                                                });
                                                     }
+                                                }
+
+                                                @Override
+                                                public void onError(Throwable e) {
+                                                    if(getView()!=null)
+                                                        Snackbar.make(getView(),e.getLocalizedMessage(),Snackbar.LENGTH_SHORT).show();
+                                                }
+
+                                                @Override
+                                                public void onComplete() {
+
                                                 }
                                             });
                                 }

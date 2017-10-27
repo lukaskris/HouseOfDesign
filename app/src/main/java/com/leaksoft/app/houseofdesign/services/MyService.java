@@ -26,7 +26,7 @@ import retrofit2.http.Path;
 
 public interface MyService {
     String SERVICE_ENDPOINT = "http://house-of-design.herokuapp.com/api/";
-    String LOCAL_ENDPOINT = "http://10.120.120.25:3000/api/";
+    String LOCAL_ENDPOINT = "http://10.0.2.2:3000/api/";
     String HOTSPOT_ENDPOINT = "http://192.168.43.249:3000/api/";
 
     @GET("category")
@@ -55,6 +55,9 @@ public interface MyService {
 
     @PUT("profile")
     Observable<Customer> updateProfile(@Body Customer customer);
+
+    @PUT("token")
+    Observable<Customer> updateToken(@Body Customer customer);
 
     @POST("shipping_address")
     Observable<ShippingAddress> createAddress(@Body ShippingAddress shippingAddress);

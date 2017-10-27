@@ -1,35 +1,35 @@
 {
   "project_info": {
-    "project_number": "603220519271",
-    "firebase_url": "https://utility-time-161403.firebaseio.com",
-    "project_id": "utility-time-161403",
-    "storage_bucket": "utility-time-161403.appspot.com"
+    "project_number": "208987835659",
+    "firebase_url": "https://houseofdesign-4f36f.firebaseio.com",
+    "project_id": "houseofdesign-4f36f",
+    "storage_bucket": "houseofdesign-4f36f.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:603220519271:android:da057e3bb2ce5b8f",
+        "mobilesdk_app_id": "1:208987835659:android:da057e3bb2ce5b8f",
         "android_client_info": {
           "package_name": "com.leaksoft.app.houseofdesign"
         }
       },
       "oauth_client": [
         {
-          "client_id": "603220519271-6ieauge740u0rfn4t29c0dn44m09v2gc.apps.googleusercontent.com",
+          "client_id": "208987835659-2c113q9r7u25kcb41lvjde3qf6201hll.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.leaksoft.app.houseofdesign",
-            "certificate_hash": "bb722242f1196cd4278cc8c2b5a7ddc7bdfd7d36"
+            "certificate_hash": "44f1ed1ef5ce608a69cc3ff33fcc79629a012ff0"
           }
         },
         {
-          "client_id": "603220519271-dbjshfiue5lis85sravhuk1g6q3d2aok.apps.googleusercontent.com",
+          "client_id": "208987835659-9bunel7r9ucvk021aq6kj5k00od0cfaa.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDmY6op97X_hnaxMHyOWDu08-ad9dmL9Io"
+          "current_key": "AIzaSyAnKKxs447iMQ2LIvuv6KrRCjzUzXU3Bb8"
         }
       ],
       "services": {
@@ -40,59 +40,7 @@
           "status": 2,
           "other_platform_oauth_client": [
             {
-              "client_id": "603220519271-dbjshfiue5lis85sravhuk1g6q3d2aok.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        },
-        "ads_service": {
-          "status": 2
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:603220519271:android:03e450f00ab0042d",
-        "android_client_info": {
-          "package_name": "com.example.lukaskris.houseofdesign"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "603220519271-g7vegm7h85aq8d2tgecd3ingpee8del3.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.lukaskris.houseofdesign",
-            "certificate_hash": "78b1aa00847dd11ab723f092598d15013bfd5681"
-          }
-        },
-        {
-          "client_id": "603220519271-7f4it82d181no91ksnpicl3jfm1ve7c8.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.lukaskris.houseofdesign",
-            "certificate_hash": "bb722242f1196cd4278cc8c2b5a7ddc7bdfd7d36"
-          }
-        },
-        {
-          "client_id": "603220519271-dbjshfiue5lis85sravhuk1g6q3d2aok.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyDmY6op97X_hnaxMHyOWDu08-ad9dmL9Io"
-        }
-      ],
-      "services": {
-        "analytics_service": {
-          "status": 1
-        },
-        "appinvite_service": {
-          "status": 2,
-          "other_platform_oauth_client": [
-            {
-              "client_id": "603220519271-dbjshfiue5lis85sravhuk1g6q3d2aok.apps.googleusercontent.com",
+              "client_id": "208987835659-9bunel7r9ucvk021aq6kj5k00od0cfaa.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

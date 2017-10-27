@@ -103,7 +103,8 @@
             </intent-filter>
         </service>
 
-        <activity android:name=".payment.TopUpActivity"></activity>
+        <activity android:name=".payment.TopUpActivity" />
+        <activity android:name=".payment.DetailTopUp"></activity>
     </application>
 
 </manifest>
