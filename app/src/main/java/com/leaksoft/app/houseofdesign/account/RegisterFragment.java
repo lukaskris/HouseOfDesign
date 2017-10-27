@@ -106,7 +106,7 @@ public class RegisterFragment extends Fragment {
                     mProgress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
                     if(isEmailValid(mEmail.getText().toString()) && mPassword.length()>=8) {
                         mProgress.show();
-                        final String defaultPicture = "https://storage.googleapis.com/houseofdesign/image/userdefault.png";
+                        final String defaultPicture = "https://firebasestorage.googleapis.com/v0/b/houseofdesign-4f36f.appspot.com/o/userdefault.png?alt=media&token=656c221d-f762-401c-9b12-88273c572167";
                         Customer newCustomer = new Customer(mName.getText().toString(),mEmail.getText().toString(),"",mPassword.getText().toString(),defaultPicture);
                         service.createCustomer(newCustomer)
                                 .subscribeOn(Schedulers.newThread())
